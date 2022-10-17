@@ -17,9 +17,6 @@ class EditorView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(CollectionStore.provider);
 
-    // final drawingController = ref.watch(DrawingController.provider.notifier);
-    // final drawingState = ref.watch(DrawingController.provider);
-
     final drawingControllerMut = ref.watch(DrawingController.provider);
 
     final offsets = useState<List<Offset>>([]);

@@ -13,6 +13,9 @@ class DrawingController extends ChangeNotifier {
   /// Drawing.
   bool get isDrawing => _state.isDrawing;
 
+  /// Polyline.
+  bool get isPolyline => _state.isPolyline;
+
   /// Points.
   List<Offset?> get points => _state.points;
 
@@ -30,6 +33,12 @@ class DrawingController extends ChangeNotifier {
   /// Toggle drawing.
   void toggleDrawingMode() {
     _state.isDrawing = !_state.isDrawing;
+    notifyListeners();
+  }
+
+  /// Toggle polyline.
+  void togglePolylineMode() {
+    _state.isPolyline = !_state.isPolyline;
     notifyListeners();
   }
 

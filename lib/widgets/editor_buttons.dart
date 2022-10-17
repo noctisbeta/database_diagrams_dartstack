@@ -15,16 +15,27 @@ class EditorButtons extends ConsumerWidget {
     // final drawingController = ref.watch(DrawingController.provider.notifier);
     // final isDrawing = ref.watch(DrawingController.provider).isDrawing;
 
-    final drawingControllerMut = ref.watch(DrawingController.provider);
-    final isDrawing = drawingControllerMut.isDrawing;
+    final drawingController = ref.watch(DrawingController.provider);
+    final isDrawing = drawingController.isDrawing;
+    final isPolyline = drawingController.isPolyline;
 
     return Column(
       children: [
         FloatingActionButton(
+          backgroundColor: isPolyline ? Colors.orange.shade900 : Colors.orange.shade700,
+          hoverColor: isPolyline ? Colors.orange.shade600 : Colors.orange.shade800,
+          splashColor: isPolyline ? Colors.orange.shade700 : Colors.orange.shade900,
+          onPressed: drawingController.togglePolylineMode,
+          child: const Icon(Icons.polyline),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        FloatingActionButton(
           backgroundColor: isDrawing ? Colors.orange.shade900 : Colors.orange.shade700,
           hoverColor: isDrawing ? Colors.orange.shade600 : Colors.orange.shade800,
           splashColor: isDrawing ? Colors.orange.shade700 : Colors.orange.shade900,
-          onPressed: drawingControllerMut.toggleDrawingMode,
+          onPressed: drawingController.toggleDrawingMode,
           child: const Icon(Icons.edit),
         ),
         const SizedBox(

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
@@ -19,6 +17,7 @@ class DrawingPainter extends CustomPainter {
       )
       .toList();
 
+  /// Splits the list on nulls.
   List<List<Point>> splitByNulls(List<Point?> list) {
     final result = <List<Point>>[];
     var current = <Point>[];

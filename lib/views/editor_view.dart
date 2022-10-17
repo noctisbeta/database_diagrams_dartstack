@@ -38,64 +38,66 @@ class EditorView extends HookConsumerWidget {
       backgroundColor: Colors.black.withOpacity(0.9),
       body: MouseRegion(
         cursor: drawingControllerMut.isDrawing ? SystemMouseCursors.precise : SystemMouseCursors.basic,
-        child: Stack(
-          children: [
-            ...collections.map(
-              (collection) => Positioned(
-                top: 50 + offsets.value[collections.indexOf(collection)].dy,
-                left: 50 + offsets.value[collections.indexOf(collection)].dx,
-                child: DraggableCollectionCard(
-                  collection: collection,
-                  onDragUpdate: (details) {
-                    offsets.value = [
-                      ...offsets.value.sublist(0, collections.indexOf(collection)),
-                      Offset(
-                        offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
-                        offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
-                      ),
-                      ...offsets.value.sublist(collections.indexOf(collection) + 1),
-                    ];
-                  },
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: AbsorbPointer(
-                absorbing: !drawingControllerMut.isDrawing,
-                child: GestureDetector(
-                  onPanStart: (details) {
-                    drawingControllerMut.addPoint(details.localPosition);
-                  },
-                  onPanUpdate: (details) {
-                    drawingControllerMut.addPoint(details.localPosition);
-                  },
-                  onPanEnd: (details) {
-                    drawingControllerMut.addPoint(null);
-                  },
-                  // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
-                  child: RepaintBoundary(
-                    child: CustomPaint(
-                      isComplex: true,
-                      willChange: true,
-                      painter: DrawingPainter(
-                        points: drawingControllerMut.points,
+        child: GestureDetector(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: AbsorbPointer(
+                  absorbing: !drawingControllerMut.isDrawing,
+                  child: GestureDetector(
+                    onPanStart: (details) {
+                      drawingControllerMut.addPoint(details.localPosition);
+                    },
+                    onPanUpdate: (details) {
+                      drawingControllerMut.addPoint(details.localPosition);
+                    },
+                    onPanEnd: (details) {
+                      drawingControllerMut.addPoint(null);
+                    },
+                    // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
+                    child: RepaintBoundary(
+                      child: CustomPaint(
+                        isComplex: true,
+                        willChange: true,
+                        painter: DrawingPainter(
+                          points: drawingControllerMut.points,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const Positioned(
-              right: 16,
-              bottom: 32,
-              child: EditorButtons(),
-            ),
-            const Positioned(
-              left: 16,
-              bottom: 16,
-              child: DrawingUndoRedoButtons(),
-            ),
-          ],
+              ...collections.map(
+                (collection) => Positioned(
+                  top: 50 + offsets.value[collections.indexOf(collection)].dy,
+                  left: 50 + offsets.value[collections.indexOf(collection)].dx,
+                  child: DraggableCollectionCard(
+                    collection: collection,
+                    onDragUpdate: (details) {
+                      offsets.value = [
+                        ...offsets.value.sublist(0, collections.indexOf(collection)),
+                        Offset(
+                          offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
+                          offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
+                        ),
+                        ...offsets.value.sublist(collections.indexOf(collection) + 1),
+                      ];
+                    },
+                  ),
+                ),
+              ),
+              const Positioned(
+                right: 16,
+                bottom: 32,
+                child: EditorButtons(),
+              ),
+              const Positioned(
+                left: 16,
+                bottom: 16,
+                child: DrawingUndoRedoButtons(),
+              ),
+            ],
+          ),
         ),
       ),
     );

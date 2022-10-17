@@ -19,6 +19,9 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
       duration: const Duration(milliseconds: 300),
     );
 
+    final drawingController = ref.watch(DrawingController.provider.notifier);
+
+    // TODO(Janez): Fires on every draw input. Seperate the drawing mode toggle notifier.
     ref.listen(
       DrawingController.provider,
       (previous, next) {
@@ -43,7 +46,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: () {},
+            onPressed: drawingController.undo,
             child: const Icon(
               Icons.keyboard_double_arrow_left,
             ),
@@ -54,7 +57,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: () {},
+            onPressed: drawingController.redo,
             child: const Icon(
               Icons.keyboard_double_arrow_right,
             ),

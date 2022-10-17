@@ -10,8 +10,6 @@ class DrawingController extends ChangeNotifier {
   /// State.
   final DrawingState _state;
 
-  // Getters
-
   /// Drawing.
   bool get isDrawing => _state.isDrawing;
 
@@ -35,19 +33,46 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Undo.
   void undo() {
     if (_state.points.isEmpty) {
       return;
     }
 
-    // for(int i = _state.points.length; i > -1; i--) {
-    //   if(_state.points[i] != null) {
-    //     _state.points.removeAt(i);
-    //     break;
-    //   }
-    // }
+    bool hitFirstNull = false;
+    for (int i = _state.points.length - 1; i > -1; i--) {
+      if (_state.points[i] == null && hitFirstNull) {
+        break;
+      }
+      if (_state.points[i] == null) {
+        hitFirstNull = true;
+        _state.points.removeAt(i);
+        _state.redoStack.add(null);
+        continue;
+      }
+      _state.redoStack.add(_state.points[i]);
+      _state.points.removeAt(i);
+    }
 
-    // _state.points.removeRange()
+    notifyListeners();
+  }
+
+  /// Redo.
+  void redo() {
+    if (_state.redoStack.isEmpty) {
+      return;
+    }
+
+    for (int i = _state.redoStack.length - 1; i > -1; i--) {
+      if (_state.redoStack[i] == null) {
+        _state.redoStack.removeAt(i);
+        _state.points.add(null);
+        break;
+      }
+      _state.points.add(_state.redoStack[i]);
+      _state.redoStack.removeAt(i);
+    }
+
     notifyListeners();
   }
 }

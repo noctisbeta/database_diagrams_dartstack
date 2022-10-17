@@ -1,7 +1,8 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/controllers/collection_store.dart';
+import 'package:database_diagrams/controllers/drawing_controller.dart';
 import 'package:database_diagrams/widgets/draggable_collection_card.dart';
+import 'package:database_diagrams/widgets/drawing_painter.dart';
+import 'package:database_diagrams/widgets/drawing_undo_redo_buttonds.dart';
 import 'package:database_diagrams/widgets/editor_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -15,6 +16,11 @@ class EditorView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(CollectionStore.provider);
+
+    // final drawingController = ref.watch(DrawingController.provider.notifier);
+    // final drawingState = ref.watch(DrawingController.provider);
+
+    final drawingControllerMut = ref.watch(DrawingController.provider);
 
     final offsets = useState<List<Offset>>([]);
 
@@ -30,7 +36,8 @@ class EditorView extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.9),
-      body: GestureDetector(
+      body: MouseRegion(
+        cursor: drawingControllerMut.isDrawing ? SystemMouseCursors.precise : SystemMouseCursors.basic,
         child: Stack(
           children: [
             ...collections.map(
@@ -52,10 +59,41 @@ class EditorView extends HookConsumerWidget {
                 ),
               ),
             ),
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: !drawingControllerMut.isDrawing,
+                child: GestureDetector(
+                  onPanStart: (details) {
+                    drawingControllerMut.addPoint(details.localPosition);
+                  },
+                  onPanUpdate: (details) {
+                    drawingControllerMut.addPoint(details.localPosition);
+                  },
+                  onPanEnd: (details) {
+                    drawingControllerMut.addPoint(null);
+                  },
+                  // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      isComplex: true,
+                      willChange: true,
+                      painter: DrawingPainter(
+                        points: drawingControllerMut.points,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             const Positioned(
               right: 16,
               bottom: 32,
               child: EditorButtons(),
+            ),
+            const Positioned(
+              left: 16,
+              bottom: 16,
+              child: DrawingUndoRedoButtons(),
             ),
           ],
         ),

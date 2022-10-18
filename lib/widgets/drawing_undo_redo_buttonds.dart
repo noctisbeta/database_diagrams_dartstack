@@ -45,7 +45,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.undo,
+            onPressed: drawingController.undoDraw,
             child: const Icon(
               Icons.keyboard_double_arrow_left,
             ),
@@ -56,7 +56,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.redo,
+            onPressed: drawingController.redoDraw,
             child: const Icon(
               Icons.keyboard_double_arrow_right,
             ),

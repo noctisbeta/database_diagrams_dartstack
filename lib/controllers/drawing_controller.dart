@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/models/drawing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,17 +18,31 @@ class DrawingController extends ChangeNotifier {
   /// Polyline.
   bool get isPolyline => _state.isPolyline;
 
-  /// Points.
-  List<Offset?> get points => _state.points;
+  /// Drawing points.
+  List<Offset?> get drawingPoints => _state.drawingPoints;
+
+  /// Polyline points.
+  List<Offset?> get polylinePoints => _state.polylinePoints;
 
   /// Provider.
   static final provider = ChangeNotifierProvider<DrawingController>(
     (ref) => DrawingController(),
   );
 
-  /// Add point.
-  void addPoint(Offset? point) {
-    _state.points.add(point);
+  /// Add drawing point.
+  void addDrawingPoint(Offset? point) {
+    _state.drawingPoints.add(point);
+    notifyListeners();
+  }
+
+  /// Add polyline point.
+  void addPolylinePoint(Offset? point) {
+    _state.polylinePoints.add(point);
+    if (_state.polylinePoints.length > 1 &&
+        _state.polylinePoints.last != null &&
+        _state.polylinePoints[_state.polylinePoints.length - 2] != null) {
+      _state.polylinePoints.add(null);
+    }
     notifyListeners();
   }
 
@@ -43,43 +59,43 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Undo.
-  void undo() {
-    if (_state.points.isEmpty) {
+  void undoDraw() {
+    if (_state.drawingPoints.isEmpty) {
       return;
     }
 
     bool hitFirstNull = false;
-    for (int i = _state.points.length - 1; i > -1; i--) {
-      if (_state.points[i] == null && hitFirstNull) {
+    for (int i = _state.drawingPoints.length - 1; i > -1; i--) {
+      if (_state.drawingPoints[i] == null && hitFirstNull) {
         break;
       }
-      if (_state.points[i] == null) {
+      if (_state.drawingPoints[i] == null) {
         hitFirstNull = true;
-        _state.points.removeAt(i);
-        _state.redoStack.add(null);
+        _state.drawingPoints.removeAt(i);
+        _state.drawingRedoStack.add(null);
         continue;
       }
-      _state.redoStack.add(_state.points[i]);
-      _state.points.removeAt(i);
+      _state.drawingRedoStack.add(_state.drawingPoints[i]);
+      _state.drawingPoints.removeAt(i);
     }
 
     notifyListeners();
   }
 
   /// Redo.
-  void redo() {
-    if (_state.redoStack.isEmpty) {
+  void redoDraw() {
+    if (_state.drawingRedoStack.isEmpty) {
       return;
     }
 
-    for (int i = _state.redoStack.length - 1; i > -1; i--) {
-      if (_state.redoStack[i] == null) {
-        _state.redoStack.removeAt(i);
-        _state.points.add(null);
+    for (int i = _state.drawingRedoStack.length - 1; i > -1; i--) {
+      if (_state.drawingRedoStack[i] == null) {
+        _state.drawingRedoStack.removeAt(i);
+        _state.drawingPoints.add(null);
         break;
       }
-      _state.points.add(_state.redoStack[i]);
-      _state.redoStack.removeAt(i);
+      _state.drawingPoints.add(_state.drawingRedoStack[i]);
+      _state.drawingRedoStack.removeAt(i);
     }
 
     notifyListeners();

@@ -4,24 +4,34 @@ import 'package:flutter/material.dart';
 class DrawingState {
   /// Default constructor.
   DrawingState({
-    required this.points,
-    required this.redoStack,
+    required this.drawingPoints,
+    required this.drawingRedoStack,
     required this.isDrawing,
     required this.isPolyline,
+    required this.polylinePoints,
+    required this.polylineRedoStack,
   });
 
   /// Initial state.
   DrawingState.initial()
-      : points = [],
-        redoStack = [],
+      : drawingPoints = [],
+        drawingRedoStack = [],
         isDrawing = false,
-        isPolyline = false;
+        isPolyline = false,
+        polylinePoints = [],
+        polylineRedoStack = [];
 
-  /// Points.
-  final List<Offset?> points;
+  /// Drawing points.
+  final List<Offset?> drawingPoints;
 
   /// Redo stack.
-  final List<Offset?> redoStack;
+  final List<Offset?> drawingRedoStack;
+
+  /// Polyline points.
+  final List<Offset?> polylinePoints;
+
+  /// Redo stack.
+  final List<Offset?> polylineRedoStack;
 
   /// Is drawing.
   bool isDrawing;

@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/controllers/collection_store.dart';
 import 'package:database_diagrams/controllers/drawing_controller.dart';
 import 'package:database_diagrams/widgets/draggable_collection_card.dart';
 import 'package:database_diagrams/widgets/drawing_painter.dart';
 import 'package:database_diagrams/widgets/drawing_undo_redo_buttonds.dart';
 import 'package:database_diagrams/widgets/editor_buttons.dart';
+import 'package:database_diagrams/widgets/polyline_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,7 +20,7 @@ class EditorView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(CollectionStore.provider);
 
-    final drawingControllerMut = ref.watch(DrawingController.provider);
+    final drawingController = ref.watch(DrawingController.provider);
 
     final offsets = useState<List<Offset>>([]);
 
@@ -34,36 +37,60 @@ class EditorView extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.9),
       body: MouseRegion(
-        cursor: drawingControllerMut.isDrawing ? SystemMouseCursors.precise : SystemMouseCursors.basic,
+        cursor: drawingController.isDrawing
+            ? SystemMouseCursors.precise
+            : drawingController.isPolyline
+                ? SystemMouseCursors.cell
+                : SystemMouseCursors.basic,
         child: GestureDetector(
           child: Stack(
             children: [
               Positioned.fill(
                 child: AbsorbPointer(
-                  absorbing: !drawingControllerMut.isDrawing,
+                  absorbing: !drawingController.isPolyline,
                   child: GestureDetector(
-                    onPanStart: (details) {
-                      drawingControllerMut.addPoint(details.localPosition);
-                    },
-                    onPanUpdate: (details) {
-                      drawingControllerMut.addPoint(details.localPosition);
-                    },
-                    onPanEnd: (details) {
-                      drawingControllerMut.addPoint(null);
+                    onTapUp: (details) {
+                      drawingController.addPolylinePoint(details.localPosition);
                     },
                     // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
                     child: RepaintBoundary(
                       child: CustomPaint(
                         isComplex: true,
                         willChange: true,
-                        painter: DrawingPainter(
-                          points: drawingControllerMut.points,
+                        painter: PolylinePainter(
+                          points: drawingController.polylinePoints,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
+              // Positioned.fill(
+              //   child: AbsorbPointer(
+              //     absorbing: !drawingController.isDrawing,
+              //     child: GestureDetector(
+              //       onPanStart: (details) {
+              //         drawingController.addDrawingPoint(details.localPosition);
+              //       },
+              //       onPanUpdate: (details) {
+              //         drawingController.addDrawingPoint(details.localPosition);
+              //       },
+              //       onPanEnd: (details) {
+              //         drawingController.addDrawingPoint(null);
+              //       },
+              //       // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
+              //       child: RepaintBoundary(
+              //         child: CustomPaint(
+              //           isComplex: true,
+              //           willChange: true,
+              //           painter: DrawingPainter(
+              //             points: drawingController.drawingPoints,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               ...collections.map(
                 (collection) => Positioned(
                   top: 50 + offsets.value[collections.indexOf(collection)].dy,

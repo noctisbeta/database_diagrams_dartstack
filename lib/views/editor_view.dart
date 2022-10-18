@@ -42,6 +42,22 @@ class EditorView extends HookConsumerWidget {
             : drawingController.isPolyline
                 ? SystemMouseCursors.cell
                 : SystemMouseCursors.basic,
+        onHover: (event) {
+          if (!drawingController.isPolyline) {
+            return;
+          }
+          if (drawingController.polylinePoints.isEmpty) {
+            return;
+          }
+
+// TODO(Janez): Add bool to track if first pivot point or not instead of null parity checks.
+          if (drawingController.polylinePoints.last != null) {
+            log(event.localPosition.toString());
+            drawingController.addPolylinePoint(event.localPosition);
+          } else {
+            drawingController.polylinePoints.last = event.localPosition;
+          }
+        },
         child: GestureDetector(
           child: Stack(
             children: [

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
@@ -73,11 +74,14 @@ class PolylinePainter extends CustomPainter {
     for (final line in split) {
       log('line: $line');
 
-      final path = Path()
-        ..moveTo(line.first.dx, line.first.dy)
-        ..lineTo(line.last.dx, line.last.dy);
-
-      canvas.drawPath(path, paint);
+      if (line.length == 1) {
+        canvas.drawPoints(PointMode.points, line, paint);
+      } else {
+        final path = Path()
+          ..moveTo(line.first.dx, line.first.dy)
+          ..lineTo(line.last.dx, line.last.dy);
+        canvas.drawPath(path, paint);
+      }
     }
 
     // for (final sublist in splitByNulls(_points)) {

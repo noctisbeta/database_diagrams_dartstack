@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/controllers/drawing_controller.dart';
 import 'package:database_diagrams/widgets/polyline_painter.dart';
 import 'package:flutter/material.dart';
@@ -15,17 +17,48 @@ class PolylinePainterContainer extends ConsumerWidget {
     return Positioned.fill(
       child: AbsorbPointer(
         absorbing: !drawingController.isPolyline,
-        child: GestureDetector(
-          onTapUp: (details) {
-            drawingController.addPolylinePoint(details.localPosition);
+        child: MouseRegion(
+          onHover: (event) {
+            if (!drawingController.isPolyline) {
+              return;
+            }
+            if (drawingController.polylinePoints.isEmpty) {
+              return;
+            }
+
+// TODO(Janez): Add bool to track if first pivot point or not instead of null parity checks.
+            // if (drawingController.polylinePoints.length == 1) {
+            //   drawingController.addPolylinePoint(event.localPosition);
+            // } else if (drawingController.polylinePoints.length == 2) {
+            //   drawingController.polylinePoints.last = event.localPosition;
+            // } else if (drawingController.polylinePoints.last != null &&
+            //     drawingController.polylinePoints.elementAt(drawingController.polylinePoints.length - 1) == null) {
+            //   drawingController.addPolylinePoint(event.localPosition);
+            // } else {
+            //   drawingController.polylinePoints.last = event.localPosition;
+            // }
+            log('hover');
+            log(drawingController.polylinePoints.length.toString());
+            log(drawingController.polylinePoints.toString());
+            if (drawingController.polylinePoints.last != null) {
+              drawingController.updatePolylineIndicator(event.localPosition);
+            }
           },
-          // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
-          child: RepaintBoundary(
-            child: CustomPaint(
-              isComplex: true,
-              willChange: true,
-              painter: PolylinePainter(
-                points: drawingController.polylinePoints,
+          child: GestureDetector(
+            onLongPress: () {
+              drawingController.addPolylinePoint(null);
+            },
+            onTapUp: (details) {
+              drawingController.addPolylinePoint(details.localPosition);
+            },
+            // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
+            child: RepaintBoundary(
+              child: CustomPaint(
+                isComplex: true,
+                willChange: true,
+                painter: PolylinePainter(
+                  points: drawingController.polylinePoints,
+                ),
               ),
             ),
           ),

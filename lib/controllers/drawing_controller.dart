@@ -1,3 +1,4 @@
+import 'package:database_diagrams/models/drawing_mode.dart';
 import 'package:database_diagrams/models/drawing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,10 +12,10 @@ class DrawingController extends ChangeNotifier {
   final DrawingState _state;
 
   /// Drawing.
-  bool get isDrawing => _state.isDrawing;
+  bool get isDrawing => _state.drawingMode == DrawingMode.draw;
 
   /// Polyline.
-  bool get isPolyline => _state.isPolyline;
+  bool get isPolyline => _state.drawingMode == DrawingMode.polyline;
 
   /// Drawing points.
   List<Offset?> get drawingPoints => _state.drawingPoints;
@@ -36,23 +37,35 @@ class DrawingController extends ChangeNotifier {
   /// Add polyline point.
   void addPolylinePoint(Offset? point) {
     _state.polylinePoints.add(point);
-    if (_state.polylinePoints.length > 1 &&
-        _state.polylinePoints.last != null &&
-        _state.polylinePoints[_state.polylinePoints.length - 2] != null) {
-      _state.polylinePoints.add(null);
-    }
+
+    // for the indicator
+    _state.polylinePoints.add(point);
+
+    notifyListeners();
+  }
+
+  void updatePolylineIndicator(Offset point) {
+    _state.polylinePoints.last = point;
     notifyListeners();
   }
 
   /// Toggle drawing.
   void toggleDrawingMode() {
-    _state.isDrawing = !_state.isDrawing;
+    if (_state.drawingMode == DrawingMode.draw) {
+      _state.drawingMode = DrawingMode.none;
+    } else {
+      _state.drawingMode = DrawingMode.draw;
+    }
     notifyListeners();
   }
 
   /// Toggle polyline.
   void togglePolylineMode() {
-    _state.isPolyline = !_state.isPolyline;
+    if (_state.drawingMode == DrawingMode.polyline) {
+      _state.drawingMode = DrawingMode.none;
+    } else {
+      _state.drawingMode = DrawingMode.polyline;
+    }
     notifyListeners();
   }
 

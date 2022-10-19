@@ -19,9 +19,9 @@ class EditorView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(CollectionStore.provider);
-
     final drawingController = ref.watch(DrawingController.provider);
 
+    // TODO(Janez): Lift to controller.
     final offsets = useState<List<Offset>>([]);
 
     final focusStackIndexes = useState<List<int>>([0, 1]);
@@ -61,22 +61,6 @@ class EditorView extends HookConsumerWidget {
             : drawingController.isPolyline
                 ? SystemMouseCursors.cell
                 : SystemMouseCursors.basic,
-        onHover: (event) {
-          if (!drawingController.isPolyline) {
-            return;
-          }
-          if (drawingController.polylinePoints.isEmpty) {
-            return;
-          }
-
-// TODO(Janez): Add bool to track if first pivot point or not instead of null parity checks.
-          if (drawingController.polylinePoints.last != null) {
-            log(event.localPosition.toString());
-            drawingController.addPolylinePoint(event.localPosition);
-          } else {
-            drawingController.polylinePoints.last = event.localPosition;
-          }
-        },
         child: Stack(
           children: [
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),

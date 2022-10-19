@@ -65,7 +65,8 @@ class PolylinePainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.red
       ..strokeWidth = 10
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
 
     final split = splitByNullsO(points);
 
@@ -74,14 +75,14 @@ class PolylinePainter extends CustomPainter {
     for (final line in split) {
       log('line: $line');
 
-      if (line.length == 1) {
-        canvas.drawPoints(PointMode.points, line, paint);
-      } else {
-        final path = Path()
-          ..moveTo(line.first.dx, line.first.dy)
-          ..lineTo(line.last.dx, line.last.dy);
-        canvas.drawPath(path, paint);
+      final path = Path()..moveTo(line.first.dx, line.first.dy);
+
+      for (final point in line.sublist(1)) {
+        path
+          ..lineTo(point.dx, point.dy)
+          ..moveTo(point.dx, point.dy);
       }
+      canvas.drawPath(path, paint);
     }
 
     // for (final sublist in splitByNulls(_points)) {

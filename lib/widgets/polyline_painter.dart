@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
@@ -11,7 +12,7 @@ class PolylinePainter extends CustomPainter {
   });
 
   /// Points.
-  final List<Offset?> points;
+  final List<DrawingPoint?> points;
 
   /// Splits the list on nulls.
   List<List<Point>> splitByNulls(List<Point?> list) {
@@ -34,9 +35,9 @@ class PolylinePainter extends CustomPainter {
   }
 
   /// Splits the list on nulls.
-  List<List<Offset>> splitByNullsO(List<Offset?> list) {
-    final result = <List<Offset>>[];
-    var current = <Offset>[];
+  List<List<DrawingPoint>> splitByNullsO(List<DrawingPoint?> list) {
+    final result = <List<DrawingPoint>>[];
+    var current = <DrawingPoint>[];
     for (final point in list) {
       if (point == null) {
         if (current.isNotEmpty) {
@@ -68,14 +69,16 @@ class PolylinePainter extends CustomPainter {
     for (final line in split) {
       log('line: $line');
 
-      final path = Path()..moveTo(line.first.dx, line.first.dy);
+      final path = Path()..moveTo(line.first.point.dx, line.first.point.dy);
 
       for (final point in line.sublist(1)) {
         path
-          ..lineTo(point.dx, point.dy)
-          ..moveTo(point.dx, point.dy);
+          ..lineTo(point.point.dx, point.point.dy)
+          ..moveTo(point.point.dx, point.point.dy);
+
+        paint.strokeWidth = point.size;
+        canvas.drawPath(path, paint);
       }
-      canvas.drawPath(path, paint);
     }
 
     // for (final sublist in splitByNulls(_points)) {

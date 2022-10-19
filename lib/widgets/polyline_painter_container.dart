@@ -1,4 +1,5 @@
 import 'package:database_diagrams/controllers/drawing_controller.dart';
+import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:database_diagrams/widgets/polyline_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -24,7 +25,12 @@ class PolylinePainterContainer extends ConsumerWidget {
               return;
             }
             if (drawingController.polylinePoints.last != null) {
-              drawingController.updatePolylineIndicator(event.localPosition);
+              drawingController.updatePolylineIndicator(
+                DrawingPoint(
+                  point: event.localPosition,
+                  size: drawingController.polylineSize,
+                ),
+              );
             }
           },
           child: GestureDetector(
@@ -32,7 +38,12 @@ class PolylinePainterContainer extends ConsumerWidget {
               drawingController.addPolylinePoint(null);
             },
             onTapUp: (details) {
-              drawingController.addPolylinePoint(details.localPosition);
+              drawingController.addPolylinePoint(
+                DrawingPoint(
+                  point: details.localPosition,
+                  size: drawingController.polylineSize,
+                ),
+              );
             },
             // TODO(Janez): Optimize. Dynamic number of painters scaled with the size of points array.
             child: RepaintBoundary(

@@ -28,10 +28,10 @@ class DrawingState {
   final List<DrawingPoint?> drawingRedoStack;
 
   /// Polyline points.
-  final List<Offset?> polylinePoints;
+  final List<DrawingPoint?> polylinePoints;
 
   /// Redo stack.
-  final List<Offset?> polylineRedoStack;
+  final List<DrawingPoint?> polylineRedoStack;
 
   /// Drawing mode.
   DrawingMode drawingMode;

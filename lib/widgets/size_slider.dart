@@ -40,10 +40,10 @@ class SizeSlider extends HookConsumerWidget {
       child: SliderTheme(
         data: SliderThemeData(overlayShape: SliderComponentShape.noOverlay),
         child: Slider(
-          value: drawingController.drawingSize,
+          value: drawingController.size,
           min: 1,
           max: 100,
-          onChanged: drawingController.setDrawingSize,
+          onChanged: drawingController.setSize,
           thumbColor: Colors.orange.shade700,
           activeColor: Colors.orange.shade900,
           inactiveColor: Colors.orange.shade900.withOpacity(0.5),

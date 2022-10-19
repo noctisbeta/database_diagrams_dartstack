@@ -28,24 +28,42 @@ class DrawingController extends ChangeNotifier {
   List<DrawingPoint?> get drawingPoints => _state.drawingPoints;
 
   /// Polyline points.
-  List<Offset?> get polylinePoints => _state.polylinePoints;
+  List<DrawingPoint?> get polylinePoints => _state.polylinePoints;
 
   double _drawingSize = 1;
 
+  double _polylineSize = 1;
+
   /// Drawing size.
   double get drawingSize => _drawingSize;
+
+  /// Polyline size.
+  double get polylineSize => _polylineSize;
+
+  /// Size.
+  double get size => _state.drawingMode == DrawingMode.draw
+      ? _drawingSize
+      : _state.drawingMode == DrawingMode.polyline
+          ? _polylineSize
+          : 1;
 
   /// Provider.
   static final provider = ChangeNotifierProvider<DrawingController>(
     (ref) => DrawingController(),
   );
 
-  /// Set drawing size.
-  void setDrawingSize(double newSize) {
+  /// Set size.
+  void setSize(double newSize) {
+    log('1');
     if (_state.drawingMode == DrawingMode.draw) {
       _drawingSize = newSize;
+      notifyListeners();
+      log('2');
+    } else if (_state.drawingMode == DrawingMode.polyline) {
+      _polylineSize = newSize;
+      notifyListeners();
+      log('3');
     }
-    notifyListeners();
   }
 
   /// Add drawing point.
@@ -55,7 +73,7 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Add polyline point.
-  void addPolylinePoint(Offset? point) {
+  void addPolylinePoint(DrawingPoint? point) {
     _state.polylinePoints.add(point);
 
     // for the indicator
@@ -67,7 +85,7 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Update indicator.
-  void updatePolylineIndicator(Offset point) {
+  void updatePolylineIndicator(DrawingPoint point) {
     _state.polylinePoints.last = point;
     notifyListeners();
   }

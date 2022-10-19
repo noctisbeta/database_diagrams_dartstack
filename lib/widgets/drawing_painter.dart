@@ -20,9 +20,9 @@ class DrawingPainter extends CustomPainter {
       .toList();
 
   /// Splits the list on nulls.
-  List<List<Point>> splitByNulls(List<Point?> list) {
-    final result = <List<Point>>[];
-    var current = <Point>[];
+  List<List<DrawingPoint>> splitByNulls(List<DrawingPoint?> list) {
+    final result = <List<DrawingPoint>>[];
+    var current = <DrawingPoint>[];
     for (final point in list) {
       if (point == null) {
         if (current.isNotEmpty) {
@@ -43,15 +43,15 @@ class DrawingPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white;
 
-    if (_perfectPoints.isEmpty) {
+    if (points.isEmpty) {
       return;
     }
 
-    for (final sublist in splitByNulls(_perfectPoints)) {
+    for (final sublist in splitByNulls(points)) {
       // 1. Get the outline points from the input points
       final outlinePoints = getStroke(
         sublist,
-        size: 2,
+        size: sublist.first.size,
         smoothing: 1,
         streamline: 1,
         thinning: 0,

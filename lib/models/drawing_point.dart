@@ -1,12 +1,13 @@
 import 'package:flutter/animation.dart';
+import 'package:perfect_freehand/perfect_freehand.dart';
 
 /// Drawing point.
-class DrawingPoint {
+class DrawingPoint extends Point {
   /// Default constructor.
-  const DrawingPoint({
+  DrawingPoint({
     required this.point,
     required this.size,
-  });
+  }) : super(point.dx, point.dy);
 
   /// Offset.
   final Offset point;

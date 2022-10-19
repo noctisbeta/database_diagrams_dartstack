@@ -23,6 +23,7 @@ class DrawingController extends ChangeNotifier {
   /// If the state is undoable.
   bool get isUndoable => (_state.drawingMode == DrawingMode.draw) || (_state.drawingMode == DrawingMode.polyline);
 
+  // TODO(Janez): Must not be a getter. Change _state.drawingPoints to type DrawingPoint.
   /// Drawing points.
   List<DrawingPoint?> get drawingPoints => _state.drawingPoints
       .map<DrawingPoint?>(

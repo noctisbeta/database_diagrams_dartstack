@@ -25,27 +25,12 @@ class PolylinePainterContainer extends ConsumerWidget {
             if (drawingController.polylinePoints.isEmpty) {
               return;
             }
-
-// TODO(Janez): Add bool to track if first pivot point or not instead of null parity checks.
-            // if (drawingController.polylinePoints.length == 1) {
-            //   drawingController.addPolylinePoint(event.localPosition);
-            // } else if (drawingController.polylinePoints.length == 2) {
-            //   drawingController.polylinePoints.last = event.localPosition;
-            // } else if (drawingController.polylinePoints.last != null &&
-            //     drawingController.polylinePoints.elementAt(drawingController.polylinePoints.length - 1) == null) {
-            //   drawingController.addPolylinePoint(event.localPosition);
-            // } else {
-            //   drawingController.polylinePoints.last = event.localPosition;
-            // }
-            log('hover');
-            log(drawingController.polylinePoints.length.toString());
-            log(drawingController.polylinePoints.toString());
             if (drawingController.polylinePoints.last != null) {
               drawingController.updatePolylineIndicator(event.localPosition);
             }
           },
           child: GestureDetector(
-            onLongPress: () {
+            onLongPressDown: (_) {
               drawingController.addPolylinePoint(null);
             },
             onTapUp: (details) {

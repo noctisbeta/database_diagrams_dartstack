@@ -66,6 +66,7 @@ class MyDropdownButton extends StatelessWidget {
             'timestamp',
             'geopoint',
             'reference',
+            'collection',
           ]
               .map(
                 (e) => DropdownMenuItem<String>(

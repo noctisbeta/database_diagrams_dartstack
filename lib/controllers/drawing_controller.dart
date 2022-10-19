@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/models/drawing_mode.dart';
 import 'package:database_diagrams/models/drawing_state.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,9 @@ class DrawingController extends ChangeNotifier {
 
   /// Polyline.
   bool get isPolyline => _state.drawingMode == DrawingMode.polyline;
+
+  /// If the state is undoable.
+  bool get isUndoable => (_state.drawingMode == DrawingMode.draw) || (_state.drawingMode == DrawingMode.polyline);
 
   /// Drawing points.
   List<Offset?> get drawingPoints => _state.drawingPoints;
@@ -44,6 +49,7 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Update indicator.
   void updatePolylineIndicator(Offset point) {
     _state.polylinePoints.last = point;
     notifyListeners();
@@ -70,7 +76,57 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Undo.
-  void undoDraw() {
+  void undo() {
+    if (_state.drawingMode == DrawingMode.draw) {
+      _undoDraw.call();
+    } else if (_state.drawingMode == DrawingMode.polyline) {
+      _undoPolyline.call();
+    }
+    notifyListeners();
+  }
+
+  /// Redo.
+  void redo() {
+    if (_state.drawingMode == DrawingMode.draw) {
+      _redoDraw.call();
+    } else if (_state.drawingMode == DrawingMode.polyline) {
+      _redoPolyline.call();
+    }
+    notifyListeners();
+  }
+
+  /// Undo polyline.
+  void _undoPolyline() {
+    if (_state.polylinePoints.isEmpty) {
+      return;
+    }
+
+    log(_state.polylinePoints.last.toString());
+
+    bool hitFirstNull = false;
+    // TODO(Janez): rework all todos, dont modify array under loop.
+    for (int i = _state.polylinePoints.length - 1; i > -1; i--) {
+      if (_state.polylinePoints[i] == null && hitFirstNull) {
+        break;
+      }
+      if (_state.polylinePoints[i] == null) {
+        hitFirstNull = true;
+        _state.polylinePoints.removeAt(i);
+        _state.polylinePoints.add(null);
+        continue;
+      }
+      _state.polylineRedoStack.add(_state.polylinePoints[i]);
+      _state.polylinePoints.removeAt(i);
+    }
+
+    notifyListeners();
+  }
+
+  /// Redo polyline.
+  void _redoPolyline() {}
+
+  /// Undo draw.
+  void _undoDraw() {
     if (_state.drawingPoints.isEmpty) {
       return;
     }
@@ -94,7 +150,7 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Redo.
-  void redoDraw() {
+  void _redoDraw() {
     if (_state.drawingRedoStack.isEmpty) {
       return;
     }

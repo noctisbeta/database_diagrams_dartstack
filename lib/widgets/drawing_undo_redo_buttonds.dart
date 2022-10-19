@@ -24,8 +24,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
     ref.listen(
       DrawingController.provider,
       (previous, next) {
-        log('inside listener');
-        if (next.isDrawing) {
+        if (next.isUndoable) {
           ctl.forward();
         } else {
           ctl.reverse();
@@ -45,7 +44,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.undoDraw,
+            onPressed: drawingController.undo,
             child: const Icon(
               Icons.keyboard_double_arrow_left,
             ),
@@ -56,7 +55,7 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.redoDraw,
+            onPressed: drawingController.redo,
             child: const Icon(
               Icons.keyboard_double_arrow_right,
             ),

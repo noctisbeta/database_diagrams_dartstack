@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/controllers/drawing_controller.dart';
 import 'package:database_diagrams/widgets/polyline_painter.dart';
 import 'package:flutter/material.dart';

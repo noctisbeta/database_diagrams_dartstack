@@ -37,14 +37,17 @@ class SizeSlider extends HookConsumerWidget {
       ).animate(
         CurvedAnimation(parent: ctl, curve: Curves.easeOutBack),
       ),
-      child: Slider(
-        value: drawingController.drawingSize,
-        min: 1,
-        max: 100,
-        onChanged: drawingController.setDrawingSize,
-        thumbColor: Colors.orange.shade700,
-        activeColor: Colors.orange.shade900,
-        inactiveColor: Colors.orange.shade900.withOpacity(0.5),
+      child: SliderTheme(
+        data: SliderThemeData(overlayShape: SliderComponentShape.noOverlay),
+        child: Slider(
+          value: drawingController.drawingSize,
+          min: 1,
+          max: 100,
+          onChanged: drawingController.setDrawingSize,
+          thumbColor: Colors.orange.shade700,
+          activeColor: Colors.orange.shade900,
+          inactiveColor: Colors.orange.shade900.withOpacity(0.5),
+        ),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
@@ -13,12 +12,6 @@ class PolylinePainter extends CustomPainter {
 
   /// Points.
   final List<Offset?> points;
-
-  List<Point?> get _points => points
-      .map(
-        (e) => e != null ? Point(e.dx, e.dy) : null,
-      )
-      .toList();
 
   /// Splits the list on nulls.
   List<List<Point>> splitByNulls(List<Point?> list) {

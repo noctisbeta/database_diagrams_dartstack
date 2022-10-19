@@ -1,4 +1,5 @@
 import 'package:database_diagrams/controllers/drawing_controller.dart';
+import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:database_diagrams/widgets/drawing_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,10 +18,20 @@ class DrawingPainterContainer extends ConsumerWidget {
         absorbing: !drawingController.isDrawing,
         child: GestureDetector(
           onPanStart: (details) {
-            drawingController.addDrawingPoint(details.localPosition);
+            drawingController.addDrawingPoint(
+              DrawingPoint(
+                point: details.localPosition,
+                size: drawingController.drawingSize,
+              ),
+            );
           },
           onPanUpdate: (details) {
-            drawingController.addDrawingPoint(details.localPosition);
+            drawingController.addDrawingPoint(
+              DrawingPoint(
+                point: details.localPosition,
+                size: drawingController.drawingSize,
+              ),
+            );
           },
           onPanEnd: (details) {
             drawingController.addDrawingPoint(null);

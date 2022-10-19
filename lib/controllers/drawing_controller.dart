@@ -25,16 +25,7 @@ class DrawingController extends ChangeNotifier {
 
   // TODO(Janez): Must not be a getter. Change _state.drawingPoints to type DrawingPoint.
   /// Drawing points.
-  List<DrawingPoint?> get drawingPoints => _state.drawingPoints
-      .map<DrawingPoint?>(
-        (p) => p != null
-            ? DrawingPoint(
-                point: p,
-                size: _drawingSize,
-              )
-            : null,
-      )
-      .toList();
+  List<DrawingPoint?> get drawingPoints => _state.drawingPoints;
 
   /// Polyline points.
   List<Offset?> get polylinePoints => _state.polylinePoints;
@@ -58,7 +49,7 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Add drawing point.
-  void addDrawingPoint(Offset? point) {
+  void addDrawingPoint(DrawingPoint? point) {
     _state.drawingPoints.add(point);
     notifyListeners();
   }

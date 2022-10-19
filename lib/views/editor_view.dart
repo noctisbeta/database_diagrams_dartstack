@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/controllers/collection_store.dart';
 import 'package:database_diagrams/controllers/drawing_controller.dart';
 import 'package:database_diagrams/widgets/draggable_collection_card.dart';

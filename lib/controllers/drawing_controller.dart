@@ -44,7 +44,9 @@ class DrawingController extends ChangeNotifier {
     _state.polylinePoints.add(point);
 
     // for the indicator
-    _state.polylinePoints.add(point);
+    if (point != null) {
+      _state.polylinePoints.add(point);
+    }
 
     notifyListeners();
   }
@@ -102,6 +104,7 @@ class DrawingController extends ChangeNotifier {
     }
 
     log(_state.polylinePoints.last.toString());
+    log(_state.polylinePoints.toString());
 
     bool hitFirstNull = false;
     // TODO(Janez): rework all todos, dont modify array under loop.

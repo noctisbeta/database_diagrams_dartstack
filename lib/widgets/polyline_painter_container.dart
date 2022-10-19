@@ -30,7 +30,7 @@ class PolylinePainterContainer extends ConsumerWidget {
             }
           },
           child: GestureDetector(
-            onLongPressDown: (_) {
+            onLongPress: () {
               drawingController.addPolylinePoint(null);
             },
             onTapUp: (details) {

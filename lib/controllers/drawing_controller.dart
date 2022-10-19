@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/models/drawing_mode.dart';
+import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:database_diagrams/models/drawing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -23,15 +24,37 @@ class DrawingController extends ChangeNotifier {
   bool get isUndoable => (_state.drawingMode == DrawingMode.draw) || (_state.drawingMode == DrawingMode.polyline);
 
   /// Drawing points.
-  List<Offset?> get drawingPoints => _state.drawingPoints;
+  List<DrawingPoint?> get drawingPoints => _state.drawingPoints
+      .map<DrawingPoint?>(
+        (p) => p != null
+            ? DrawingPoint(
+                point: p,
+                size: _drawingSize,
+              )
+            : null,
+      )
+      .toList();
 
   /// Polyline points.
   List<Offset?> get polylinePoints => _state.polylinePoints;
+
+  double _drawingSize = 1;
+
+  /// Drawing size.
+  double get drawingSize => _drawingSize;
 
   /// Provider.
   static final provider = ChangeNotifierProvider<DrawingController>(
     (ref) => DrawingController(),
   );
+
+  /// Set drawing size.
+  void setDrawingSize(double newSize) {
+    if (_state.drawingMode == DrawingMode.draw) {
+      _drawingSize = newSize;
+    }
+    notifyListeners();
+  }
 
   /// Add drawing point.
   void addDrawingPoint(Offset? point) {

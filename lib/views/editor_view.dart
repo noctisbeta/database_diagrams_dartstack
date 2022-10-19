@@ -7,6 +7,7 @@ import 'package:database_diagrams/widgets/drawing_painter_container.dart';
 import 'package:database_diagrams/widgets/drawing_undo_redo_buttonds.dart';
 import 'package:database_diagrams/widgets/editor_buttons.dart';
 import 'package:database_diagrams/widgets/polyline_painter_container.dart';
+import 'package:database_diagrams/widgets/size_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -62,6 +63,7 @@ class EditorView extends HookConsumerWidget {
                 ? SystemMouseCursors.cell
                 : SystemMouseCursors.basic,
         child: Stack(
+          alignment: Alignment.center,
           children: [
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
@@ -93,6 +95,10 @@ class EditorView extends HookConsumerWidget {
               left: 16,
               bottom: 16,
               child: DrawingUndoRedoButtons(),
+            ),
+            const Positioned(
+              bottom: 16,
+              child: SizeSlider(),
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
@@ -9,11 +10,12 @@ class DrawingPainter extends CustomPainter {
   });
 
   /// Points.
-  final List<Offset?> points;
+  final List<DrawingPoint?> points;
 
-  List<Point?> get _points => points
+  List<Point?> get _perfectPoints => points
+      // TODO(Janez): DrawingPoint extends Point from perfect_freehand
       .map(
-        (e) => e != null ? Point(e.dx, e.dy) : null,
+        (e) => e != null ? Point(e.point.dx, e.point.dy) : null,
       )
       .toList();
 
@@ -41,15 +43,11 @@ class DrawingPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white;
 
-    // for (var i = 0; i < points.length - 1; i++) {
-    //   if (points[i] != null && points[i + 1] != null) {
-    //     canvas.drawLine(points[i]!, points[i + 1]!, paint);
-    //   } else if (points[i] != null) {
-    //     canvas.drawPoints(PointMode.points, [points[i]!], paint);
-    //   }
-    // }
+    if (_perfectPoints.isEmpty) {
+      return;
+    }
 
-    for (final sublist in splitByNulls(_points)) {
+    for (final sublist in splitByNulls(_perfectPoints)) {
       // 1. Get the outline points from the input points
       final outlinePoints = getStroke(
         sublist,

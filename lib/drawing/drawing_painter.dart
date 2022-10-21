@@ -1,4 +1,4 @@
-import 'package:database_diagrams/models/drawing_point.dart';
+import 'package:database_diagrams/drawing/drawing_point.dart';
 import 'package:flutter/material.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 

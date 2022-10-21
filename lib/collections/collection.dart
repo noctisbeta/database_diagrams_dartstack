@@ -1,4 +1,4 @@
-import 'package:database_diagrams/models/schema.dart';
+import 'package:database_diagrams/collections/schema.dart';
 
 /// Collection.
 class Collection {

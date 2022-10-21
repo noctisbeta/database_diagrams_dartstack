@@ -1,4 +1,4 @@
-import 'package:database_diagrams/models/collection.dart';
+import 'package:database_diagrams/collections/collection.dart';
 import 'package:database_diagrams/utilities/iterable_extension.dart';
 import 'package:flutter/material.dart';
 

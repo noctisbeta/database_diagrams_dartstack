@@ -1,7 +1,7 @@
-import 'package:database_diagrams/controllers/collection_store.dart';
-import 'package:database_diagrams/models/collection.dart';
-import 'package:database_diagrams/models/schema.dart';
-import 'package:database_diagrams/widgets/collection_card.dart';
+import 'package:database_diagrams/collections/collection_store.dart';
+import 'package:database_diagrams/collections/collection.dart';
+import 'package:database_diagrams/collections/schema.dart';
+import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/widgets/my_button.dart';
 import 'package:database_diagrams/widgets/my_dropdown_button.dart';
 import 'package:database_diagrams/widgets/my_text_field.dart';

@@ -1,4 +1,4 @@
-import 'package:database_diagrams/models/collection.dart';
+import 'package:database_diagrams/collections/collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Collection store.

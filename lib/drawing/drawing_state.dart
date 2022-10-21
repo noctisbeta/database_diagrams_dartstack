@@ -1,5 +1,5 @@
-import 'package:database_diagrams/models/drawing_mode.dart';
-import 'package:database_diagrams/models/drawing_point.dart';
+import 'package:database_diagrams/drawing/drawing_mode.dart';
+import 'package:database_diagrams/drawing/drawing_point.dart';
 
 /// Drawing state.
 class DrawingState {

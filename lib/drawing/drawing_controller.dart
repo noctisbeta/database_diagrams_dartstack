@@ -1,6 +1,6 @@
-import 'package:database_diagrams/models/drawing_mode.dart';
-import 'package:database_diagrams/models/drawing_point.dart';
-import 'package:database_diagrams/models/drawing_state.dart';
+import 'package:database_diagrams/drawing/drawing_mode.dart';
+import 'package:database_diagrams/drawing/drawing_point.dart';
+import 'package:database_diagrams/drawing/drawing_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

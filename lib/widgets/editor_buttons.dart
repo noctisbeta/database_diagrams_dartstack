@@ -1,5 +1,5 @@
-import 'package:database_diagrams/controllers/drawing_controller.dart';
-import 'package:database_diagrams/widgets/add_collection_dialog.dart';
+import 'package:database_diagrams/drawing/drawing_controller.dart';
+import 'package:database_diagrams/collections/add_collection_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

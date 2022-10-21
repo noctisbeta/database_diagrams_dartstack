@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/models/drawing_mode.dart';
 import 'package:database_diagrams/models/drawing_point.dart';
 import 'package:database_diagrams/models/drawing_state.dart';
@@ -54,15 +52,12 @@ class DrawingController extends ChangeNotifier {
 
   /// Set size.
   void setSize(double newSize) {
-    log('1');
     if (_state.drawingMode == DrawingMode.draw) {
       _drawingSize = newSize;
       notifyListeners();
-      log('2');
     } else if (_state.drawingMode == DrawingMode.polyline) {
       _polylineSize = newSize;
       notifyListeners();
-      log('3');
     }
   }
 
@@ -135,9 +130,6 @@ class DrawingController extends ChangeNotifier {
     if (_state.polylinePoints.isEmpty) {
       return;
     }
-
-    log(_state.polylinePoints.last.toString());
-    log(_state.polylinePoints.toString());
 
     bool hitFirstNull = false;
     // TODO(Janez): rework all todos, dont modify array under loop.

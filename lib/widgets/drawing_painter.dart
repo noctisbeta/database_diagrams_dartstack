@@ -12,13 +12,6 @@ class DrawingPainter extends CustomPainter {
   /// Points.
   final List<DrawingPoint?> points;
 
-  List<Point?> get _perfectPoints => points
-      // TODO(Janez): DrawingPoint extends Point from perfect_freehand
-      .map(
-        (e) => e != null ? Point(e.point.dx, e.point.dy) : null,
-      )
-      .toList();
-
   /// Splits the list on nulls.
   List<List<DrawingPoint>> splitByNulls(List<DrawingPoint?> list) {
     final result = <List<DrawingPoint>>[];
@@ -50,7 +43,7 @@ class DrawingPainter extends CustomPainter {
     for (final sublist in splitByNulls(points)) {
       // 1. Get the outline points from the input points
       final outlinePoints = getStroke(
-        sublist,
+        sublist.map((e) => Point(e.point.dx, e.point.dy)).toList(),
         size: sublist.first.size,
         smoothing: 1,
         streamline: 1,

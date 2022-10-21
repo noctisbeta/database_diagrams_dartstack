@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/controllers/collection_store.dart';
 import 'package:database_diagrams/models/collection.dart';
 import 'package:database_diagrams/models/schema.dart';
@@ -91,8 +89,6 @@ class AddCollectionDialog extends HookConsumerWidget {
                                   },
                                 ),
                               );
-                              log(collection.value!.schema.nameToType.toString());
-
                               fieldName.value = null;
                               fieldType.value = null;
                               fieldCtl.clear();

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/collections/card_ordinal.dart';
+import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,13 +14,13 @@ class SmartlineController extends ChangeNotifier {
 
   CardOrdinal _cardOrdinal = CardOrdinal.first;
 
-  final List<List<GlobalObjectKey>> _keys = [];
+  final List<List<SmartlineAnchor>> _keys = [];
 
   /// Keys.
-  List<List<GlobalObjectKey>> get keys => _keys;
+  List<List<SmartlineAnchor>> get anchors => _keys;
 
   /// Add card.
-  void addCard(GlobalObjectKey key) {
+  void addCard(SmartlineAnchor key) {
     if (_cardOrdinal == CardOrdinal.first) {
       _cardOrdinal = CardOrdinal.second;
       _keys.add([key]);
@@ -31,6 +32,5 @@ class SmartlineController extends ChangeNotifier {
       _keys.last.add(key);
     }
     notifyListeners();
-    log(_keys.toString());
   }
 }

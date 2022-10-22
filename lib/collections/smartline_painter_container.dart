@@ -16,7 +16,7 @@ class SmartlinePainterContainer extends ConsumerWidget {
 
     return CustomPaint(
       painter: SmartlinePainter(
-        keys: smartlineController.keys,
+        anchors: smartlineController.anchors,
       ),
     );
   }

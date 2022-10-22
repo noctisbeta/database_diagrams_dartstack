@@ -1,25 +1,41 @@
+import 'dart:developer';
+
+import 'package:database_diagrams/collections/smartline_anchor.dart';
+import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:flutter/material.dart';
 
 /// SmartlinePainter.
 class SmartlinePainter extends CustomPainter {
   /// Default constructor.
   const SmartlinePainter({
-    required this.keys,
+    required this.anchors,
   });
 
   /// Keys.
-  final List<List<GlobalObjectKey>> keys;
+  final List<List<SmartlineAnchor>> anchors;
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final pair in keys) {
-      final first = pair.first.currentContext?.findRenderObject() as RenderBox?;
-      final second = pair.last.currentContext?.findRenderObject() as RenderBox?;
-      if (first != null && second != null) {
-        // final firstOffset = first.localToGlobal(first.size.center(Offset.zero));
-        // final secondOffset = second.localToGlobal(second.size.center(Offset.zero));
+    for (final pair in anchors) {
+      log('pair: $pair');
+      if (pair.length != 2) {
+        log('Invalid pair: $pair');
+        continue;
+      }
 
-        final padding = 10;
+      final first = pair.first.key.currentContext?.findRenderObject() as RenderBox?;
+      final second = pair.last.key.currentContext?.findRenderObject() as RenderBox?;
+
+      final paint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = 2;
+
+      if (first != null && second != null) {
+        log('none null, painting');
+        // TODO(Janez): Separate card and attribute lines. Padding gets in the way (inside the card).
+        const padding = 15;
 
         final firstRight = first.localToGlobal(first.size.center(Offset(padding + first.size.width / 2, 0)));
         final firstLeft = first.localToGlobal(first.size.center(Offset(-padding - first.size.width / 2, 0)));
@@ -47,15 +63,77 @@ class SmartlinePainter extends CustomPainter {
           }
         }
 
-        final paint = Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeWidth = 2;
-        final path = Path()
-          ..moveTo(firstOffset.dx, firstOffset.dy)
-          ..lineTo(secondOffset.dx, secondOffset.dy);
-        canvas.drawPath(path, paint);
+        if (pair.first.type == SmartlineType.card || pair.last.type == SmartlineType.card) {
+          log('connecting cards');
+          canvas.drawLine(firstOffset, secondOffset, paint);
+        } else {
+          log('connecting attributes');
+          final firstCenter = first.localToGlobal(first.size.center(Offset.zero));
+          final secondCenter = second.localToGlobal(second.size.center(Offset.zero));
+
+          final path = Path();
+
+          // first left of second
+          if (firstCenter.dx < secondCenter.dx) {
+            log('first left of second');
+            // first below second
+            if (firstCenter.dy > secondCenter.dy) {
+              log('first below second');
+              // if big enough gap
+              if (firstCenter.dy - secondCenter.dy > 30) {
+                log('big enough gap');
+                final firstRight = first.localToGlobal(first.size.center(Offset(padding + first.size.width / 2, 0)));
+                final secondLeft = second.localToGlobal(second.size.center(Offset(-padding - second.size.width / 2, 0)));
+
+                path
+                  ..moveTo(firstRight.dx, firstRight.dy)
+                  ..lineTo(-15 + firstRight.dx + (secondCenter.dx - firstCenter.dx) / 5, firstRight.dy)
+                  ..arcToPoint(
+                    Offset(firstRight.dx + (secondCenter.dx - firstCenter.dx) / 5, firstRight.dy - 15),
+                    radius: const Radius.circular(20),
+                    clockwise: false,
+                    rotation: 90,
+                  )
+                  ..lineTo(firstRight.dx + (secondCenter.dx - firstCenter.dx) / 5, secondLeft.dy + 15)
+                  ..arcToPoint(
+                    Offset(15 + firstRight.dx + (secondCenter.dx - firstCenter.dx) / 5, secondLeft.dy),
+                    radius: const Radius.circular(20),
+                    rotation: 90,
+                  )
+                  ..lineTo(secondLeft.dx, secondLeft.dy);
+              } else {
+                log('not big enough gap');
+
+                final firstRight = first.localToGlobal(first.size.center(Offset(padding + first.size.width / 2, 0)));
+                final secondLeft = second.localToGlobal(second.size.center(Offset(-padding - second.size.width / 2, 0)));
+
+                path
+                  ..moveTo(firstRight.dx, firstRight.dy)
+                  ..lineTo(-15 + firstRight.dx + (secondCenter.dx - firstCenter.dx) / 2, firstRight.dy)
+                  ..arcToPoint(
+                    Offset(firstRight.dx + (secondCenter.dx - firstCenter.dx) / 2, firstRight.dy - 15),
+                    radius: const Radius.circular(20),
+                    clockwise: false,
+                    rotation: 90,
+                  )
+                  ..lineTo(firstRight.dx + (secondCenter.dx - firstCenter.dx) / 2, secondLeft.dy + 15)
+                  ..arcToPoint(
+                    Offset(15 + firstRight.dx + (secondCenter.dx - firstCenter.dx) / 2, secondLeft.dy),
+                    radius: const Radius.circular(20),
+                    rotation: 90,
+                  )
+                  ..lineTo(secondLeft.dx, secondLeft.dy);
+              }
+              // first above second
+            } else {
+              log('first above second');
+            }
+            // first right of second
+          } else {
+            log('first right of second');
+          }
+          canvas.drawPath(path, paint);
+        }
       }
     }
   }

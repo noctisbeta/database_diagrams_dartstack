@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/collections/collection.dart';
+import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_controller.dart';
+import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/utilities/iterable_extension.dart';
@@ -44,13 +46,16 @@ class CollectionCard extends HookConsumerWidget {
 
     final smartlineController = ref.watch(SmartlineController.provider);
 
-    log('build CollectionCard');
-
     return GestureDetector(
       key: isPreview ? null : cardKey.value,
       onTap: () {
         if (mode == Mode.smartLine) {
-          smartlineController.addCard(cardKey.value);
+          smartlineController.addCard(
+            SmartlineAnchor(
+              key: cardKey.value,
+              type: SmartlineType.card,
+            ),
+          );
         }
       },
       child: Container(
@@ -93,26 +98,45 @@ class CollectionCard extends HookConsumerWidget {
               child: Column(
                 children: collection.schema.nameToType
                     .map(
-                      (k, v) => MapEntry<dynamic, Widget>(
-                        k,
-                        Row(
-                          children: [
-                            Text(
-                              k,
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
+                      (k, v) {
+                        final key = GlobalObjectKey(k.hashCode + v.hashCode + collection.hashCode);
+
+                        return MapEntry<dynamic, Widget>(
+                          k,
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            key: isPreview ? null : key,
+                            onTap: () {
+                              if (mode == Mode.smartLine) {
+                                log('addming anchor');
+                                smartlineController.addCard(
+                                  SmartlineAnchor(
+                                    key: key,
+                                    type: SmartlineType.field,
+                                  ),
+                                );
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  k,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  '$v',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const Spacer(),
-                            Text(
-                              '$v',
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     )
                     .values
                     .separatedBy(

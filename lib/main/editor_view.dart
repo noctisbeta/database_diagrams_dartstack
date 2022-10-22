@@ -1,11 +1,13 @@
+import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
-import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/collections/draggable_collection_card.dart';
+import 'package:database_diagrams/collections/smartline_painter_container.dart';
+import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_undo_redo_buttonds.dart';
-import 'package:database_diagrams/widgets/editor_buttons.dart';
 import 'package:database_diagrams/drawing/polyline_painter_container.dart';
 import 'package:database_diagrams/drawing/size_slider.dart';
+import 'package:database_diagrams/main/editor_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -65,6 +67,9 @@ class EditorView extends HookConsumerWidget {
           children: [
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
+            const Positioned.fill(
+              child: SmartlinePainterContainer(),
+            ),
             ...collections.map(
               (collection) => Positioned(
                 top: 50 + offsets.value[collections.indexOf(collection)].dy,

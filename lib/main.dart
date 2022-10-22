@@ -1,4 +1,4 @@
-import 'package:database_diagrams/views/editor_view.dart';
+import 'package:database_diagrams/main/editor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

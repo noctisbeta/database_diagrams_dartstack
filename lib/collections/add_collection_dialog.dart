@@ -1,10 +1,10 @@
-import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/collection.dart';
-import 'package:database_diagrams/collections/schema.dart';
 import 'package:database_diagrams/collections/collection_card.dart';
-import 'package:database_diagrams/widgets/my_button.dart';
-import 'package:database_diagrams/widgets/my_dropdown_button.dart';
-import 'package:database_diagrams/widgets/my_text_field.dart';
+import 'package:database_diagrams/collections/collection_store.dart';
+import 'package:database_diagrams/collections/schema.dart';
+import 'package:database_diagrams/main/my_button.dart';
+import 'package:database_diagrams/main/my_dropdown_button.dart';
+import 'package:database_diagrams/main/my_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -112,6 +112,7 @@ class AddCollectionDialog extends HookConsumerWidget {
                 child: collection.value != null
                     ? CollectionCard(
                         collection: collection.value!,
+                        isPreview: true,
                       )
                     : const Center(
                         child: Text(

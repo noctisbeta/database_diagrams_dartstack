@@ -1,5 +1,4 @@
 import 'package:database_diagrams/collections/add_collection_dialog.dart';
-import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:flutter/material.dart';

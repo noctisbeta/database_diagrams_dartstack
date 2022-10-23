@@ -1,25 +1,20 @@
-import 'package:database_diagrams/drawing/drawing_mode.dart';
 import 'package:database_diagrams/drawing/drawing_point.dart';
 import 'package:database_diagrams/drawing/drawing_state.dart';
+import 'package:database_diagrams/main/mode.dart';
+import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Drawing controller.
 class DrawingController extends ChangeNotifier {
   /// Default constructor.
-  DrawingController() : _state = DrawingState.initial();
+  DrawingController(this._ref) : _state = DrawingState.initial();
+
+  /// Riverpod ref.
+  final Ref _ref;
 
   /// State.
   final DrawingState _state;
-
-  /// Drawing.
-  bool get isDrawing => _state.drawingMode == DrawingMode.draw;
-
-  /// Polyline.
-  bool get isPolyline => _state.drawingMode == DrawingMode.polyline;
-
-  /// If the state is undoable.
-  bool get isUndoable => (_state.drawingMode == DrawingMode.draw) || (_state.drawingMode == DrawingMode.polyline);
 
   // TODO(Janez): Must not be a getter. Change _state.drawingPoints to type DrawingPoint.
   /// Drawing points.
@@ -39,23 +34,21 @@ class DrawingController extends ChangeNotifier {
   double get polylineSize => _polylineSize;
 
   /// Size.
-  double get size => _state.drawingMode == DrawingMode.draw
-      ? _drawingSize
-      : _state.drawingMode == DrawingMode.polyline
-          ? _polylineSize
-          : 1;
+  double get size => _ref.read(ModeController.provider) == Mode.drawing ? _drawingSize : _polylineSize;
 
   /// Provider.
   static final provider = ChangeNotifierProvider<DrawingController>(
-    (ref) => DrawingController(),
+    DrawingController.new,
   );
 
   /// Set size.
   void setSize(double newSize) {
-    if (_state.drawingMode == DrawingMode.draw) {
+    final mode = _ref.read(ModeController.provider);
+
+    if (mode == Mode.drawing) {
       _drawingSize = newSize;
       notifyListeners();
-    } else if (_state.drawingMode == DrawingMode.polyline) {
+    } else if (mode == Mode.polyline) {
       _polylineSize = newSize;
       notifyListeners();
     }
@@ -85,31 +78,13 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle drawing.
-  void toggleDrawingMode() {
-    if (_state.drawingMode == DrawingMode.draw) {
-      _state.drawingMode = DrawingMode.none;
-    } else {
-      _state.drawingMode = DrawingMode.draw;
-    }
-    notifyListeners();
-  }
-
-  /// Toggle polyline.
-  void togglePolylineMode() {
-    if (_state.drawingMode == DrawingMode.polyline) {
-      _state.drawingMode = DrawingMode.none;
-    } else {
-      _state.drawingMode = DrawingMode.polyline;
-    }
-    notifyListeners();
-  }
-
   /// Undo.
   void undo() {
-    if (_state.drawingMode == DrawingMode.draw) {
+    final mode = _ref.read(ModeController.provider);
+
+    if (mode == Mode.drawing) {
       _undoDraw.call();
-    } else if (_state.drawingMode == DrawingMode.polyline) {
+    } else if (mode == Mode.polyline) {
       _undoPolyline.call();
     }
     notifyListeners();
@@ -117,9 +92,10 @@ class DrawingController extends ChangeNotifier {
 
   /// Redo.
   void redo() {
-    if (_state.drawingMode == DrawingMode.draw) {
+    final mode = _ref.read(ModeController.provider);
+    if (mode == Mode.drawing) {
       _redoDraw.call();
-    } else if (_state.drawingMode == DrawingMode.polyline) {
+    } else if (mode == Mode.polyline) {
       _redoPolyline.call();
     }
     notifyListeners();

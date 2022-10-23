@@ -1,4 +1,3 @@
-import 'package:database_diagrams/drawing/drawing_mode.dart';
 import 'package:database_diagrams/drawing/drawing_point.dart';
 
 /// Drawing state.
@@ -9,7 +8,6 @@ class DrawingState {
     required this.drawingRedoStack,
     required this.polylinePoints,
     required this.polylineRedoStack,
-    required this.drawingMode,
   });
 
   /// Initial state.
@@ -17,8 +15,7 @@ class DrawingState {
       : drawingPoints = [],
         drawingRedoStack = [],
         polylinePoints = [],
-        polylineRedoStack = [],
-        drawingMode = DrawingMode.none;
+        polylineRedoStack = [];
 
   /// Drawing points.
   final List<DrawingPoint?> drawingPoints;
@@ -31,7 +28,4 @@ class DrawingState {
 
   /// Redo stack.
   final List<DrawingPoint?> polylineRedoStack;
-
-  /// Drawing mode.
-  DrawingMode drawingMode;
 }

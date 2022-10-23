@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/draggable_collection_card.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
-import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_undo_redo_buttonds.dart';
 import 'package:database_diagrams/drawing/polyline_painter_container.dart';
@@ -23,7 +22,7 @@ class EditorView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(CollectionStore.provider);
-    final drawingController = ref.watch(DrawingController.provider);
+    final mode = ref.watch(ModeController.provider);
 
     // TODO(Janez): Lift to controller.
     final offsets = useState<List<Offset>>([]);
@@ -74,9 +73,9 @@ class EditorView extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.9),
       body: MouseRegion(
-        cursor: drawingController.isDrawing
+        cursor: mode == Mode.drawing
             ? SystemMouseCursors.precise
-            : drawingController.isPolyline
+            : mode == Mode.polyline
                 ? SystemMouseCursors.cell
                 : SystemMouseCursors.basic,
         child: Stack(

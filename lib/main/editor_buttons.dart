@@ -29,10 +29,10 @@ class EditorButtons extends ConsumerWidget {
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: mode == Mode.polyline ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: mode == Mode.polyline ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: mode == Mode.polyline ? Colors.orange.shade700 : Colors.orange.shade900,
-          onPressed: modeController.togglePolyline,
+          backgroundColor: mode == Mode.text ? Colors.orange.shade900 : Colors.orange.shade700,
+          hoverColor: mode == Mode.text ? Colors.orange.shade600 : Colors.orange.shade800,
+          splashColor: mode == Mode.text ? Colors.orange.shade700 : Colors.orange.shade900,
+          onPressed: modeController.toggleText,
           child: const Icon(Icons.text_fields),
         ),
         const SizedBox(

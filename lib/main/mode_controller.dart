@@ -25,4 +25,9 @@ class ModeController extends StateNotifier<Mode> {
   void toggleDrawing() {
     state = state == Mode.drawing ? Mode.none : Mode.drawing;
   }
+
+  /// Toggle text mode.
+  void toggleText() {
+    state = state == Mode.text ? Mode.none : Mode.text;
+  }
 }

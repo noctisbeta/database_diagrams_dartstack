@@ -4,6 +4,7 @@ import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/polyline/polyline_controller.dart';
+import 'package:database_diagrams/text/my_text_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -59,6 +60,9 @@ class UndoRedoButtons extends HookConsumerWidget {
                 case Mode.drawing:
                   ref.read(DrawingController.provider.notifier).undo();
                   break;
+                case Mode.text:
+                  ref.read(MyTextController.provider.notifier).undo();
+                  break;
                 case Mode.smartLine:
                   break;
                 case Mode.none:
@@ -82,6 +86,10 @@ class UndoRedoButtons extends HookConsumerWidget {
                   break;
                 case Mode.drawing:
                   ref.read(DrawingController.provider.notifier).redo();
+                  break;
+
+                case Mode.text:
+                  ref.read(MyTextController.provider.notifier).redo();
                   break;
                 case Mode.smartLine:
                   break;

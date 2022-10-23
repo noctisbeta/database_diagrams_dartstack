@@ -10,6 +10,7 @@ import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/main/size_slider.dart';
 import 'package:database_diagrams/main/undo_redo_buttonds.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
+import 'package:database_diagrams/text/my_text_painter_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,6 +32,7 @@ class EditorView extends HookConsumerWidget {
       [
         const DrawingPainterContainer(),
         const PolylinePainterContainer(),
+        const MyTextPainterContainer(),
         const SmartlinePainterContainer(),
       ],
     );
@@ -55,13 +57,16 @@ class EditorView extends HookConsumerWidget {
           log('previous: $previous, next: $next');
           switch (next) {
             case Mode.drawing:
-              focusStackIndexes.value = [2, 1, 0];
+              focusStackIndexes.value = [1, 2, 3, 0];
               break;
             case Mode.polyline:
-              focusStackIndexes.value = [0, 2, 1];
+              focusStackIndexes.value = [2, 3, 0, 1];
+              break;
+            case Mode.text:
+              focusStackIndexes.value = [3, 0, 1, 2];
               break;
             case Mode.smartLine:
-              focusStackIndexes.value = [1, 0, 2];
+              focusStackIndexes.value = [0, 1, 2, 3];
               break;
             case Mode.none:
               break;
@@ -84,6 +89,7 @@ class EditorView extends HookConsumerWidget {
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
             focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
+            focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
             ...collections.map(
               (collection) => Positioned(
                 top: 50 + offsets.value[collections.indexOf(collection)].dy,

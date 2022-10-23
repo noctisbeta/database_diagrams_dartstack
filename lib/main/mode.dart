@@ -10,8 +10,11 @@ enum Mode {
   polyline,
 
   ///
+  text,
+
+  ///
   none;
 
   /// Is undoable.
-  bool get isUndoable => this == Mode.drawing || this == Mode.polyline || this == Mode.smartLine;
+  bool get isUndoable => this == Mode.drawing || this == Mode.polyline || this == Mode.smartLine || this == Mode.text;
 }

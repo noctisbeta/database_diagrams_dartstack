@@ -1,4 +1,4 @@
-import 'package:database_diagrams/main/editor_view.dart';
+import 'package:database_diagrams/main/main_view.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,6 +20,6 @@ class InitWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EditorView();
+    return const MainView();
   }
 }

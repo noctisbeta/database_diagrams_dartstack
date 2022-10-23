@@ -27,7 +27,7 @@ class DrawingPainterContainer extends ConsumerWidget {
             drawingController.addDrawingPoint(
               DrawingPoint(
                 point: details.localPosition,
-                size: drawingController.drawingSize,
+                size: drawingController.size,
               ),
             );
           },
@@ -35,7 +35,7 @@ class DrawingPainterContainer extends ConsumerWidget {
             drawingController.addDrawingPoint(
               DrawingPoint(
                 point: details.localPosition,
-                size: drawingController.drawingSize,
+                size: drawingController.size,
               ),
             );
           },

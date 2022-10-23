@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/drawing/drawing_controller.dart';
+import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
+import 'package:database_diagrams/polyline/polyline_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,9 +21,8 @@ class SizeSlider extends HookConsumerWidget {
       duration: const Duration(milliseconds: 300),
     );
 
-    final drawingController = ref.watch(DrawingController.provider);
+    final mode = ref.watch(ModeController.provider);
 
-    // TODO(Janez): Fires on every draw input. Seperate the drawing mode toggle notifier.
     ref.listen(
       ModeController.provider,
       (previous, next) {
@@ -38,6 +39,19 @@ class SizeSlider extends HookConsumerWidget {
       },
     );
 
+    double size() {
+      switch (mode) {
+        case Mode.polyline:
+          return ref.watch(PolylineController.provider).size;
+        case Mode.drawing:
+          return ref.watch(DrawingController.provider).size;
+        case Mode.smartLine:
+          return 1;
+        case Mode.none:
+          return 1;
+      }
+    }
+
     return SlideTransition(
       position: Tween<Offset>(
         begin: const Offset(0, 2),
@@ -48,10 +62,23 @@ class SizeSlider extends HookConsumerWidget {
       child: SliderTheme(
         data: SliderThemeData(overlayShape: SliderComponentShape.noOverlay),
         child: Slider(
-          value: drawingController.size,
+          value: size(),
           min: 1,
           max: 100,
-          onChanged: drawingController.setSize,
+          onChanged: (value) {
+            switch (mode) {
+              case Mode.smartLine:
+                break;
+              case Mode.drawing:
+                ref.read(DrawingController.provider).setSize(value);
+                break;
+              case Mode.polyline:
+                ref.read(PolylineController.provider).setSize(value);
+                break;
+              case Mode.none:
+                break;
+            }
+          },
           thumbColor: Colors.orange.shade700,
           activeColor: Colors.orange.shade900,
           inactiveColor: Colors.orange.shade900.withOpacity(0.5),

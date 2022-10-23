@@ -1,15 +1,17 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/drawing/drawing_controller.dart';
+import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
+import 'package:database_diagrams/polyline/polyline_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Editor buttons.
-class DrawingUndoRedoButtons extends HookConsumerWidget {
+class UndoRedoButtons extends HookConsumerWidget {
   /// Default constructor.
-  const DrawingUndoRedoButtons({
+  const UndoRedoButtons({
     super.key,
   });
 
@@ -19,9 +21,8 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
       duration: const Duration(milliseconds: 300),
     );
 
-    final drawingController = ref.watch(DrawingController.provider.notifier);
+    final mode = ref.watch(ModeController.provider);
 
-    // TODO(Janez): Fires on every draw input. Seperate the drawing mode toggle notifier.
     ref.listen(
       ModeController.provider,
       (previous, next) {
@@ -50,7 +51,20 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.undo,
+            onPressed: () {
+              switch (mode) {
+                case Mode.polyline:
+                  ref.read(PolylineController.provider.notifier).undo();
+                  break;
+                case Mode.drawing:
+                  ref.read(DrawingController.provider.notifier).undo();
+                  break;
+                case Mode.smartLine:
+                  break;
+                case Mode.none:
+                  break;
+              }
+            },
             child: const Icon(
               Icons.keyboard_double_arrow_left,
             ),
@@ -61,7 +75,20 @@ class DrawingUndoRedoButtons extends HookConsumerWidget {
           FloatingActionButton(
             backgroundColor: Colors.orange.shade700,
             hoverColor: Colors.orange.shade800,
-            onPressed: drawingController.redo,
+            onPressed: () {
+              switch (mode) {
+                case Mode.polyline:
+                  ref.read(PolylineController.provider.notifier).redo();
+                  break;
+                case Mode.drawing:
+                  ref.read(DrawingController.provider.notifier).redo();
+                  break;
+                case Mode.smartLine:
+                  break;
+                case Mode.none:
+                  break;
+              }
+            },
             child: const Icon(
               Icons.keyboard_double_arrow_right,
             ),

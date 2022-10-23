@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/text/my_text_item.dart';
+import 'package:database_diagrams/text/text_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,7 +16,7 @@ class MyTextController extends ChangeNotifier {
 
   final List<MyTextItem> _textRedoStack = [];
 
-  double _size = 10;
+  double _size = 20;
 
   /// Size.
   double get size => _size;
@@ -21,7 +24,22 @@ class MyTextController extends ChangeNotifier {
   /// Text spans.
   List<MyTextItem> get textItems => _textItems;
 
-  /// Add text span.
+  TextMode _mode = TextMode.edit;
+
+  /// Text mode.
+  TextMode get mode => _mode;
+
+  /// Set mode.
+  void setMode(TextMode mode) {
+    if (mode == _mode) {
+      return;
+    }
+
+    _mode = mode;
+    notifyListeners();
+  }
+
+  /// Add text item.
   void addTextItem(MyTextItem textItem) {
     _textItems.add(textItem);
     notifyListeners();
@@ -51,5 +69,16 @@ class MyTextController extends ChangeNotifier {
     _textItems.add(_textRedoStack.last);
     _textRedoStack.removeLast();
     notifyListeners();
+  }
+
+  /// Update text item.
+  void updateTextItem(int index, Offset offset) {
+    if (_textItems.length <= index || index < 0) {
+      return;
+    }
+    final item = _textItems.elementAt(index).copyWith(offset: offset);
+    _textItems[index] = item;
+    notifyListeners();
+    log('notified');
   }
 }

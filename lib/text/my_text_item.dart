@@ -17,4 +17,17 @@ class MyTextItem {
 
   /// Size.
   final double size;
+
+  /// Copy with.
+  MyTextItem copyWith({
+    Offset? offset,
+    String? text,
+    double? size,
+  }) {
+    return MyTextItem(
+      offset: offset ?? this.offset,
+      text: text ?? this.text,
+      size: size ?? this.size,
+    );
+  }
 }

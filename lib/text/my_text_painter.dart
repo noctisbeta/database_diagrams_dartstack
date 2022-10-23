@@ -20,7 +20,7 @@ class MyTextPainter extends CustomPainter {
       final textSpan = TextSpan(
         text: item.text,
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: item.size,
         ),
       );

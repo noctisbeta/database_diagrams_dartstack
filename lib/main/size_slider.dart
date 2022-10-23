@@ -57,7 +57,7 @@ class SizeSlider extends HookConsumerWidget {
 
     return SlideTransition(
       position: Tween<Offset>(
-        begin: const Offset(0, 2),
+        begin: const Offset(0, 3),
         end: Offset.zero,
       ).animate(
         CurvedAnimation(parent: ctl, curve: Curves.easeOutBack),

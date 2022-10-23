@@ -11,6 +11,7 @@ import 'package:database_diagrams/main/size_slider.dart';
 import 'package:database_diagrams/main/undo_redo_buttonds.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
 import 'package:database_diagrams/text/my_text_painter_container.dart';
+import 'package:database_diagrams/text/text_mode_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -122,6 +123,11 @@ class EditorView extends HookConsumerWidget {
             const Positioned(
               bottom: 16,
               child: SizeSlider(),
+            ),
+            const Positioned(
+              bottom: 16,
+              right: 256,
+              child: TextModeButtons(),
             ),
           ],
         ),

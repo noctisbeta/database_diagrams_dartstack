@@ -14,10 +14,6 @@ class EditorButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final drawingController = ref.watch(DrawingController.provider);
-    final isDrawing = drawingController.isDrawing;
-    final isPolyline = drawingController.isPolyline;
-
     final modeController = ref.watch(ModeController.provider.notifier);
     final mode = ref.watch(ModeController.provider);
 
@@ -34,30 +30,30 @@ class EditorButtons extends ConsumerWidget {
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: isPolyline ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: isPolyline ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: isPolyline ? Colors.orange.shade700 : Colors.orange.shade900,
-          onPressed: drawingController.togglePolylineMode,
+          backgroundColor: mode == Mode.polyline ? Colors.orange.shade900 : Colors.orange.shade700,
+          hoverColor: mode == Mode.polyline ? Colors.orange.shade600 : Colors.orange.shade800,
+          splashColor: mode == Mode.polyline ? Colors.orange.shade700 : Colors.orange.shade900,
+          onPressed: modeController.togglePolyline,
           child: const Icon(Icons.text_fields),
         ),
         const SizedBox(
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: isPolyline ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: isPolyline ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: isPolyline ? Colors.orange.shade700 : Colors.orange.shade900,
-          onPressed: drawingController.togglePolylineMode,
+          backgroundColor: mode == Mode.polyline ? Colors.orange.shade900 : Colors.orange.shade700,
+          hoverColor: mode == Mode.polyline ? Colors.orange.shade600 : Colors.orange.shade800,
+          splashColor: mode == Mode.polyline ? Colors.orange.shade700 : Colors.orange.shade900,
+          onPressed: modeController.togglePolyline,
           child: const Icon(Icons.polyline),
         ),
         const SizedBox(
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: isDrawing ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: isDrawing ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: isDrawing ? Colors.orange.shade700 : Colors.orange.shade900,
-          onPressed: drawingController.toggleDrawingMode,
+          backgroundColor: mode == Mode.drawing ? Colors.orange.shade900 : Colors.orange.shade700,
+          hoverColor: mode == Mode.drawing ? Colors.orange.shade600 : Colors.orange.shade800,
+          splashColor: mode == Mode.drawing ? Colors.orange.shade700 : Colors.orange.shade900,
+          onPressed: modeController.toggleDrawing,
           child: const Icon(Icons.edit),
         ),
         const SizedBox(

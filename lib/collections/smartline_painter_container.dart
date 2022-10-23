@@ -12,9 +12,11 @@ class SmartlinePainterContainer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final smartlineController = ref.watch(SmartlineController.provider);
 
-    return CustomPaint(
-      painter: SmartlinePainter(
-        anchors: smartlineController.anchors,
+    return Positioned.fill(
+      child: CustomPaint(
+        painter: SmartlinePainter(
+          anchors: smartlineController.anchors,
+        ),
       ),
     );
   }

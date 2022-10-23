@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/drawing/drawing_controller.dart';
+import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,11 +23,16 @@ class SizeSlider extends HookConsumerWidget {
 
     // TODO(Janez): Fires on every draw input. Seperate the drawing mode toggle notifier.
     ref.listen(
-      DrawingController.provider,
+      ModeController.provider,
       (previous, next) {
-        if (next.isUndoable) {
+        log(
+          'SizeSlider: ModeController.provider: $previous -> $next',
+          name: 'SizeSlider',
+        );
+
+        if (next.isUndoable && (!(previous?.isUndoable ?? false))) {
           ctl.forward();
-        } else {
+        } else if (!next.isUndoable) {
           ctl.reverse();
         }
       },

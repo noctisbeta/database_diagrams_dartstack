@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/drawing/drawing_painter.dart';
 import 'package:database_diagrams/drawing/drawing_point.dart';
+import 'package:database_diagrams/main/mode.dart';
+import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,13 +15,15 @@ class DrawingPainterContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(ModeController.provider);
     final drawingController = ref.watch(DrawingController.provider);
 
     return Positioned.fill(
       child: AbsorbPointer(
-        absorbing: !drawingController.isDrawing,
+        absorbing: mode != Mode.drawing,
         child: GestureDetector(
           onPanStart: (details) {
+            log('here');
             drawingController.addDrawingPoint(
               DrawingPoint(
                 point: details.localPosition,

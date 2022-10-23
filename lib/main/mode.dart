@@ -4,5 +4,14 @@ enum Mode {
   smartLine,
 
   ///
-  none,
+  drawing,
+
+  ///
+  polyline,
+
+  ///
+  none;
+
+  /// Is undoable.
+  bool get isUndoable => this == Mode.drawing || this == Mode.polyline || this == Mode.smartLine;
 }

@@ -15,4 +15,14 @@ class ModeController extends StateNotifier<Mode> {
   void toogleSmartLine() {
     state = state == Mode.smartLine ? Mode.none : Mode.smartLine;
   }
+
+  /// Toggle polyline mode.
+  void togglePolyline() {
+    state = state == Mode.polyline ? Mode.none : Mode.polyline;
+  }
+
+  /// Toggle drawing mode.
+  void toggleDrawing() {
+    state = state == Mode.drawing ? Mode.none : Mode.drawing;
+  }
 }

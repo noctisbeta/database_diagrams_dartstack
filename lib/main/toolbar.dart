@@ -14,34 +14,34 @@ class Toolbar extends StatelessWidget {
       color: Colors.orange.shade700,
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
-          Text(
+          const Text(
             'Save',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
-          Text(
+          const Text(
             'Export',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           GestureDetector(
             onTap: () async {
               final _auth = FirebaseAuth.instance;
-              User? user;
+              final User? user;
 
               // The `GoogleAuthProvider` can only be used while running on the web
-              GoogleAuthProvider authProvider = GoogleAuthProvider();
+              final GoogleAuthProvider authProvider = GoogleAuthProvider();
 
               try {
                 final UserCredential userCredential = await _auth.signInWithPopup(authProvider);
@@ -51,7 +51,7 @@ class Toolbar extends StatelessWidget {
                 print(e);
               }
             },
-            child: Text(
+            child: const Text(
               'Login',
               style: TextStyle(
                 color: Colors.white,
@@ -59,7 +59,7 @@ class Toolbar extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
         ],

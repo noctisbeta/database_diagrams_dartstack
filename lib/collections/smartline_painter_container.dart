@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/collections/smartline_controller.dart';
 import 'package:database_diagrams/collections/smartline_painter.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,10 +15,18 @@ class SmartlinePainterContainer extends ConsumerWidget {
     final smartlineController = ref.watch(SmartlineController.provider);
 
     return Positioned.fill(
-      child: CustomPaint(
-        painter: SmartlinePainter(
-          anchors: smartlineController.anchors,
-        ),
+      child: LayoutBuilder(
+        builder: (context, constarints) {
+          log('constraints: $constarints');
+          return Transform.translate(
+            offset: const Offset(0, -40),
+            child: CustomPaint(
+              painter: SmartlinePainter(
+                anchors: smartlineController.anchors,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

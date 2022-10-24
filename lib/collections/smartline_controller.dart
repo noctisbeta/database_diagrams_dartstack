@@ -21,6 +21,12 @@ class SmartlineController extends ChangeNotifier {
 
   /// Add card.
   void addCard(SmartlineAnchor key) {
+    final keyG = key.key;
+
+    // keyG position
+    final keyGPosition = keyG.currentContext!.findRenderObject()!.getTransformTo(null).getTranslation();
+    log('keyGPosition: $keyGPosition');
+
     if (_cardOrdinal == CardOrdinal.first) {
       _cardOrdinal = CardOrdinal.second;
       _keys.add([key]);

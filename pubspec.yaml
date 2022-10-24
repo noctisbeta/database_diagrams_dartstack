@@ -30,10 +30,12 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.2
+  firebase_auth: ^4.0.2
   firebase_core: ^2.1.0
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.5+1
+  google_sign_in: ^5.4.2
   hooks_riverpod: ^2.0.2
   perfect_freehand: ^1.0.4
 

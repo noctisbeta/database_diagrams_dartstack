@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:vector_math/vector_math_64.dart';
 
@@ -12,4 +13,6 @@ class CanvasController {
   );
 
   Quad viewport = Quad();
+
+  static const canvasContainerKey = GlobalObjectKey('canvasContainerKey');
 }

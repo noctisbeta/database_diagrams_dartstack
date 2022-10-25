@@ -33,4 +33,3 @@ class InitWidget extends StatelessWidget {
     return const MainView();
   }
 }
-  

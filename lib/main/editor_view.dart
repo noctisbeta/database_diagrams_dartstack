@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/draggable_collection_card.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
@@ -57,14 +58,12 @@ class EditorView extends HookConsumerWidget {
           if (previous != null && previous.length < next.length) {
             offsets.value = [
               ...offsets.value,
-              // Offset.zero,
               Offset(
                 ref.read(CanvasController.provider).viewport.point0.x.clamp(0, width.value),
                 ref.read(CanvasController.provider).viewport.point0.y.clamp(0, height.value),
               ),
             ];
           }
-          // offsets.value = [...offsets.value, Offset.zero];
         },
       )
       ..listen(
@@ -124,7 +123,10 @@ class EditorView extends HookConsumerWidget {
               maxScale: 10,
               builder: (context, viewport) {
                 ref.read(CanvasController.provider).viewport = viewport;
+                log(viewport.point0.toString());
+
                 return Container(
+                  key: CanvasController.canvasContainerKey,
                   width: width.value,
                   height: height.value,
                   decoration: BoxDecoration(
@@ -144,10 +146,8 @@ class EditorView extends HookConsumerWidget {
                         (collection) => Positioned(
                           top: 50 + offsets.value[collections.indexOf(collection)].dy,
                           left: 50 + offsets.value[collections.indexOf(collection)].dx,
-                          child: DraggableCollectionCard(
-                            scale: transformController.value.getMaxScaleOnAxis(),
-                            collection: collection,
-                            onDragUpdate: (details) {
+                          child: GestureDetector(
+                            onPanUpdate: (details) {
                               offsets.value = [
                                 ...offsets.value.sublist(0, collections.indexOf(collection)),
                                 Offset(
@@ -157,7 +157,24 @@ class EditorView extends HookConsumerWidget {
                                 ...offsets.value.sublist(collections.indexOf(collection) + 1),
                               ];
                             },
+                            child: CollectionCard(
+                              collection: collection,
+                            ),
                           ),
+                          // DraggableCollectionCard(
+                          //   scale: transformController.value.getMaxScaleOnAxis(),
+                          //   collection: collection,
+                          //   onDragUpdate: (details) {
+                          //     offsets.value = [
+                          //       ...offsets.value.sublist(0, collections.indexOf(collection)),
+                          //       Offset(
+                          //         offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
+                          //         offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
+                          //       ),
+                          //       ...offsets.value.sublist(collections.indexOf(collection) + 1),
+                          //     ];
+                          //   },
+                          // ),
                         ),
                       ),
                     ],

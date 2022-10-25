@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_type.dart';
+import 'package:database_diagrams/main/canvas_controller.dart';
+import 'package:database_diagrams/main/editor_view.dart';
 import 'package:flutter/material.dart';
 
 /// SmartlinePainter.
@@ -28,6 +30,13 @@ class SmartlinePainter extends CustomPainter {
         continue;
       }
 
+      final ancestor = CanvasController.canvasContainerKey.currentContext?.findRenderObject() as RenderBox?;
+
+      log('render box: ${first.localToGlobal(Offset.zero, ancestor: ancestor)}');
+      log('render box: ${first.localToGlobal(Offset.zero)}');
+      log('render box: ${first.globalToLocal(Offset.zero)}');
+      log('render box: ${first.parent}');
+
       final paint = Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
@@ -37,18 +46,18 @@ class SmartlinePainter extends CustomPainter {
       // TODO(Janez): Separate card and attribute lines. Padding gets in the way (inside the card).
       const padding = 15;
 
-      final firstCenter = first.localToGlobal(first.size.center(Offset.zero));
-      final secondCenter = second.localToGlobal(second.size.center(Offset.zero));
+      final firstCenter = first.localToGlobal(first.size.center(Offset.zero), ancestor: ancestor);
+      final secondCenter = second.localToGlobal(second.size.center(Offset.zero), ancestor: ancestor);
 
-      final firstLeft = first.localToGlobal(first.size.center(Offset(-padding - first.size.width / 2, 0)));
-      final firstRight = first.localToGlobal(first.size.center(Offset(padding + first.size.width / 2, 0)));
-      final firstTop = first.localToGlobal(first.size.center(Offset(0, -padding - first.size.height / 2)));
-      final firstBottom = first.localToGlobal(first.size.center(Offset(0, padding + first.size.height / 2)));
+      final firstLeft = first.localToGlobal(first.size.center(Offset(-padding - first.size.width / 2, 0)), ancestor: ancestor);
+      final firstRight = first.localToGlobal(first.size.center(Offset(padding + first.size.width / 2, 0)), ancestor: ancestor);
+      final firstTop = first.localToGlobal(first.size.center(Offset(0, -padding - first.size.height / 2)), ancestor: ancestor);
+      final firstBottom = first.localToGlobal(first.size.center(Offset(0, padding + first.size.height / 2)), ancestor: ancestor);
 
-      final secondLeft = second.localToGlobal(second.size.center(Offset(-padding - second.size.width / 2, 0)));
-      final secondRight = second.localToGlobal(second.size.center(Offset(padding + second.size.width / 2, 0)));
-      final secondTop = second.localToGlobal(second.size.center(Offset(0, -padding - second.size.height / 2)));
-      final secondBottom = second.localToGlobal(second.size.center(Offset(0, padding + second.size.height / 2)));
+      final secondLeft = second.localToGlobal(second.size.center(Offset(-padding - second.size.width / 2, 0)), ancestor: ancestor);
+      final secondRight = second.localToGlobal(second.size.center(Offset(padding + second.size.width / 2, 0)), ancestor: ancestor);
+      final secondTop = second.localToGlobal(second.size.center(Offset(0, -padding - second.size.height / 2)), ancestor: ancestor);
+      final secondBottom = second.localToGlobal(second.size.center(Offset(0, padding + second.size.height / 2)), ancestor: ancestor);
 
       /// minimize distance between two points
       if (pair.first.type == SmartlineType.card || pair.last.type == SmartlineType.card) {

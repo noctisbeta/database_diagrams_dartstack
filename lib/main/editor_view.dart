@@ -15,6 +15,7 @@ import 'package:database_diagrams/text/text_mode_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:vector_math/vector_math_64.dart' hide Colors;
 
 /// Editor view.
 class EditorView extends HookConsumerWidget {
@@ -76,8 +77,29 @@ class EditorView extends HookConsumerWidget {
         },
       );
 
+    final width = useState<double>(4000);
+    final height = useState<double>(4000);
+
+    final transformController = useTransformationController();
+    final screenSize = MediaQuery.of(context).size;
+
+    useEffect(
+      () {
+        transformController.value.setTranslation(
+          Vector3(
+            -width.value / 2 + screenSize.width / 2,
+            -height.value / 2 + screenSize.height / 2,
+            0,
+          ),
+        );
+
+        return transformController.dispose;
+      },
+      [transformController],
+    );
+
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.9),
+      backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
       body: MouseRegion(
         cursor: mode == Mode.drawing
             ? SystemMouseCursors.precise
@@ -87,28 +109,51 @@ class EditorView extends HookConsumerWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
-            focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
-            focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
-            focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
-            ...collections.map(
-              (collection) => Positioned(
-                top: 50 + offsets.value[collections.indexOf(collection)].dy,
-                left: 50 + offsets.value[collections.indexOf(collection)].dx,
-                child: DraggableCollectionCard(
-                  collection: collection,
-                  onDragUpdate: (details) {
-                    offsets.value = [
-                      ...offsets.value.sublist(0, collections.indexOf(collection)),
-                      Offset(
-                        offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
-                        offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
+            InteractiveViewer.builder(
+              transformationController: transformController,
+              boundaryMargin: const EdgeInsets.all(10000),
+              minScale: 0.01,
+              maxScale: 10,
+              builder: (context, viewport) {
+                return Container(
+                  width: width.value,
+                  height: height.value,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(25, 25, 25, 1),
+                    border: Border.all(
+                      color: Colors.white,
+                    ),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
+                      ...collections.map(
+                        (collection) => Positioned(
+                          top: 50 + offsets.value[collections.indexOf(collection)].dy,
+                          left: 50 + offsets.value[collections.indexOf(collection)].dx,
+                          child: DraggableCollectionCard(
+                            collection: collection,
+                            onDragUpdate: (details) {
+                              offsets.value = [
+                                ...offsets.value.sublist(0, collections.indexOf(collection)),
+                                Offset(
+                                  offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
+                                  offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
+                                ),
+                                ...offsets.value.sublist(collections.indexOf(collection) + 1),
+                              ];
+                            },
+                          ),
+                        ),
                       ),
-                      ...offsets.value.sublist(collections.indexOf(collection) + 1),
-                    ];
-                  },
-                ),
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
             const Positioned(
               right: 16,

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
-import 'package:database_diagrams/collections/draggable_collection_card.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';

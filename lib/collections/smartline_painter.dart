@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
-import 'package:database_diagrams/main/editor_view.dart';
 import 'package:flutter/material.dart';
 
 /// SmartlinePainter.

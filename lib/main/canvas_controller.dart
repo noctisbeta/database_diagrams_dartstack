@@ -12,7 +12,9 @@ class CanvasController {
     (ref) => CanvasController(),
   );
 
+  /// Viewport.
   Quad viewport = Quad();
 
+  /// Container key.
   static const canvasContainerKey = GlobalObjectKey('canvasContainerKey');
 }

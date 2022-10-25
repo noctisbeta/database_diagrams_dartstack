@@ -8,6 +8,7 @@ class DraggableCollectionCard extends StatelessWidget {
   const DraggableCollectionCard({
     required this.collection,
     required this.onDragUpdate,
+    required this.scale,
     super.key,
   });
 
@@ -17,6 +18,9 @@ class DraggableCollectionCard extends StatelessWidget {
   /// Collection.
   final Collection collection;
 
+  /// Scale.
+  final double scale;
+
   @override
   Widget build(BuildContext context) {
     return Draggable<Collection>(
@@ -25,8 +29,11 @@ class DraggableCollectionCard extends StatelessWidget {
       childWhenDragging: const SizedBox.shrink(),
       feedback: Material(
         type: MaterialType.transparency,
-        child: CollectionCard(
-          collection: collection,
+        child: Transform.scale(
+          scale: scale,
+          child: CollectionCard(
+            collection: collection,
+          ),
         ),
       ),
       child: CollectionCard(

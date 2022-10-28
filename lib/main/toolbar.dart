@@ -1,3 +1,4 @@
+import 'package:database_diagrams/authentication/login_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -34,30 +35,7 @@ class Toolbar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          GestureDetector(
-            onTap: () async {
-              final auth = FirebaseAuth.instance;
-              final User? user;
-
-              // The `GoogleAuthProvider` can only be used while running on the web
-              final GoogleAuthProvider authProvider = GoogleAuthProvider();
-
-              try {
-                final UserCredential userCredential = await auth.signInWithPopup(authProvider);
-
-                user = userCredential.user;
-              } catch (e) {
-                print(e);
-              }
-            },
-            child: const Text(
-              'Login',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
-            ),
-          ),
+          const LoginButton(),
           const SizedBox(
             width: 16,
           ),

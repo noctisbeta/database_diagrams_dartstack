@@ -1,11 +1,11 @@
 import 'package:database_diagrams/authentication/login_button.dart';
 import 'package:database_diagrams/collections/compiler.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Toolbar.
-class Toolbar extends ConsumerWidget {
+class Toolbar extends HookConsumerWidget {
   /// Default constructor.
   const Toolbar({super.key});
 
@@ -41,7 +41,7 @@ class Toolbar extends ConsumerWidget {
           ),
           GestureDetector(
             onTapUp: (details) {
-              ref.read(Compiler.provider).toggleOverlay(details, context);
+              ref.read(Compiler.provider.notifier).toggleOverlay(details, context);
             },
             child: const Text(
               'Code editor',

@@ -1,10 +1,16 @@
+import 'dart:developer';
+
+import 'package:database_diagrams/collections/code_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Code editor compiler.
-class Compiler {
+class Compiler extends StateNotifier<String> {
+  /// Default constructor.
+  Compiler() : super('');
+
   /// Provider.
-  static final provider = Provider<Compiler>(
+  static final provider = StateNotifierProvider<Compiler, String>(
     (ref) => Compiler(),
   );
 
@@ -35,79 +41,9 @@ class Compiler {
           left: details.globalPosition.dx,
           child: Material(
             type: MaterialType.transparency,
-            child: Stack(
-              children: [
-                Container(
-                  width: 400,
-                  height: 500,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(50, 50, 50, 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    cursorColor: Colors.white,
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    decoration: InputDecoration.collapsed(
-                      hintText: '',
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      this.entry?.remove();
-                      _isOverlayOpen = false;
-                      this.entry = null;
-                    },
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                // save button
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      this.entry?.remove();
-                      _isOverlayOpen = false;
-                      this.entry = null;
-                    },
-                    child: Container(
-                      width: 100,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade700,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            child: CodeEditor(
+              onClose: closeOverlay,
+              onSave: saveState,
             ),
           ),
         );
@@ -115,5 +51,18 @@ class Compiler {
     );
     Overlay.of(context)?.insert(entry);
     this.entry = entry;
+  }
+
+  /// close overlay.
+  void closeOverlay() {
+    entry?.remove();
+    _isOverlayOpen = false;
+    entry = null;
+  }
+
+  /// save state.
+  void saveState(String state) {
+    log(state);
+    this.state = state.trim();
   }
 }

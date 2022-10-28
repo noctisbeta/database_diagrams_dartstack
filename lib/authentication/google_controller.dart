@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -7,27 +5,23 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class GoogleControllerWeb {
   /// Provides the controller.
   static final provider = Provider.autoDispose<GoogleControllerWeb>(
-    (ref) => GoogleControllerWeb(),
+    (ref) => GoogleControllerWeb(), 
   );
 
   /// Sign in with google and return the account if successful.
   Future<void> signInWithGoogle() async {
-    try {
-
-     
-
     final auth = FirebaseAuth.instance;
-        final User? user;
+    final User? user;
 
-        // The `GoogleAuthProvider` can only be used while running on the web
-        final GoogleAuthProvider authProvider = GoogleAuthProvider();
+    // The `GoogleAuthProvider` can only be used while running on the web
+    final GoogleAuthProvider authProvider = GoogleAuthProvider();
 
-        try {
-          final UserCredential userCredential = await auth.signInWithPopup(authProvider);
+    try {
+      final UserCredential userCredential = await auth.signInWithPopup(authProvider);
 
-          user = userCredential.user;
-        } catch (e) {
-          print(e);
-        }}}
-  
+      user = userCredential.user;
+    } catch (e) {
+      print(e);
+    }
+  }
 }

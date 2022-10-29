@@ -83,18 +83,65 @@ class Compiler extends StateNotifier<CompilerState> {
       return [];
     }
 
+    String compileString = state.collections.replaceAll(' ', '').replaceAll('\n', '').replaceAll('\t', '');
+
+    log('Compile string: $compileString');
+    final leftCurlyCount = compileString.characters.where((p0) => p0 == '{').length;
+    final rightCurlyCount = compileString.characters.where((p0) => p0 == '}').length;
+
+    if (leftCurlyCount != rightCurlyCount) {
+      log('Error: Curly braces mismatch');
+      return [];
+    }
+
     final collections = <Collection>[];
 
-    for (final word in state.collections.split(' ')) {
-      if (word == 'Collection') {
-        collections.add(
-          Collection(
-            name: 'test',
-            schema: Schema({}),
-          ),
-        );
+    while (compileString.contains('Collection')) {
+      log('1');
+      final collectionName = compileString.substring(compileString.indexOf('Collection') + 10, compileString.indexOf('{'));
+      final collectionCode = compileString.substring(compileString.indexOf('{') + 1, compileString.indexOf('}'));
+
+      log('2');
+      log('collectionCode: $collectionCode');
+      final schemaCompileString = collectionCode.split(',');
+      log('schemaCompileString: $schemaCompileString');
+      log('schemaCompileString length: ${schemaCompileString.length}');
+
+      final schemaMap = <String, dynamic>{};
+
+      for (final row in schemaCompileString) {
+        if (row.isEmpty) {
+          continue;
+        }
+        log('row: $row');
+        final split_ = row.split(':');
+        schemaMap[split_[0]] = split_[1];
       }
+
+      log('3');
+
+      final collection = Collection(
+        name: collectionName,
+        schema: Schema(
+          schemaMap,
+        ),
+      );
+
+      compileString = compileString.substring(compileString.indexOf('}') + 1);
+
+      collections.add(collection);
     }
+
+    // for (final word in state.collections.split(' ')) {
+    //   if (word == 'Collection') {
+    //     collections.add(
+    //       Collection(
+    //         name: 'test',
+    //         schema: Schema({}),
+    //       ),
+    //     );
+    //   }
+    // }
 
     return collections;
   }

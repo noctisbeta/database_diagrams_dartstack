@@ -23,9 +23,7 @@ class CodeEditor extends HookConsumerWidget {
         stringMatchMap: <String, TextStyle>{
           'Collection': TextStyle(color: Colors.orange.shade700),
         },
-        onMatch: (match) {
-          log(match.toString());
-        },
+        onMatch: (match) {},
       ),
     );
 
@@ -34,9 +32,7 @@ class CodeEditor extends HookConsumerWidget {
         stringMatchMap: <String, TextStyle>{
           'Relation': TextStyle(color: Colors.orange.shade700),
         },
-        onMatch: (match) {
-          log(match.toString());
-        },
+        onMatch: (match) {},
       ),
     );
 

@@ -128,8 +128,8 @@ class EditorView extends HookConsumerWidget {
             offsets.value = [
               ...offsets.value,
               Offset(
-                ref.read(CanvasController.provider).viewport.point0.x.clamp(100, width.value),
-                ref.read(CanvasController.provider).viewport.point0.y.clamp(100, height.value),
+                ref.read(CanvasController.provider).viewport.point0.x.clamp(300, width.value),
+                ref.read(CanvasController.provider).viewport.point0.y.clamp(300, height.value),
               ),
             ];
           }

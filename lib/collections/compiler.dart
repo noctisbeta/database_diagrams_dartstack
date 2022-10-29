@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:database_diagrams/collections/code_editor.dart';
 import 'package:database_diagrams/collections/collection.dart';
+import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/compiler_state.dart';
 import 'package:database_diagrams/collections/schema.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +11,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// Code editor compiler.
 class Compiler extends StateNotifier<CompilerState> {
   /// Default constructor.
-  Compiler()
-      : super(
+  Compiler(
+    this.ref,
+  ) : super(
           const CompilerState.initial(),
         );
 
   /// Provider.
   static final provider = StateNotifierProvider<Compiler, CompilerState>(
-    (ref) => Compiler(),
+    Compiler.new,
   );
+
+  /// Riverpod ref.
+  final Ref ref;
 
   bool _isOverlayOpen = false;
 
@@ -91,6 +96,10 @@ class Compiler extends StateNotifier<CompilerState> {
     state = state.copyWith(
       collections: code,
     );
+
+    compile().forEach((c) {
+      ref.read(CollectionStore.provider.notifier).add(c);
+    });
   }
 
   /// Save relations.

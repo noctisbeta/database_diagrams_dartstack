@@ -8,7 +8,9 @@ class CollectionStore extends StateNotifier<List<Collection>> {
 
   /// Provider.
   static final provider = StateNotifierProvider<CollectionStore, List<Collection>>(
-    (ref) => CollectionStore(),
+    (ref) {
+      return CollectionStore();
+    },
   );
 
   /// Add collection.

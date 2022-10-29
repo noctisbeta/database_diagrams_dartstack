@@ -25,6 +25,11 @@ class Compiler extends StateNotifier<CompilerState> {
   /// Current overlay entry.
   OverlayEntry? entry;
 
+  Offset? _overlayOffset;
+
+  /// Collections.
+  List<Collection> get collections => compile();
+
   /// Toggle overlay.
   void toggleOverlay(TapUpDetails details, BuildContext context) {
     if (_isOverlayOpen) {
@@ -42,17 +47,35 @@ class Compiler extends StateNotifier<CompilerState> {
   void openOverlay(TapUpDetails details, BuildContext context) {
     final entry = OverlayEntry(
       builder: (context) {
+        log('Build: _overlayOffset: $_overlayOffset');
         return Positioned(
-          top: details.globalPosition.dy == 45 ? details.localPosition.dy : 45,
-          left: details.globalPosition.dx,
-          child: const Material(
+          top: _overlayOffset != null
+              ? _overlayOffset!.dy
+              : details.globalPosition.dy == 45
+                  ? details.localPosition.dy
+                  : 45,
+          left: _overlayOffset != null ? _overlayOffset!.dx : details.globalPosition.dx,
+          child: Material(
             type: MaterialType.transparency,
-            child: CodeEditor(),
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                log('here');
+                _overlayOffset = Offset(
+                  _overlayOffset!.dx + details.delta.dx,
+                  _overlayOffset!.dy + details.delta.dy,
+                );
+                if (this.entry != null) {
+                  this.entry!.markNeedsBuild();
+                }
+              },
+              child: const CodeEditor(),
+            ),
           ),
         );
       },
     );
     Overlay.of(context)?.insert(entry);
+    _overlayOffset ??= details.globalPosition;
     this.entry = entry;
   }
 

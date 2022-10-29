@@ -120,19 +120,19 @@ class EditorView extends HookConsumerWidget {
       ..listen(
         Compiler.provider,
         (previous, next) {
-          final collections = ref.read(Compiler.provider.notifier).compile();
+          // final collections = ref.read(Compiler.provider.notifier).compile();
 
-          for (final col in collections) {
-            ref.read(CollectionStore.provider.notifier).add(col);
+          // for (final col in collections) {
+          //   ref.read(CollectionStore.provider.notifier).add(col);
 
-            offsets.value = [
-              ...offsets.value,
-              Offset(
-                ref.read(CanvasController.provider).viewport.point0.x.clamp(300, width.value),
-                ref.read(CanvasController.provider).viewport.point0.y.clamp(300, height.value),
-              ),
-            ];
-          }
+          //   offsets.value = [
+          //     ...offsets.value,
+          //     Offset(
+          //       ref.read(CanvasController.provider).viewport.point0.x.clamp(300, width.value),
+          //       ref.read(CanvasController.provider).viewport.point0.y.clamp(300, height.value),
+          //     ),
+          //   ];
+          // }
         },
       );
 

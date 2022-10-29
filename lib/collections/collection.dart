@@ -13,4 +13,10 @@ class Collection {
 
   /// Schema.
   final Schema schema;
+
+  /// To compile string.
+  String toCompileString() {
+    final schemaString = schema.nameToType.entries.map((e) => '${e.key}:${e.value}').join(',');
+    return 'Collection $name { $schemaString }';
+  }
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/compiler.dart';
 import 'package:database_diagrams/collections/rich_text_controller.dart';
 import 'package:flutter/material.dart';

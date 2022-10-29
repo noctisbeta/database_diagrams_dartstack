@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
+import 'package:database_diagrams/collections/compiler.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
@@ -103,9 +104,35 @@ class EditorView extends HookConsumerWidget {
           //   next,
           // );
 
-          // transformController.value = transformController.value..scale(1.5, 1.5, 1.5);
-          // transformController.value.scale(1.5);
+          // transformController.value = transformController.value..scale(next);
+          // transformController.value.scale(next);
+          // transformController.value = Matrix4.identity()..scale(next);
+          // transformController.value = transformController.value
+          //   ..scale(
+          //     next * transformController.value.getMaxScaleOnAxis(),
+          //     next * transformController.value.getMaxScaleOnAxis(),
+          //     next * transformController.value.getMaxScaleOnAxis(),
+          //   );
+          // s
           // TODO(Janez): fix zooming.
+        },
+      )
+      ..listen(
+        Compiler.provider,
+        (previous, next) {
+          final collections = ref.read(Compiler.provider.notifier).compile();
+
+          for (final col in collections) {
+            ref.read(CollectionStore.provider.notifier).add(col);
+
+            offsets.value = [
+              ...offsets.value,
+              Offset(
+                ref.read(CanvasController.provider).viewport.point0.x.clamp(100, width.value),
+                ref.read(CanvasController.provider).viewport.point0.y.clamp(100, height.value),
+              ),
+            ];
+          }
         },
       );
 
@@ -121,7 +148,7 @@ class EditorView extends HookConsumerWidget {
 
         return transformController.dispose;
       },
-      [transformController],
+      const [],
     );
 
     return Scaffold(
@@ -135,64 +162,58 @@ class EditorView extends HookConsumerWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            GestureDetector(
-              onScaleUpdate: (details) => transformController.value.scale(
-                details.scale,
-                // details.localFocalPoint.dx,
-                // details.localFocalPoint.dy,
-              ),
-              child: InteractiveViewer.builder(
-                transformationController: transformController,
-                boundaryMargin: const EdgeInsets.all(10000),
-                minScale: 0.01,
-                maxScale: 10,
-                builder: (context, viewport) {
-                  ref.read(CanvasController.provider).viewport = viewport;
-                  log(viewport.point0.toString());
+            InteractiveViewer.builder(
+              transformationController: transformController,
+              boundaryMargin: const EdgeInsets.all(10000),
+              minScale: 0.01,
+              maxScale: 10,
+              // scaleFactor: ref.watch(ZoomController.provider),
+              builder: (context, viewport) {
+                ref.read(CanvasController.provider).viewport = viewport;
+                log(viewport.point0.toString());
 
-                  return Container(
-                    key: CanvasController.canvasContainerKey,
-                    width: width.value,
-                    height: height.value,
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(25, 25, 25, 1),
-                      border: Border.all(
-                        color: Colors.white,
-                      ),
+                return Container(
+                  key: CanvasController.canvasContainerKey,
+                  width: width.value,
+                  height: height.value,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(25, 25, 25, 1),
+                    border: Border.all(
+                      color: Colors.white,
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
-                        focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
-                        focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
-                        focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
-                        ...collections.map(
-                          (collection) => Positioned(
-                            top: 50 + offsets.value[collections.indexOf(collection)].dy,
-                            left: 50 + offsets.value[collections.indexOf(collection)].dx,
-                            child: GestureDetector(
-                              onPanUpdate: (details) {
-                                offsets.value = [
-                                  ...offsets.value.sublist(0, collections.indexOf(collection)),
-                                  Offset(
-                                    offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
-                                    offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
-                                  ),
-                                  ...offsets.value.sublist(collections.indexOf(collection) + 1),
-                                ];
-                              },
-                              child: CollectionCard(
-                                collection: collection,
-                              ),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
+                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
+                      ...collections.map(
+                        (collection) => Positioned(
+                          top: 50 + offsets.value[collections.indexOf(collection)].dy,
+                          left: 50 + offsets.value[collections.indexOf(collection)].dx,
+                          child: GestureDetector(
+                            onPanUpdate: (details) {
+                              offsets.value = [
+                                ...offsets.value.sublist(0, collections.indexOf(collection)),
+                                Offset(
+                                  offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
+                                  offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
+                                ),
+                                ...offsets.value.sublist(collections.indexOf(collection) + 1),
+                              ];
+                            },
+                            child: CollectionCard(
+                              collection: collection,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             const Positioned(
               top: 16,

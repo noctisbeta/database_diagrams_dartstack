@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
@@ -30,11 +28,6 @@ class SmartlinePainter extends CustomPainter {
       }
 
       final ancestor = CanvasController.canvasContainerKey.currentContext?.findRenderObject() as RenderBox?;
-
-      log('render box: ${first.localToGlobal(Offset.zero, ancestor: ancestor)}');
-      log('render box: ${first.localToGlobal(Offset.zero)}');
-      log('render box: ${first.globalToLocal(Offset.zero)}');
-      log('render box: ${first.parent}');
 
       final paint = Paint()
         ..color = Colors.white
@@ -91,7 +84,6 @@ class SmartlinePainter extends CustomPainter {
 
         // if first is above second
         if (firstCenter.dy < secondCenter.dy) {
-          log('here');
           flgbfa(path, firstRight, secondLeft, canvas, paint);
           continue;
           // if first is below second
@@ -110,7 +102,6 @@ class SmartlinePainter extends CustomPainter {
 
         // if first is above second
         if (firstCenter.dy < secondCenter.dy) {
-          log('here');
           frgbfa(path, secondRight, firstLeft, canvas, paint);
           continue;
           // if first is below second

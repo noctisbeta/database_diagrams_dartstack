@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/card_ordinal.dart';
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,15 +21,10 @@ class SmartlineController extends ChangeNotifier {
   void addCard(SmartlineAnchor key) {
     final keyG = key.key;
 
-    // keyG position
-    final keyGPosition = keyG.currentContext!.findRenderObject()!.getTransformTo(null).getTranslation();
-    log('keyGPosition: $keyGPosition');
-
     if (_cardOrdinal == CardOrdinal.first) {
       _cardOrdinal = CardOrdinal.second;
       _keys.add([key]);
     } else if (_keys.last.contains(key)) {
-      log('Cannot have duplicates in pairs.');
       return;
     } else if (_cardOrdinal == CardOrdinal.second) {
       _cardOrdinal = CardOrdinal.first;

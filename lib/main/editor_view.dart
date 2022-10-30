@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/compiler.dart';
@@ -71,7 +69,6 @@ class EditorView extends HookConsumerWidget {
       ..listen(
         ModeController.provider,
         (previous, next) {
-          log('previous: $previous, next: $next');
           switch (next) {
             case Mode.drawing:
               focusStackIndexes.value = [1, 2, 3, 0];
@@ -88,14 +85,11 @@ class EditorView extends HookConsumerWidget {
             case Mode.none:
               break;
           }
-          log('focusStackIndexes.value: ${focusStackIndexes.value}');
         },
       )
       ..listen(
         ZoomController.provider,
         (previous, next) {
-          log('inside zoom listener');
-
           // transformController.value = transformController.value..scale(next, next);
 
           // transformController.value = Matrix4.identity()..scale(next);
@@ -167,10 +161,9 @@ class EditorView extends HookConsumerWidget {
               boundaryMargin: const EdgeInsets.all(10000),
               minScale: 0.01,
               maxScale: 10,
-              // scaleFactor: ref.watch(ZoomController.provider),
+              scaleFactor: 400,
               builder: (context, viewport) {
                 ref.read(CanvasController.provider).viewport = viewport;
-                log(viewport.point0.toString());
 
                 return Container(
                   key: CanvasController.canvasContainerKey,

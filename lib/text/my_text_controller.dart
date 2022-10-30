@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/text/my_text_item.dart';
 import 'package:database_diagrams/text/text_mode.dart';
 import 'package:flutter/cupertino.dart';
@@ -79,6 +77,5 @@ class MyTextController extends ChangeNotifier {
     final item = _textItems.elementAt(index).copyWith(offset: offset);
     _textItems[index] = item;
     notifyListeners();
-    log('notified');
   }
 }

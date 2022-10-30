@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/text/my_text_item.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +14,6 @@ class MyTextPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (final item in textItems) {
-      log('item: $item');
       final textSpan = TextSpan(
         text: item.text,
         style: TextStyle(

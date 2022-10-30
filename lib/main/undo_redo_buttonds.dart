@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
@@ -27,11 +25,6 @@ class UndoRedoButtons extends HookConsumerWidget {
     ref.listen(
       ModeController.provider,
       (previous, next) {
-        log(
-          'DrawingUndoRedoButtons: ModeController.provider: $previous -> $next',
-          name: 'DrawingUndoRedoButtons',
-        );
-
         if (next.isUndoable && (!(previous?.isUndoable ?? false))) {
           ctl.forward();
         } else if (!next.isUndoable) {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
@@ -27,11 +25,6 @@ class SizeSlider extends HookConsumerWidget {
     ref.listen(
       ModeController.provider,
       (previous, next) {
-        log(
-          'SizeSlider: ModeController.provider: $previous -> $next',
-          name: 'SizeSlider',
-        );
-
         if (next.isUndoable && (!(previous?.isUndoable ?? false))) {
           ctl.forward();
         } else if (!next.isUndoable) {

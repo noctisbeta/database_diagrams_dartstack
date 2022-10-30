@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/code_editor.dart';
 import 'package:database_diagrams/collections/collection.dart';
 import 'package:database_diagrams/collections/collection_store.dart';
@@ -52,7 +50,6 @@ class Compiler extends StateNotifier<CompilerState> {
   void openOverlay(TapUpDetails details, BuildContext context) {
     final entry = OverlayEntry(
       builder: (context) {
-        log('Build: _overlayOffset: $_overlayOffset');
         return Positioned(
           top: _overlayOffset != null
               ? _overlayOffset!.dy
@@ -64,7 +61,6 @@ class Compiler extends StateNotifier<CompilerState> {
             type: MaterialType.transparency,
             child: GestureDetector(
               onPanUpdate: (details) {
-                log('here');
                 _overlayOffset = Offset(
                   _overlayOffset!.dx + details.delta.dx,
                   _overlayOffset!.dy + details.delta.dy,
@@ -117,27 +113,20 @@ class Compiler extends StateNotifier<CompilerState> {
 
     String compileString = state.collections.replaceAll(' ', '').replaceAll('\n', '').replaceAll('\t', '');
 
-    log('Compile string: $compileString');
     final leftCurlyCount = compileString.characters.where((p0) => p0 == '{').length;
     final rightCurlyCount = compileString.characters.where((p0) => p0 == '}').length;
 
     if (leftCurlyCount != rightCurlyCount) {
-      log('Error: Curly braces mismatch');
       return [];
     }
 
     final collections = <Collection>[];
 
     while (compileString.contains('Collection')) {
-      log('1');
       final collectionName = compileString.substring(compileString.indexOf('Collection') + 10, compileString.indexOf('{'));
       final collectionCode = compileString.substring(compileString.indexOf('{') + 1, compileString.indexOf('}'));
 
-      log('2');
-      log('collectionCode: $collectionCode');
       final schemaCompileString = collectionCode.split(',');
-      log('schemaCompileString: $schemaCompileString');
-      log('schemaCompileString length: ${schemaCompileString.length}');
 
       final schemaMap = <String, dynamic>{};
 
@@ -145,12 +134,9 @@ class Compiler extends StateNotifier<CompilerState> {
         if (row.isEmpty) {
           continue;
         }
-        log('row: $row');
         final split_ = row.split(':');
         schemaMap[split_[0]] = split_[1];
       }
-
-      log('3');
 
       final collection = Collection(
         name: collectionName,

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/collection.dart';
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_controller.dart';
@@ -108,7 +106,6 @@ class CollectionCard extends HookConsumerWidget {
                             key: isPreview ? null : key,
                             onTap: () {
                               if (mode == Mode.smartLine) {
-                                log('addming anchor');
                                 smartlineController.addCard(
                                   SmartlineAnchor(
                                     key: key,

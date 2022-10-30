@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/drawing/drawing_painter.dart';
 import 'package:database_diagrams/drawing/drawing_point.dart';
@@ -23,7 +21,6 @@ class DrawingPainterContainer extends ConsumerWidget {
         absorbing: mode != Mode.drawing,
         child: GestureDetector(
           onPanStart: (details) {
-            log('here');
             drawingController.addDrawingPoint(
               DrawingPoint(
                 point: details.localPosition,

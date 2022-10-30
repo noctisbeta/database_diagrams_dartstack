@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/text/my_text_controller.dart';
@@ -87,18 +85,12 @@ class MyTextPainterContainer extends HookConsumerWidget {
               ...textController.textItems.asMap().entries.map(
                 (entry) {
                   final item = entry.value;
-                  final index = entry.key;
 
                   return Positioned(
                     left: item.offset.dx,
                     top: item.offset.dy,
                     child: Draggable(
                       onDragUpdate: (details) {
-                        log('onDragUpdate');
-                        log('details.localPosition: ${details.localPosition}');
-                        log(item.offset.toString());
-                        // final index = textController.textItems.indexOf(item);
-                        log('index: $index');
                         textController.updateTextItem(
                           textController.textItems.indexOf(item),
                           details.localPosition,

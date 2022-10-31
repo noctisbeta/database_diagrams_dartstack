@@ -1,7 +1,7 @@
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
-import 'package:database_diagrams/text/my_text_controller.dart';
-import 'package:database_diagrams/text/text_mode.dart';
+import 'package:database_diagrams/text_tool/text_tool_controller.dart';
+import 'package:database_diagrams/text_tool/text_tool_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,7 +19,7 @@ class TextModeButtons extends HookConsumerWidget {
       duration: const Duration(milliseconds: 300),
     );
 
-    final textController = ref.watch(MyTextController.provider);
+    final textController = ref.watch(TextToolController.provider);
     final textMode = textController.mode;
 
     ref.listen(
@@ -43,11 +43,11 @@ class TextModeButtons extends HookConsumerWidget {
       child: Row(
         children: [
           FloatingActionButton(
-            backgroundColor: textMode == TextMode.edit ? Colors.orange.shade900 : Colors.orange.shade700,
-            hoverColor: textMode == TextMode.edit ? Colors.orange.shade600 : Colors.orange.shade800,
-            splashColor: textMode == TextMode.edit ? Colors.orange.shade700 : Colors.orange.shade900,
+            backgroundColor: textMode == TextToolMode.edit ? Colors.orange.shade900 : Colors.orange.shade700,
+            hoverColor: textMode == TextToolMode.edit ? Colors.orange.shade600 : Colors.orange.shade800,
+            splashColor: textMode == TextToolMode.edit ? Colors.orange.shade700 : Colors.orange.shade900,
             onPressed: () {
-              textController.setMode(TextMode.edit);
+              textController.setMode(TextToolMode.edit);
             },
             child: const Icon(
               Icons.text_format,
@@ -57,11 +57,11 @@ class TextModeButtons extends HookConsumerWidget {
             width: 16,
           ),
           FloatingActionButton(
-            backgroundColor: textMode == TextMode.move ? Colors.orange.shade900 : Colors.orange.shade700,
-            hoverColor: textMode == TextMode.move ? Colors.orange.shade600 : Colors.orange.shade800,
-            splashColor: textMode == TextMode.move ? Colors.orange.shade700 : Colors.orange.shade900,
+            backgroundColor: textMode == TextToolMode.move ? Colors.orange.shade900 : Colors.orange.shade700,
+            hoverColor: textMode == TextToolMode.move ? Colors.orange.shade600 : Colors.orange.shade800,
+            splashColor: textMode == TextToolMode.move ? Colors.orange.shade700 : Colors.orange.shade900,
             onPressed: () {
-              textController.setMode(TextMode.move);
+              textController.setMode(TextToolMode.move);
             },
             child: const Icon(
               Icons.move_down,

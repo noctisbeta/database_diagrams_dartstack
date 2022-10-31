@@ -1,7 +1,8 @@
 import 'package:database_diagrams/collections/code_editor.dart';
 import 'package:database_diagrams/collections/collection.dart';
-import 'package:database_diagrams/collections/collection_store.dart';
 import 'package:database_diagrams/collections/compiler_state.dart';
+import 'package:database_diagrams/collections/controllers/collection_store.dart';
+import 'package:database_diagrams/collections/models/collection_item.dart';
 import 'package:database_diagrams/collections/schema.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -94,7 +95,12 @@ class Compiler extends StateNotifier<CompilerState> {
     );
 
     compile().forEach((c) {
-      ref.read(CollectionStore.provider.notifier).add(c);
+      ref.read(CollectionStore.provider.notifier).add(
+            CollectionItem(
+              collection: c,
+              position: Offset.zero,
+            ),
+          );
     });
   }
 

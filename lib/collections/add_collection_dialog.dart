@@ -1,6 +1,7 @@
 import 'package:database_diagrams/collections/collection.dart';
 import 'package:database_diagrams/collections/collection_card.dart';
-import 'package:database_diagrams/collections/collection_store.dart';
+import 'package:database_diagrams/collections/controllers/collection_store.dart';
+import 'package:database_diagrams/collections/models/collection_item.dart';
 import 'package:database_diagrams/collections/schema.dart';
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_dropdown_button.dart';
@@ -138,7 +139,12 @@ class AddCollectionDialog extends HookConsumerWidget {
             label: 'Add',
             onPressed: () {
               if (collection.value != null) {
-                ref.read(CollectionStore.provider.notifier).add(collection.value!);
+                ref.read(CollectionStore.provider.notifier).add(
+                      CollectionItem(
+                        collection: collection.value!,
+                        position: Offset.zero,
+                      ),
+                    );
                 Navigator.of(context).pop();
               }
             },

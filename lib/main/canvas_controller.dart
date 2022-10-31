@@ -17,4 +17,16 @@ class CanvasController {
 
   /// Container key.
   static const canvasContainerKey = GlobalObjectKey('canvasContainerKey');
+
+  /// Canvas height.
+  static const height = 4000.0;
+
+  /// Canvas width.
+  static const width = 4000.0;
+
+  /// Top left point of the viewport clamped to canvas.
+  Offset get topLeft => Offset(
+        viewport.point0.x.clamp(0, width),
+        viewport.point0.y.clamp(0, height),
+      );
 }

@@ -1,8 +1,8 @@
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
-import 'package:database_diagrams/text/my_text_controller.dart';
-import 'package:database_diagrams/text/my_text_item.dart';
-import 'package:database_diagrams/text/text_mode.dart';
+import 'package:database_diagrams/text_tool/my_text_item.dart';
+import 'package:database_diagrams/text_tool/text_tool_controller.dart';
+import 'package:database_diagrams/text_tool/text_tool_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,7 +15,7 @@ class MyTextPainterContainer extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(ModeController.provider);
-    final textController = ref.watch(MyTextController.provider);
+    final textController = ref.watch(TextToolController.provider);
 
     final textField = useState<TextField?>(null);
     final coordinate = useState<Offset?>(null);
@@ -64,14 +64,14 @@ class MyTextPainterContainer extends HookConsumerWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTapUp: (details) {
-            if (textController.mode == TextMode.edit) {
+            if (textController.mode == TextToolMode.edit) {
               handleEditTap(details);
             }
             switch (textController.mode) {
-              case TextMode.edit:
+              case TextToolMode.edit:
                 handleEditTap(details);
                 break;
-              case TextMode.move:
+              case TextToolMode.move:
                 break;
             }
           },

@@ -19,8 +19,6 @@ class SmartlineController extends ChangeNotifier {
 
   /// Add card.
   void addCard(SmartlineAnchor key) {
-    final keyG = key.key;
-
     if (_cardOrdinal == CardOrdinal.first) {
       _cardOrdinal = CardOrdinal.second;
       _keys.add([key]);

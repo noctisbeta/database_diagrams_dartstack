@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/collections/collection_card.dart';
-import 'package:database_diagrams/collections/collection_store.dart';
-import 'package:database_diagrams/collections/compiler.dart';
+import 'package:database_diagrams/collections/controllers/collection_store.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
@@ -12,8 +13,8 @@ import 'package:database_diagrams/main/undo_redo_buttonds.dart';
 import 'package:database_diagrams/main/zoom_buttons.dart';
 import 'package:database_diagrams/main/zoom_controller.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
-import 'package:database_diagrams/text/my_text_painter_container.dart';
-import 'package:database_diagrams/text/text_mode_buttons.dart';
+import 'package:database_diagrams/text_tool/my_text_painter_container.dart';
+import 'package:database_diagrams/text_tool/text_mode_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,11 +27,10 @@ class EditorView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collections = ref.watch(CollectionStore.provider);
     final mode = ref.watch(ModeController.provider);
 
     // TODO(Janez): Lift to controller.
-    final offsets = useState<List<Offset>>([]);
+    // final offsets = useState<List<Offset>>([]);
 
     final focusStack = useState<List<Widget>>(
       [
@@ -45,27 +45,10 @@ class EditorView extends HookConsumerWidget {
       List.generate(focusStack.value.length, (index) => index),
     );
 
-    final width = useState<double>(4000);
-    final height = useState<double>(4000);
-
     final transformController = useTransformationController();
     final screenSize = MediaQuery.of(context).size;
 
     ref
-      ..listen(
-        CollectionStore.provider,
-        (previous, next) {
-          if (previous != null && previous.length < next.length) {
-            offsets.value = [
-              ...offsets.value,
-              Offset(
-                ref.read(CanvasController.provider).viewport.point0.x.clamp(0, width.value),
-                ref.read(CanvasController.provider).viewport.point0.y.clamp(0, height.value),
-              ),
-            ];
-          }
-        },
-      )
       ..listen(
         ModeController.provider,
         (previous, next) {
@@ -110,32 +93,14 @@ class EditorView extends HookConsumerWidget {
           // s
           // TODO(Janez): fix zooming.
         },
-      )
-      ..listen(
-        Compiler.provider,
-        (previous, next) {
-          // final collections = ref.read(Compiler.provider.notifier).compile();
-
-          // for (final col in collections) {
-          //   ref.read(CollectionStore.provider.notifier).add(col);
-
-          //   offsets.value = [
-          //     ...offsets.value,
-          //     Offset(
-          //       ref.read(CanvasController.provider).viewport.point0.x.clamp(300, width.value),
-          //       ref.read(CanvasController.provider).viewport.point0.y.clamp(300, height.value),
-          //     ),
-          //   ];
-          // }
-        },
       );
 
     useEffect(
       () {
         transformController.value.setTranslation(
           Vector3(
-            -width.value / 2 + screenSize.width / 2,
-            -height.value / 2 + screenSize.height / 2,
+            -CanvasController.width / 2 + screenSize.width / 2,
+            -CanvasController.height / 2 + screenSize.height / 2,
             0,
           ),
         );
@@ -165,10 +130,11 @@ class EditorView extends HookConsumerWidget {
               builder: (context, viewport) {
                 ref.read(CanvasController.provider).viewport = viewport;
 
+                log('rebuild IW');
                 return Container(
                   key: CanvasController.canvasContainerKey,
-                  width: width.value,
-                  height: height.value,
+                  width: CanvasController.width,
+                  height: CanvasController.height,
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(25, 25, 25, 1),
                     border: Border.all(
@@ -182,26 +148,33 @@ class EditorView extends HookConsumerWidget {
                       focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
                       focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
                       focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
-                      ...collections.map(
-                        (collection) => Positioned(
-                          top: 50 + offsets.value[collections.indexOf(collection)].dy,
-                          left: 50 + offsets.value[collections.indexOf(collection)].dx,
-                          child: GestureDetector(
-                            onPanUpdate: (details) {
-                              offsets.value = [
-                                ...offsets.value.sublist(0, collections.indexOf(collection)),
-                                Offset(
-                                  offsets.value[collections.indexOf(collection)].dx + details.delta.dx,
-                                  offsets.value[collections.indexOf(collection)].dy + details.delta.dy,
-                                ),
-                                ...offsets.value.sublist(collections.indexOf(collection) + 1),
-                              ];
-                            },
-                            child: CollectionCard(
-                              collection: collection,
-                            ),
-                          ),
-                        ),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final cItems = ref.watch(CollectionStore.provider);
+                          final collItemsCtl = ref.watch(CollectionStore.provider.notifier);
+
+                          return Stack(
+                            children: cItems
+                                .map(
+                                  (cItem) => Positioned(
+                                    top: cItem.position.dy,
+                                    left: cItem.position.dx,
+                                    child: GestureDetector(
+                                      onPanUpdate: (details) {
+                                        collItemsCtl.updatePosition(
+                                          collection: cItem,
+                                          delta: details.delta,
+                                        );
+                                      },
+                                      child: CollectionCard(
+                                        collection: cItem.collection,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        },
                       ),
                     ],
                   ),

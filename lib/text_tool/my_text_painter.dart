@@ -1,4 +1,4 @@
-import 'package:database_diagrams/text/my_text_item.dart';
+import 'package:database_diagrams/text_tool/my_text_item.dart';
 import 'package:flutter/material.dart';
 
 /// Text painter.

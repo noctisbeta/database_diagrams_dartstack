@@ -1,5 +1,5 @@
 /// Text mode.
-enum TextMode {
+enum TextToolMode {
   /// Move.
   move,
 

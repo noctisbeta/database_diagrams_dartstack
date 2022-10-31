@@ -1,13 +1,13 @@
-import 'package:database_diagrams/text/my_text_item.dart';
-import 'package:database_diagrams/text/text_mode.dart';
+import 'package:database_diagrams/text_tool/my_text_item.dart';
+import 'package:database_diagrams/text_tool/text_tool_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// MyText controller.
-class MyTextController extends ChangeNotifier {
+/// Text tool controller.
+class TextToolController extends ChangeNotifier {
   /// Provider.
-  static final provider = ChangeNotifierProvider<MyTextController>(
-    (ref) => MyTextController(),
+  static final provider = ChangeNotifierProvider<TextToolController>(
+    (ref) => TextToolController(),
   );
 
   final List<MyTextItem> _textItems = [];
@@ -22,13 +22,13 @@ class MyTextController extends ChangeNotifier {
   /// Text spans.
   List<MyTextItem> get textItems => _textItems;
 
-  TextMode _mode = TextMode.edit;
+  TextToolMode _mode = TextToolMode.edit;
 
   /// Text mode.
-  TextMode get mode => _mode;
+  TextToolMode get mode => _mode;
 
   /// Set mode.
-  void setMode(TextMode mode) {
+  void setMode(TextToolMode mode) {
     if (mode == _mode) {
       return;
     }

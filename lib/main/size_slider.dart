@@ -2,7 +2,7 @@ import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/polyline/polyline_controller.dart';
-import 'package:database_diagrams/text/my_text_controller.dart';
+import 'package:database_diagrams/text_tool/text_tool_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -44,7 +44,7 @@ class SizeSlider extends HookConsumerWidget {
         case Mode.none:
           return 1;
         case Mode.text:
-          return ref.watch(MyTextController.provider).size;
+          return ref.watch(TextToolController.provider).size;
       }
     }
 
@@ -72,7 +72,7 @@ class SizeSlider extends HookConsumerWidget {
                 ref.read(PolylineController.provider).setSize(value);
                 break;
               case Mode.text:
-                ref.read(MyTextController.provider).setSize(value);
+                ref.read(TextToolController.provider).setSize(value);
                 break;
               case Mode.none:
                 break;

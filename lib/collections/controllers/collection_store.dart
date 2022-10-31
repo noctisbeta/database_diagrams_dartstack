@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/models/collection_item.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +23,6 @@ class CollectionStore extends StateNotifier<List<CollectionItem>> {
   /// Add collection.
   void add(CollectionItem cItem) {
     final topLeft = ref.read(CanvasController.provider).topLeft;
-
-    log('topLeft: $topLeft');
 
     final fixedPosition = cItem.copyWith(
       position: topLeft.translate(50, 50),

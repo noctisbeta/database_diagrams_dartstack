@@ -7,8 +7,6 @@ import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/main/size_slider.dart';
 import 'package:database_diagrams/main/undo_redo_buttonds.dart';
-import 'package:database_diagrams/main/zoom_buttons.dart';
-import 'package:database_diagrams/main/zoom_controller.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
 import 'package:database_diagrams/smartline/smartline_painter_container.dart';
 import 'package:database_diagrams/text_tool/components/my_text_painter_container.dart';
@@ -27,8 +25,6 @@ class EditorView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(ModeController.provider);
 
-    // TODO(Janez): Lift to controller.
-
     final focusStack = useState<List<Widget>>(
       [
         const DrawingPainterContainer(),
@@ -42,59 +38,34 @@ class EditorView extends HookConsumerWidget {
       List.generate(focusStack.value.length, (index) => index),
     );
 
-    final transformController = useTransformationController();
+    final transformationController = useTransformationController();
     final screenSize = MediaQuery.of(context).size;
 
-    ref
-      ..listen(
-        ModeController.provider,
-        (previous, next) {
-          switch (next) {
-            case Mode.drawing:
-              focusStackIndexes.value = [1, 2, 3, 0];
-              break;
-            case Mode.polyline:
-              focusStackIndexes.value = [2, 3, 0, 1];
-              break;
-            case Mode.text:
-              focusStackIndexes.value = [3, 0, 1, 2];
-              break;
-            case Mode.smartLine:
-              focusStackIndexes.value = [0, 1, 2, 3];
-              break;
-            case Mode.none:
-              break;
-          }
-        },
-      )
-      ..listen(
-        ZoomController.provider,
-        (previous, next) {
-          // transformController.value = transformController.value..scale(next, next);
-
-          // transformController.value = Matrix4.identity()..scale(next);
-          // transformController.value.scaled(
-          //   next,
-          //   next,
-          // );
-
-          // transformController.value = transformController.value..scale(next);
-          // transformController.value.scale(next);
-          // transformController.value = Matrix4.identity()..scale(next);
-          // transformController.value = transformController.value
-          //   ..scale(
-          //     next * transformController.value.getMaxScaleOnAxis(),
-          //     next * transformController.value.getMaxScaleOnAxis(),
-          //     next * transformController.value.getMaxScaleOnAxis(),
-          //   );
-          // s
-          // TODO(Janez): fix zooming.
-        },
-      );
+    ref.listen(
+      ModeController.provider,
+      (previous, next) {
+        switch (next) {
+          case Mode.drawing:
+            focusStackIndexes.value = [1, 2, 3, 0];
+            break;
+          case Mode.polyline:
+            focusStackIndexes.value = [2, 3, 0, 1];
+            break;
+          case Mode.text:
+            focusStackIndexes.value = [3, 0, 1, 2];
+            break;
+          case Mode.smartLine:
+            focusStackIndexes.value = [0, 1, 2, 3];
+            break;
+          case Mode.none:
+            break;
+        }
+      },
+    );
 
     useEffect(
       () {
-        transformController.value.setTranslation(
+        transformationController.value.setTranslation(
           Vector3(
             -CanvasController.width / 2 + screenSize.width / 2,
             -CanvasController.height / 2 + screenSize.height / 2,
@@ -102,7 +73,7 @@ class EditorView extends HookConsumerWidget {
           ),
         );
 
-        return transformController.dispose;
+        return transformationController.dispose;
       },
       const [],
     );
@@ -119,7 +90,7 @@ class EditorView extends HookConsumerWidget {
           alignment: Alignment.center,
           children: [
             InteractiveViewer.builder(
-              transformationController: transformController,
+              transformationController: transformationController,
               boundaryMargin: const EdgeInsets.all(10000),
               minScale: 0.01,
               maxScale: 10,
@@ -176,11 +147,6 @@ class EditorView extends HookConsumerWidget {
                   ),
                 );
               },
-            ),
-            const Positioned(
-              top: 16,
-              left: 16,
-              child: ZoomButtons(),
             ),
             const Positioned(
               right: 16,

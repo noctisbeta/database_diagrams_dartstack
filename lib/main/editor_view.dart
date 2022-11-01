@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/collection_card.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
 import 'package:database_diagrams/collections/smartline_painter_container.dart';
@@ -130,7 +128,6 @@ class EditorView extends HookConsumerWidget {
               builder: (context, viewport) {
                 ref.read(CanvasController.provider).viewport = viewport;
 
-                log('rebuild IW');
                 return Container(
                   key: CanvasController.canvasContainerKey,
                   width: CanvasController.width,

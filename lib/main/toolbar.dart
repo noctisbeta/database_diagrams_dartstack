@@ -1,4 +1,4 @@
-import 'package:database_diagrams/authentication/login_button.dart';
+import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/compiler.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -51,7 +51,7 @@ class Toolbar extends HookConsumerWidget {
             ),
           ),
           const Spacer(),
-          const LoginButton(),
+          const SignInButton(),
           const SizedBox(
             width: 16,
           ),

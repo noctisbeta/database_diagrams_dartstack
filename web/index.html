@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,7 +28,7 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>database_diagrams</title>
   <link rel="manifest" href="manifest.json">
@@ -39,16 +40,17 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
+
 <body>
   <script>
-    document.addEventListener('wheel', function(e) {
+    document.addEventListener('wheel', function (e) {
       e.ctrlKey && e.preventDefault();
     }, {
       passive: false,
     });
   </script>
   <script>
-    window.addEventListener('keydown', function(e) {
+    window.addEventListener('keydown', function (e) {
       if (event.metaKey || event.ctrlKey) {
         switch (event.key) {
           case '=':
@@ -60,26 +62,27 @@
     });
   </script>
   <script>
-    window.addEventListener('load', function(ev) {
+    window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         }
-      }).then(function(engineInitializer) {
+      }).then(function (engineInitializer) {
         return engineInitializer.initializeEngine();
-      }).then(function(appRunner) {
+      }).then(function (appRunner) {
         return appRunner.runApp();
       });
     });
   </script>
   <script type="module">
     // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-analytics.js";
+    // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js";
+    // import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-analytics.js";
+    // import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-auth.js";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
-  
+
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
@@ -91,10 +94,12 @@
       appId: "1:433961630790:web:0adf82eaf349f08fd79e47",
       measurementId: "G-KK5BX9JEPE"
     };
-  
+
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    // const app = initializeApp(firebaseConfig);
+    // const analytics = getAnalytics(app);
+    // const auth = getAuth();
   </script>
 </body>
+
 </html>

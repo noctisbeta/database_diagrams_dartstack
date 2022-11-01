@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,6 +22,8 @@ class GoogleControllerWeb {
       final UserCredential userCredential = await auth.signInWithPopup(authProvider);
 
       user = userCredential.user;
-    } catch (e) {}
+    } catch (e) {
+      log('Error $e');
+    }
   }
 }

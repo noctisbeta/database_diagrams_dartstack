@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/collections/models/collection.dart';
-import 'package:database_diagrams/collections/smartline_anchor.dart';
-import 'package:database_diagrams/collections/smartline_controller.dart';
-import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
+import 'package:database_diagrams/smartline/smartline_anchor.dart';
+import 'package:database_diagrams/smartline/smartline_controller.dart';
+import 'package:database_diagrams/smartline/smartline_type.dart';
 import 'package:database_diagrams/utilities/iterable_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -25,7 +25,6 @@ class CollectionCard extends HookConsumerWidget {
 
   /// isPreview.
   final bool isPreview;
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

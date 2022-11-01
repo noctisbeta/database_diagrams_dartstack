@@ -1,5 +1,5 @@
-import 'package:database_diagrams/collections/card_ordinal.dart';
-import 'package:database_diagrams/collections/smartline_anchor.dart';
+import 'package:database_diagrams/smartline/card_ordinal.dart';
+import 'package:database_diagrams/smartline/smartline_anchor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

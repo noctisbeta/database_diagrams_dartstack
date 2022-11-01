@@ -1,9 +1,7 @@
-import 'dart:developer';
-
-import 'package:database_diagrams/collections/code_editor.dart';
-import 'package:database_diagrams/collections/compiler_state.dart';
+import 'package:database_diagrams/collections/components/code_editor.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
 import 'package:database_diagrams/collections/models/collection.dart';
+import 'package:database_diagrams/collections/models/compiler_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

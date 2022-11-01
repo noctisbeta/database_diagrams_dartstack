@@ -1,5 +1,5 @@
-import 'package:database_diagrams/collections/smartline_controller.dart';
-import 'package:database_diagrams/collections/smartline_painter.dart';
+import 'package:database_diagrams/smartline/smartline_controller.dart';
+import 'package:database_diagrams/smartline/smartline_painter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

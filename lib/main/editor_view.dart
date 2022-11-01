@@ -1,6 +1,5 @@
 import 'package:database_diagrams/collections/components/collection_card.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
-import 'package:database_diagrams/collections/smartline_painter_container.dart';
 import 'package:database_diagrams/drawing/drawing_painter_container.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
 import 'package:database_diagrams/main/editor_buttons.dart';
@@ -11,6 +10,7 @@ import 'package:database_diagrams/main/undo_redo_buttonds.dart';
 import 'package:database_diagrams/main/zoom_buttons.dart';
 import 'package:database_diagrams/main/zoom_controller.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
+import 'package:database_diagrams/smartline/smartline_painter_container.dart';
 import 'package:database_diagrams/text_tool/components/my_text_painter_container.dart';
 import 'package:database_diagrams/text_tool/components/text_mode_buttons.dart';
 import 'package:flutter/material.dart';

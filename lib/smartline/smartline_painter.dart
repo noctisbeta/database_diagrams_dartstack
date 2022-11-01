@@ -1,6 +1,6 @@
-import 'package:database_diagrams/collections/smartline_anchor.dart';
-import 'package:database_diagrams/collections/smartline_type.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
+import 'package:database_diagrams/smartline/smartline_anchor.dart';
+import 'package:database_diagrams/smartline/smartline_type.dart';
 import 'package:flutter/material.dart';
 
 /// SmartlinePainter.

@@ -1,4 +1,4 @@
-import 'package:database_diagrams/collections/smartline_type.dart';
+import 'package:database_diagrams/smartline/smartline_type.dart';
 import 'package:flutter/material.dart';
 
 /// Smartline anchor.

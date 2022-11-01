@@ -2,7 +2,7 @@ import 'package:database_diagrams/drawing/drawing_controller.dart';
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/polyline/polyline_controller.dart';
-import 'package:database_diagrams/text_tool/text_tool_controller.dart';
+import 'package:database_diagrams/text_tool/controllers/text_tool_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

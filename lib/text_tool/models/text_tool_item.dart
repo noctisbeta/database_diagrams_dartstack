@@ -1,9 +1,9 @@
 import 'package:flutter/animation.dart';
 
 /// MyText item.
-class MyTextItem {
+class TextToolItem {
   /// Default constructor.
-  MyTextItem({
+  TextToolItem({
     required this.offset,
     required this.text,
     required this.size,
@@ -19,12 +19,12 @@ class MyTextItem {
   final double size;
 
   /// Copy with.
-  MyTextItem copyWith({
+  TextToolItem copyWith({
     Offset? offset,
     String? text,
     double? size,
   }) {
-    return MyTextItem(
+    return TextToolItem(
       offset: offset ?? this.offset,
       text: text ?? this.text,
       size: size ?? this.size,

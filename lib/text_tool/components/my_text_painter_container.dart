@@ -1,8 +1,8 @@
 import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
-import 'package:database_diagrams/text_tool/my_text_item.dart';
-import 'package:database_diagrams/text_tool/text_tool_controller.dart';
-import 'package:database_diagrams/text_tool/text_tool_mode.dart';
+import 'package:database_diagrams/text_tool/controllers/text_tool_controller.dart';
+import 'package:database_diagrams/text_tool/models/text_tool_item.dart';
+import 'package:database_diagrams/text_tool/models/text_tool_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -30,7 +30,7 @@ class MyTextPainterContainer extends HookConsumerWidget {
         focusNode: focusNode.value,
         onSubmitted: (value) {
           textController.addTextItem(
-            MyTextItem(
+            TextToolItem(
               offset: details.localPosition,
               size: textController.size,
               text: value,

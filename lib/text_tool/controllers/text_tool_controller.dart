@@ -1,5 +1,5 @@
-import 'package:database_diagrams/text_tool/my_text_item.dart';
-import 'package:database_diagrams/text_tool/text_tool_mode.dart';
+import 'package:database_diagrams/text_tool/models/text_tool_item.dart';
+import 'package:database_diagrams/text_tool/models/text_tool_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,9 +10,9 @@ class TextToolController extends ChangeNotifier {
     (ref) => TextToolController(),
   );
 
-  final List<MyTextItem> _textItems = [];
+  final List<TextToolItem> _textItems = [];
 
-  final List<MyTextItem> _textRedoStack = [];
+  final List<TextToolItem> _textRedoStack = [];
 
   double _size = 20;
 
@@ -20,7 +20,7 @@ class TextToolController extends ChangeNotifier {
   double get size => _size;
 
   /// Text spans.
-  List<MyTextItem> get textItems => _textItems;
+  List<TextToolItem> get textItems => _textItems;
 
   TextToolMode _mode = TextToolMode.edit;
 
@@ -38,7 +38,7 @@ class TextToolController extends ChangeNotifier {
   }
 
   /// Add text item.
-  void addTextItem(MyTextItem textItem) {
+  void addTextItem(TextToolItem textItem) {
     _textItems.add(textItem);
     notifyListeners();
   }

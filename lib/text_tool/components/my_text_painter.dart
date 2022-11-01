@@ -1,4 +1,4 @@
-import 'package:database_diagrams/text_tool/my_text_item.dart';
+import 'package:database_diagrams/text_tool/models/text_tool_item.dart';
 import 'package:flutter/material.dart';
 
 /// Text painter.
@@ -9,7 +9,7 @@ class MyTextPainter extends CustomPainter {
   });
 
   /// Text spans.
-  final List<MyTextItem> textItems;
+  final List<TextToolItem> textItems;
 
   @override
   void paint(Canvas canvas, Size size) {

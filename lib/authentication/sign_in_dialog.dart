@@ -1,14 +1,16 @@
+import 'package:database_diagrams/authentication/google_controller_web.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 /// Sign in dialog.
-class SignInDialog extends StatelessWidget {
+class SignInDialog extends ConsumerWidget {
   /// Default constructor.
   const SignInDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       type: MaterialType.transparency,
       child: Container(
@@ -71,7 +73,9 @@ class SignInDialog extends StatelessWidget {
             ),
             SignInButton(
               Buttons.googleDark,
-              onPressed: () {},
+              onPressed: () {
+                ref.read(GoogleControllerWeb.provider).signInWithGoogle();
+              },
             )
           ],
         ),

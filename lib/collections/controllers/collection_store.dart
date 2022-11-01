@@ -1,3 +1,5 @@
+import 'package:database_diagrams/collections/controllers/compiler.dart';
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:database_diagrams/collections/models/collection_item.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +23,31 @@ class CollectionStore extends StateNotifier<List<CollectionItem>> {
   );
 
   /// Add collection.
-  void add(CollectionItem cItem) {
+  void add(Collection collection) {
     final topLeft = ref.read(CanvasController.provider).topLeft;
 
-    final fixedPosition = cItem.copyWith(
+    final item = CollectionItem(
+      collection: collection,
       position: topLeft.translate(50, 50),
     );
 
-    state = [...state, fixedPosition];
+    state = [...state, item];
+
+    ref.read(Compiler.provider.notifier).addCollection(collection);
+  }
+
+  /// Update collection.
+  void updateCollection(Collection collection) {
+    if (state.map((e) => e.collection).any((element) => element.name == collection.name)) {
+      state = state.map(
+        (e) {
+          if (e.collection == collection) {
+            return e.copyWith(collection: collection);
+          }
+          return e;
+        },
+      ).toList();
+    }
   }
 
   /// Update position.

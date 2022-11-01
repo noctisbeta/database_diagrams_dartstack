@@ -1,5 +1,5 @@
-import 'package:database_diagrams/collections/collection.dart';
-import 'package:database_diagrams/collections/collection_card.dart';
+import 'package:database_diagrams/collections/components/collection_card.dart';
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:flutter/material.dart';
 
 /// DraggableCollectionCard.

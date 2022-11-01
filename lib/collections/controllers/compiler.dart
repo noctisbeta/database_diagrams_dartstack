@@ -1,9 +1,9 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/collections/code_editor.dart';
-import 'package:database_diagrams/collections/collection.dart';
 import 'package:database_diagrams/collections/compiler_state.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
-import 'package:database_diagrams/collections/models/collection_item.dart';
-import 'package:database_diagrams/collections/schema.dart';
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -30,9 +30,6 @@ class Compiler extends StateNotifier<CompilerState> {
   OverlayEntry? entry;
 
   Offset? _overlayOffset;
-
-  /// Collections.
-  List<Collection> get collections => compile();
 
   /// Toggle overlay.
   void toggleOverlay(TapUpDetails details, BuildContext context) {
@@ -94,14 +91,19 @@ class Compiler extends StateNotifier<CompilerState> {
       collections: code,
     );
 
-    compile().forEach((c) {
-      ref.read(CollectionStore.provider.notifier).add(
-            CollectionItem(
-              collection: c,
-              position: Offset.zero,
-            ),
-          );
-    });
+    final storeCollections = ref.read(CollectionStore.provider).map((e) => e.collection);
+
+    _compile().forEach(
+      (c) {
+        final ctl = ref.read(CollectionStore.provider.notifier);
+
+        if (storeCollections.any((e) => e.name == c.name)) {
+          ctl.updateCollection(c);
+        } else {
+          ctl.add(c);
+        }
+      },
+    );
   }
 
   /// Save relations.
@@ -112,7 +114,7 @@ class Compiler extends StateNotifier<CompilerState> {
   }
 
   /// Compile.
-  List<Collection> compile() {
+  List<Collection> _compile() {
     if (state.collections.isEmpty) {
       return [];
     }
@@ -134,7 +136,7 @@ class Compiler extends StateNotifier<CompilerState> {
 
       final schemaCompileString = collectionCode.split(',');
 
-      final schemaMap = <String, dynamic>{};
+      final schemaMap = <String, String>{};
 
       for (final row in schemaCompileString) {
         if (row.isEmpty) {
@@ -146,9 +148,7 @@ class Compiler extends StateNotifier<CompilerState> {
 
       final collection = Collection(
         name: collectionName,
-        schema: Schema(
-          schemaMap,
-        ),
+        schema: schemaMap,
       );
 
       compileString = compileString.substring(compileString.indexOf('}') + 1);
@@ -156,17 +156,13 @@ class Compiler extends StateNotifier<CompilerState> {
       collections.add(collection);
     }
 
-    // for (final word in state.collections.split(' ')) {
-    //   if (word == 'Collection') {
-    //     collections.add(
-    //       Collection(
-    //         name: 'test',
-    //         schema: Schema({}),
-    //       ),
-    //     );
-    //   }
-    // }
-
     return collections;
+  }
+
+  /// Add collection.
+  void addCollection(Collection collection) {
+    state = state.copyWith(
+      collections: state.collections.isEmpty ? collection.toCompileString() : '${state.collections}\n${collection.toCompileString()}',
+    );
   }
 }

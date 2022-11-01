@@ -1,4 +1,6 @@
-import 'package:database_diagrams/collections/collection.dart';
+import 'dart:developer';
+
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:database_diagrams/collections/smartline_anchor.dart';
 import 'package:database_diagrams/collections/smartline_controller.dart';
 import 'package:database_diagrams/collections/smartline_type.dart';
@@ -24,9 +26,11 @@ class CollectionCard extends HookConsumerWidget {
   /// isPreview.
   final bool isPreview;
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(ModeController.provider);
+
     final borderColor = useState(
       mode == Mode.smartLine ? Colors.white : Colors.grey[850]!,
     );
@@ -43,6 +47,8 @@ class CollectionCard extends HookConsumerWidget {
     );
 
     final smartlineController = ref.watch(SmartlineController.provider);
+
+    log('card: ${collection.schema}');
 
     return GestureDetector(
       key: isPreview ? null : cardKey.value,
@@ -94,7 +100,7 @@ class CollectionCard extends HookConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(8),
               child: Column(
-                children: collection.schema.nameToType
+                children: collection.schema
                     .map(
                       (k, v) {
                         final key = GlobalObjectKey(k.hashCode + v.hashCode + collection.hashCode);
@@ -124,7 +130,7 @@ class CollectionCard extends HookConsumerWidget {
                                 ),
                                 const Spacer(),
                                 Text(
-                                  '$v',
+                                  v,
                                   style: const TextStyle(
                                     color: Colors.white,
                                   ),

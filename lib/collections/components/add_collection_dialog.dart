@@ -1,8 +1,8 @@
-import 'package:database_diagrams/collections/collection.dart';
-import 'package:database_diagrams/collections/collection_card.dart';
+import 'dart:developer';
+
+import 'package:database_diagrams/collections/components/collection_card.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
-import 'package:database_diagrams/collections/models/collection_item.dart';
-import 'package:database_diagrams/collections/schema.dart';
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_dropdown_button.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
@@ -17,7 +17,7 @@ class AddCollectionDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colName = useState<String?>(null);
+    final collName = useState<String?>(null);
     final fieldName = useState<String?>(null);
     final fieldType = useState<String?>(null);
     final collection = useState<Collection?>(null);
@@ -42,7 +42,7 @@ class AddCollectionDialog extends HookConsumerWidget {
                         label: 'Collection name',
                         textInputAction: TextInputAction.next,
                         onChanged: (value) {
-                          colName.value = value;
+                          collName.value = value;
                         },
                       ),
                       Divider(
@@ -52,7 +52,7 @@ class AddCollectionDialog extends HookConsumerWidget {
                         controller: fieldCtl,
                         label: 'Field name',
                         textInputAction: TextInputAction.next,
-                        enabled: colName.value != null && colName.value!.isNotEmpty,
+                        enabled: collName.value != null && collName.value!.isNotEmpty,
                         onChanged: (value) {
                           fieldName.value = value;
                         },
@@ -62,7 +62,7 @@ class AddCollectionDialog extends HookConsumerWidget {
                       ),
                       MyDropdownButton(
                         value: fieldType.value,
-                        enabled: colName.value != null && colName.value!.isNotEmpty,
+                        enabled: collName.value != null && collName.value!.isNotEmpty,
                         onChanged: (value) {
                           fieldType.value = value;
                         },
@@ -75,21 +75,31 @@ class AddCollectionDialog extends HookConsumerWidget {
                         child: MyButton(
                           label: 'Add field',
                           onPressed: () {
-                            if (colName.value != null &&
-                                colName.value!.isNotEmpty &&
+                            log(
+                              {
+                                if (collection.value != null) ...collection.value!.schema,
+                                fieldName.value!: fieldType.value!,
+                              }.toString(),
+                            );
+                            if (collName.value != null &&
+                                collName.value!.isNotEmpty &&
                                 fieldName.value != null &&
                                 fieldName.value!.isNotEmpty &&
                                 fieldType.value != null &&
                                 fieldType.value!.isNotEmpty) {
-                              collection.value = Collection(
-                                name: colName.value!,
-                                schema: Schema(
-                                  {
-                                    if (collection.value != null) ...collection.value!.schema.nameToType,
-                                    fieldName.value!: fieldType.value,
-                                  },
-                                ),
-                              );
+                              collection.value = collection.value?.copyWith(
+                                    name: collName.value,
+                                    schema: {
+                                      if (collection.value != null) ...collection.value!.schema,
+                                      fieldName.value!: fieldType.value!,
+                                    },
+                                  ) ??
+                                  Collection(
+                                    name: collName.value!,
+                                    schema: {
+                                      fieldName.value!: fieldType.value!,
+                                    },
+                                  );
                               fieldName.value = null;
                               fieldType.value = null;
                               fieldCtl.clear();
@@ -111,9 +121,13 @@ class AddCollectionDialog extends HookConsumerWidget {
               ),
               Expanded(
                 child: collection.value != null
-                    ? CollectionCard(
-                        collection: collection.value!,
-                        isPreview: true,
+                    ? HookBuilder(
+                        builder: (context) {
+                          return CollectionCard(
+                            collection: collection.value!,
+                            isPreview: true,
+                          );
+                        },
                       )
                     : const Center(
                         child: Text(
@@ -140,10 +154,7 @@ class AddCollectionDialog extends HookConsumerWidget {
             onPressed: () {
               if (collection.value != null) {
                 ref.read(CollectionStore.provider.notifier).add(
-                      CollectionItem(
-                        collection: collection.value!,
-                        position: Offset.zero,
-                      ),
+                      collection.value!,
                     );
                 Navigator.of(context).pop();
               }

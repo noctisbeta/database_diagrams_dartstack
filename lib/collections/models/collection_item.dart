@@ -1,4 +1,4 @@
-import 'package:database_diagrams/collections/collection.dart';
+import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:flutter/animation.dart';
 
 /// Collection item.

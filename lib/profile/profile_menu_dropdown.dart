@@ -1,3 +1,4 @@
+import 'package:database_diagrams/authentication/controllers/login_controller.dart';
 import 'package:database_diagrams/profile/profile_controller.dart';
 import 'package:database_diagrams/profile/profile_menu_button.dart';
 import 'package:database_diagrams/projects/project_dialog.dart';
@@ -42,7 +43,10 @@ class ProfileMenuDropdown extends HookConsumerWidget {
           ),
           ProfileMenuButton(
             label: 'Sign out',
-            onPressed: () {},
+            onPressed: () async {
+              profileCtl.closeProfileMenu();
+              await ref.read(LoginController.provider).logout();
+            },
             icon: Icon(
               Icons.logout,
               color: Colors.orange.shade700,

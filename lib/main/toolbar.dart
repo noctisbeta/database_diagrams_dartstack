@@ -67,8 +67,13 @@ class Toolbar extends HookConsumerWidget {
           if (user == null)
             const SignInButton()
           else
-            const ProfileAvatar(
-              child: Text('JE'),
+            ProfileAvatar(
+              child: Text(
+                'JE',
+                style: TextStyle(
+                  color: Colors.orange.shade700,
+                ),
+              ),
             ),
           const SizedBox(
             width: 16,

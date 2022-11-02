@@ -55,6 +55,15 @@ class Toolbar extends HookConsumerWidget {
             ),
           ),
           const Spacer(),
+          if (user != null) ...[
+            const Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+          ],
           if (user == null)
             const SignInButton()
           else

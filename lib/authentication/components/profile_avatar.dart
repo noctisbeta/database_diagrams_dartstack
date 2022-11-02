@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:database_diagrams/profile/profile_menu_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -14,9 +17,37 @@ class ProfileAvatar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarKey = useState(GlobalKey());
+
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        final entry = OverlayEntry(
+          builder: (context) {
+            final avatarRect = avatarKey.value.currentContext?.findRenderObject() as RenderBox?;
+            final avatarSize = avatarRect?.size;
+            final avatarOffset = avatarRect?.localToGlobal(
+              Offset.zero.translate(
+                avatarSize!.width / 2,
+                avatarSize.height / 2,
+              ),
+            );
+
+            log('avatarOffset: $avatarOffset');
+
+            return Positioned(
+              left: avatarOffset!.dx - 200,
+              top: avatarOffset.dy + 25,
+              child: const Material(
+                type: MaterialType.transparency,
+                child: ProfileMenuDropdown(),
+              ),
+            );
+          },
+        );
+        Overlay.of(context)?.insert(entry);
+      },
       child: CircleAvatar(
+        key: avatarKey.value,
         backgroundColor: Colors.white,
         radius: 15,
         child: child,

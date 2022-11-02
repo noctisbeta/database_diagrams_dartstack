@@ -7,6 +7,7 @@ class ProfileMenuButton extends HookWidget {
   const ProfileMenuButton({
     required this.label,
     required this.icon,
+    required this.onPressed,
     super.key,
   });
 
@@ -16,6 +17,9 @@ class ProfileMenuButton extends HookWidget {
   /// Icon.
   final Icon icon;
 
+  /// On pressed;
+  final void Function() onPressed;
+
   @override
   Widget build(BuildContext context) {
     final isHovered = useState(false);
@@ -23,28 +27,31 @@ class ProfileMenuButton extends HookWidget {
     return MouseRegion(
       onEnter: (_) => isHovered.value = true,
       onExit: (_) => isHovered.value = false,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: isHovered.value ? Colors.grey[200] : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 32,
-            ),
-            icon,
-            const SizedBox(
-              width: 16,
-            ),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 16,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isHovered.value ? Colors.grey[200] : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 32,
               ),
-            ),
-          ],
+              icon,
+              const SizedBox(
+                width: 16,
+              ),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/controllers/compiler.dart';
 import 'package:database_diagrams/profile/profile_avatar.dart';
+import 'package:database_diagrams/profile/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,6 +14,8 @@ class Toolbar extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(AuthStore.provider);
+
+    final profileStream = ref.watch(ProfileController.profileStreamProvider);
 
     return Container(
       height: 40,
@@ -67,13 +70,17 @@ class Toolbar extends HookConsumerWidget {
           if (user == null)
             const SignInButton()
           else
-            ProfileAvatar(
-              child: Text(
-                'JE',
-                style: TextStyle(
-                  color: Colors.orange.shade700,
+            profileStream.when(
+              data: (profile) => ProfileAvatar(
+                child: Text(
+                  profile.initials,
+                  style: TextStyle(
+                    color: Colors.orange.shade700,
+                  ),
                 ),
               ),
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stack) => const Text('Error'),
             ),
           const SizedBox(
             width: 16,

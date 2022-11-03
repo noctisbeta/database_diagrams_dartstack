@@ -8,6 +8,7 @@ class Profile {
     required this.lastName,
     required this.email,
     required this.createdAt,
+    required this.profileImage,
   });
 
   /// Creates a profile from a snapshot.
@@ -19,6 +20,7 @@ class Profile {
       lastName: data['lastName'] ?? '',
       email: data['email'] ?? '',
       createdAt: data['createdAt'] ?? Timestamp.now(),
+      profileImage: data['profileImage'],
     );
   }
 
@@ -33,6 +35,9 @@ class Profile {
 
   /// Creation date.
   final Timestamp createdAt;
+
+  /// Image url.
+  final String? profileImage;
 
   /// Returns the initials of the first and last name or the first two letters of the email.
   String get initials {

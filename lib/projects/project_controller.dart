@@ -4,13 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Project controller.
-class ProjectController {
+class ProjectController extends StateNotifier<Project?> {
   /// Default constructor.
-  const ProjectController({
+  ProjectController({
     required this.ref,
     required this.auth,
     required this.db,
-  });
+  }) : super(null);
 
   /// Riverpod reference.
   final Ref ref;
@@ -20,6 +20,17 @@ class ProjectController {
 
   /// Firestore database.
   final FirebaseFirestore db;
+
+  /// Provider.
+  static final provider = StateNotifierProvider<ProjectController, Project?>(
+    (ref) {
+      return ProjectController(
+        ref: ref,
+        auth: FirebaseAuth.instance,
+        db: FirebaseFirestore.instance,
+      );
+    },
+  );
 
   /// Provides the project stream.
   static final projectStreamProvider = StreamProvider.autoDispose((ref) {
@@ -39,4 +50,17 @@ class ProjectController {
       },
     );
   });
+
+  /// Creates a new project.
+  Future<bool> createProject(Project project) async {
+    try {
+      await db.collection('projects').add(
+            project.toMap(),
+          );
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

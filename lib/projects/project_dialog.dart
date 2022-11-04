@@ -1,4 +1,6 @@
+import 'package:database_diagrams/projects/add_project_tile.dart';
 import 'package:database_diagrams/projects/project_controller.dart';
+import 'package:database_diagrams/projects/project_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,21 +25,14 @@ class ProjectDialog extends ConsumerWidget {
         ),
         child: projectStream.when(
           data: (data) {
-            return ListView.builder(
-              itemCount: data.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  // Add project button.
-                  return ListTile(
-                    leading: const Icon(Icons.add),
-                    title: const Text('Add project'),
-                    onTap: () {},
-                  );
-                }
-                return ListTile(
-                  title: Text(data[index].title),
-                );
-              },
+            return Wrap(
+              children: [
+                const AddProjectTile(),
+                for (final project in data)
+                  ProjectTile(
+                    project: project,
+                  ),
+              ],
             );
           },
           error: (error, stackTrace) {

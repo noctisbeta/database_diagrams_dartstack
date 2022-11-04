@@ -8,7 +8,14 @@ class Project {
   const Project({
     required this.title,
     required this.userIds,
+    required this.createdAt,
   });
+
+  /// Empty project.
+  Project.empty()
+      : title = '',
+        userIds = [],
+        createdAt = Timestamp.now();
 
   /// From snapshot.
   factory Project.fromSnapshot(DocumentSnapshot snapshot) {
@@ -17,6 +24,7 @@ class Project {
     return Project(
       title: data['title'] ?? '',
       userIds: List<String>.from(data['userIds']),
+      createdAt: data['createdAt'] ?? Timestamp.now(),
     );
   }
 
@@ -26,5 +34,17 @@ class Project {
   /// Title
   final String title;
 
+  /// CreatedAt.
+  final Timestamp createdAt;
+
   /// Collections save.
+
+  /// To map.
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'userIds': userIds,
+      'createdAt': createdAt,
+    };
+  }
 }

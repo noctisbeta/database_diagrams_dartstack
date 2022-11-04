@@ -28,4 +28,7 @@ class AuthStore extends StateNotifier<User?> {
       );
     },
   );
+
+  /// Is logged in.
+  bool get isLoggedIn => state != null;
 }

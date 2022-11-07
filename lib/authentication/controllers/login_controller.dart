@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:database_diagrams/authentication/controllers/google_controller_web.dart';
 import 'package:database_diagrams/profile/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Login controller.

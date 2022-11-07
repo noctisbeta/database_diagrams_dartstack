@@ -52,7 +52,12 @@ class ProjectController extends StateNotifier<Project?> {
   });
 
   /// Creates a new project.
-  Future<bool> createProject(Project project) async {
+  Future<bool> createProject(String title) async {
+    final project = Project(
+      title: title,
+      userIds: [auth.currentUser!.uid],
+      createdAt: Timestamp.now(),
+    );
     try {
       await db.collection('projects').add(
             project.toMap(),

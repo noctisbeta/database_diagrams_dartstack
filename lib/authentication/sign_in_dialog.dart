@@ -1,4 +1,3 @@
-import 'package:database_diagrams/authentication/controllers/google_controller_web.dart';
 import 'package:database_diagrams/authentication/controllers/login_controller.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
 import 'package:flutter/material.dart';

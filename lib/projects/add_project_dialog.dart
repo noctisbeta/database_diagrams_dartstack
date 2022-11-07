@@ -1,6 +1,6 @@
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
-import 'package:database_diagrams/projects/project.dart';
+import 'package:database_diagrams/projects/project_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,7 +12,7 @@ class AddProjectDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final project = useState(Project.empty());
+    final textCtl = useTextEditingController();
 
     return Material(
       type: MaterialType.transparency,
@@ -29,9 +29,10 @@ class AddProjectDialog extends HookConsumerWidget {
             SizedBox(
               width: 400,
               child: Column(
-                children: const [
+                children: [
                   MyTextField(
                     label: 'Title',
+                    controller: textCtl,
                   ),
                 ],
               ),
@@ -39,7 +40,12 @@ class AddProjectDialog extends HookConsumerWidget {
             const Spacer(),
             MyButton(
               label: 'Add',
-              onPressed: () {},
+              onPressed: () {
+                ref.read(ProjectController.provider.notifier).createProject(
+                      textCtl.text,
+                    );
+                Navigator.of(context).pop();
+              },
             ),
           ],
         ),

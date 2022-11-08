@@ -68,4 +68,6 @@ class ProjectController extends StateNotifier<Project?> {
       return false;
     }
   }
+
+  /// Set the current project.
 }

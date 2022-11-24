@@ -11,6 +11,14 @@ class Profile {
     required this.profileImage,
   });
 
+  /// Empty profile.
+  Profile.empty()
+      : firstName = '',
+        lastName = '',
+        email = '',
+        createdAt = Timestamp(0, 0),
+        profileImage = '';
+
   /// Creates a profile from a snapshot.
   factory Profile.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data()! as Map<String, dynamic>;

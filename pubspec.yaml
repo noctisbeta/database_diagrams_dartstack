@@ -31,13 +31,16 @@ environment:
 dependencies:
   cloud_firestore: ^4.0.4
   cupertino_icons: ^1.0.2
-  dartz: ^0.10.1
   firebase_auth: ^4.1.1
   firebase_core: ^2.1.1
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.5+1
+  functional:
+    git:
+      url: https://github.com/noctisbeta/functional
   hooks_riverpod: ^2.1.1
+  logger: ^1.1.0
   perfect_freehand: ^1.0.4
   sign_in_button: ^3.1.0
   vector_math: ^2.1.2

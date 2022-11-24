@@ -1,6 +1,7 @@
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/controllers/compiler.dart';
+import 'package:database_diagrams/common/toolbar_button.dart';
 import 'package:database_diagrams/profile/profile_avatar.dart';
 import 'package:database_diagrams/profile/profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -25,63 +26,71 @@ class Toolbar extends HookConsumerWidget {
           const SizedBox(
             width: 16,
           ),
+          Expanded(
+            child: Row(
+              children: [
+                ToolbarButton(
+                  label: 'Save',
+                  onTap: () {},
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                ToolbarButton(
+                  label: 'Export',
+                  onTap: () {},
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                ToolbarButton(
+                  label: 'Code editor',
+                  onTapUp: (details) => ref
+                      .read(Compiler.provider.notifier)
+                      .toggleOverlay(details, context),
+                ),
+              ],
+            ),
+          ),
           const Text(
-            'Save',
+            'untitled',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 22,
             ),
           ),
-          const SizedBox(
-            width: 16,
-          ),
-          const Text(
-            'Export',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          GestureDetector(
-            onTapUp: (details) {
-              ref.read(Compiler.provider.notifier).toggleOverlay(details, context);
-            },
-            child: const Text(
-              'Code editor',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
-            ),
-          ),
-          const Spacer(),
-          if (user != null) ...[
-            const Icon(
-              Icons.notifications,
-              color: Colors.white,
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-          ],
-          if (user == null)
-            const SignInButton()
-          else
-            profileStream.when(
-              data: (profile) => ProfileAvatar(
-                child: Text(
-                  profile.initials,
-                  style: TextStyle(
-                    color: Colors.orange.shade700,
-                  ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: user.match(
+                () => const SignInButton(),
+                (user) => Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Icon(
+                      Icons.notifications,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    profileStream.when(
+                      data: (profile) => ProfileAvatar(
+                        child: Text(
+                          profile.initials,
+                          style: TextStyle(
+                            color: Colors.orange.shade700,
+                          ),
+                        ),
+                      ),
+                      loading: () => const CircularProgressIndicator(),
+                      error: (error, stack) => const Text('Error'),
+                    ),
+                  ],
                 ),
               ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => const Text('Error'),
             ),
+          ),
           const SizedBox(
             width: 16,
           ),

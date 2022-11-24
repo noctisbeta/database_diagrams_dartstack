@@ -5,8 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-// ...
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -14,25 +12,14 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseAuth.instance.setPersistence(Persistence.INDEXED_DB);
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   runApp(
     const ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: InitWidget(),
+        home: MainView(),
       ),
     ),
   );
-}
-
-/// App entry point.
-class InitWidget extends StatelessWidget {
-  /// Default constructor.
-  const InitWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MainView();
-  }
 }

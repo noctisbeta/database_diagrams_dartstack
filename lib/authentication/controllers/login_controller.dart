@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:database_diagrams/authentication/controllers/google_controller_web.dart';
+import 'package:database_diagrams/authentication/controllers/google_sign_in_controller_web.dart';
 import 'package:database_diagrams/profile/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,11 +26,11 @@ class LoginController {
 
   /// Logs the user in with google and creates/fetches their profile.
   Future<void> loginWithGoogle() async {
-    final googleCtl = ref.read(GoogleControllerWeb.provider);
+    final googleCtl = ref.read(GoogleSignInControllerWeb.provider);
 
     final either = await googleCtl.signInWithGoogle();
 
-    await either.fold(
+    await either.match(
       (exception) {
         log('Exception with sign in with google:  $exception');
       },
@@ -39,7 +39,8 @@ class LoginController {
 
         final profileCtl = ref.read(ProfileController.provider);
 
-        final res = await profileCtl.createProfileFromUserCredential(userCredential);
+        final res =
+            await profileCtl.createProfileFromUserCredential(userCredential);
 
         if (res) {
           log('Profile created');

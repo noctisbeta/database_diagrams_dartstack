@@ -24,7 +24,7 @@ class GoogleSignInControllerWeb implements GoogleSignInProtocol {
             () => _auth.signInWithPopup(
               GoogleAuthProvider(),
             ),
-          ).attemptEither<FirebaseAuthMultiFactorException>().run().then(
+          ).attempt<FirebaseAuthMultiFactorException>().run().then(
                 (either) => either.match(
                   (exception) => withEffect(
                     Left(

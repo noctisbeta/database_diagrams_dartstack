@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:database_diagrams/authentication/controllers/google_sign_in_controller_web.dart';
-import 'package:database_diagrams/profile/profile_controller.dart';
+import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

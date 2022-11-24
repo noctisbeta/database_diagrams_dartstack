@@ -152,7 +152,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_web_plugins:
-    dependency: transitive
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -168,7 +168,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "251859af181ae4a3db2a5cc2d5e9d4a7eb1a0bf8"
+      resolved-ref: "16cee9e9549f5f30b2e3e959ed6c4eb022edf49d"
       url: "https://github.com/noctisbeta/functional"
     source: git
     version: "0.0.1"

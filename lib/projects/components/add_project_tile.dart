@@ -1,4 +1,4 @@
-import 'package:database_diagrams/projects/add_project_dialog.dart';
+import 'package:database_diagrams/projects/components/add_project_dialog.dart';
 import 'package:flutter/material.dart';
 
 /// Add project tile.

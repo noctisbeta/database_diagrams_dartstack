@@ -1,4 +1,4 @@
-import 'package:database_diagrams/projects/project.dart';
+import 'package:database_diagrams/projects/models/project.dart';
 import 'package:flutter/material.dart';
 
 /// Project tile.

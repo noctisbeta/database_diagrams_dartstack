@@ -1,7 +1,7 @@
 import 'package:database_diagrams/authentication/controllers/login_controller.dart';
-import 'package:database_diagrams/profile/profile_controller.dart';
-import 'package:database_diagrams/profile/profile_menu_button.dart';
-import 'package:database_diagrams/projects/project_dialog.dart';
+import 'package:database_diagrams/profile/controllers/profile_controller.dart';
+import 'package:database_diagrams/profile/components/profile_menu_button.dart';
+import 'package:database_diagrams/projects/components/project_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

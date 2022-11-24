@@ -2,8 +2,8 @@ import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/controllers/compiler.dart';
 import 'package:database_diagrams/common/toolbar_button.dart';
-import 'package:database_diagrams/profile/profile_avatar.dart';
-import 'package:database_diagrams/profile/profile_controller.dart';
+import 'package:database_diagrams/profile/components/profile_avatar.dart';
+import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

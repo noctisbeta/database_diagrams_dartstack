@@ -9,13 +9,15 @@ class Project {
     required this.title,
     required this.userIds,
     required this.createdAt,
+    required this.saveData,
   });
 
   /// Empty project.
   Project.empty()
       : title = '',
         userIds = [],
-        createdAt = Timestamp.now();
+        createdAt = Timestamp.now(),
+        saveData = {};
 
   /// From snapshot.
   factory Project.fromSnapshot(DocumentSnapshot snapshot) {
@@ -25,6 +27,7 @@ class Project {
       title: data['title'] ?? '',
       userIds: List<String>.from(data['userIds']),
       createdAt: data['createdAt'] ?? Timestamp.now(),
+      saveData: data['saveData'] ?? {},
     );
   }
 
@@ -37,7 +40,8 @@ class Project {
   /// CreatedAt.
   final Timestamp createdAt;
 
-  /// Collections save.
+  /// Save data.
+  final Map<String, dynamic> saveData;
 
   /// To map.
   Map<String, dynamic> toMap() {
@@ -45,6 +49,7 @@ class Project {
       'title': title,
       'userIds': userIds,
       'createdAt': createdAt,
+      'saveData': saveData,
     };
   }
 }

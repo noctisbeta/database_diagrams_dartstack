@@ -73,9 +73,9 @@ class SignInDialog extends ConsumerWidget {
             ),
             SignInButton(
               Buttons.googleDark,
-              onPressed: () {
-                ref.read(LoginController.provider).loginWithGoogle();
-              },
+              onPressed: () => ref
+                  .read(LoginController.provider.notifier)
+                  .signInWithGoogle(),
             )
           ],
         ),

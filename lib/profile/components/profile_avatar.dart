@@ -1,5 +1,5 @@
-import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:database_diagrams/profile/components/profile_menu_dropdown.dart';
+import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,7 +26,8 @@ class ProfileAvatar extends HookConsumerWidget {
         if (!profileCtl.isProfileMenuOpen) {
           final entry = OverlayEntry(
             builder: (context) {
-              final avatarRect = avatarKey.value.currentContext?.findRenderObject() as RenderBox?;
+              final avatarRect = avatarKey.value.currentContext
+                  ?.findRenderObject() as RenderBox?;
               final avatarSize = avatarRect?.size;
               final avatarOffset = avatarRect?.localToGlobal(
                 Offset.zero.translate(

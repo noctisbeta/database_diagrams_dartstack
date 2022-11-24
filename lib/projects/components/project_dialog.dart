@@ -1,6 +1,6 @@
 import 'package:database_diagrams/projects/components/add_project_tile.dart';
-import 'package:database_diagrams/projects/controllers/project_controller.dart';
 import 'package:database_diagrams/projects/components/project_tile.dart';
+import 'package:database_diagrams/projects/controllers/project_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

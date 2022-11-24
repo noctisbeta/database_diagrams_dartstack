@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/projects/models/project.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:functional/functional.dart';
@@ -29,23 +30,22 @@ class ProjectController extends StateNotifier<Option<Project>> {
   );
 
   /// Provides the project stream.
-  static final projectStreamProvider = StreamProvider.autoDispose((ref) {
-    final db = FirebaseFirestore.instance;
-    final auth = FirebaseAuth.instance;
-
-    return db
-        .collection('projects')
-        .where(
-          'userIds',
-          arrayContains: auth.currentUser!.uid,
-        )
-        .snapshots()
-        .map(
-      (snapshot) {
-        return snapshot.docs.map(Project.fromSnapshot).toList();
-      },
-    );
-  });
+  static final projectStreamProvider =
+      StreamProvider.autoDispose<List<Project>>(
+    (ref) => ref.watch(AuthStore.provider).match(
+          () => Stream.value([]),
+          (user) => FirebaseFirestore.instance
+              .collection('projects')
+              .where(
+                'userIds',
+                arrayContains: user.uid,
+              )
+              .snapshots()
+              .map(
+                (snapshot) => snapshot.docs.map(Project.fromSnapshot).toList(),
+              ),
+        ),
+  );
 
   /// Creates a new project.
   Future<bool> createProject(String title) async => Task(
@@ -58,7 +58,7 @@ class ProjectController extends StateNotifier<Option<Project>> {
         ),
       ).attempt().run().then(
             (either) => either.match(
-              (exception) => withEffect(
+              (exception) => tap(
                 false,
                 () => Logger().e(
                   'Error creating project.',
@@ -66,10 +66,18 @@ class ProjectController extends StateNotifier<Option<Project>> {
                   StackTrace.current,
                 ),
               ),
-              (_) => withEffect(
+              (_) => tap(
                 true,
                 () => Logger().i('Created project $title.'),
               ),
             ),
           );
+
+  /// Save project.
+  // Future<bool> saveProject() async => Task(
+  //       () => state.match(
+  //         () => null,
+  //         (project) => null,
+  //       ),
+  //     );
 }

@@ -11,6 +11,9 @@ class SignInDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loginCtl = ref.watch(LoginController.provider.notifier);
+    final loginState = ref.watch(LoginController.provider);
+
     return Material(
       type: MaterialType.transparency,
       child: Container(
@@ -71,12 +74,15 @@ class SignInDialog extends ConsumerWidget {
             const SizedBox(
               height: 16,
             ),
-            SignInButton(
-              Buttons.googleDark,
-              onPressed: () => ref
-                  .read(LoginController.provider.notifier)
-                  .signInWithGoogle(),
-            )
+            if (loginState.googleInProgress)
+              const CircularProgressIndicator()
+            else
+              SignInButton(
+                Buttons.googleDark,
+                onPressed: () => loginCtl.signInWithGoogle().then(
+                      (value) => value ? Navigator.pop(context) : null,
+                    ),
+              )
           ],
         ),
       ),

@@ -1,4 +1,3 @@
-import 'package:database_diagrams/authentication/controllers/login_controller.dart';
 import 'package:database_diagrams/profile/components/profile_menu_button.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:database_diagrams/projects/components/project_dialog.dart';

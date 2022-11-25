@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/profile/models/profile.dart';
@@ -37,16 +35,18 @@ class ProfileController {
   final AuthStore _authStore;
 
   /// Provides the profile stream.
-  static final profileStreamProvider = StreamProvider.autoDispose((ref) {
-    final db = FirebaseFirestore.instance;
-
-    return ref.watch(AuthStore.provider).match(
+  static final profileStreamProvider = StreamProvider.autoDispose(
+    (ref) => ref.watch(AuthStore.provider).match(
           () => Stream.value(Profile.empty()),
-          (user) => db.collection('users').doc(user.uid).snapshots().map(
+          (user) => FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .snapshots()
+              .map(
                 Profile.fromSnapshot,
               ),
-        );
-  });
+        ),
+  );
 
   /// Creates a new profile.
   Future<Either<Exception, Unit>> createProfileFromUserCredential(
@@ -94,10 +94,10 @@ class ProfileController {
             SetOptions(merge: true),
           );
 
-      log('Profile created: $user');
+      Logger().i('Profile created: $user');
       return true;
     } on FirebaseException catch (e) {
-      log('Error creating profile: ${e.message}');
+      Logger().e('Error creating profile: ${e.message}', e, StackTrace.current);
       return false;
     }
   }
@@ -105,7 +105,7 @@ class ProfileController {
   /// Signs the user out.
   Future<void> signOut() async {
     await _auth.signOut();
-    log('Signed out the user.');
+    Logger().i('Signed out the user.');
   }
 
   OverlayEntry? _profileMenuEntry;

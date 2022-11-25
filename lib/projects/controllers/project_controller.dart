@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
+import 'package:database_diagrams/projects/components/add_project_dialog.dart';
 import 'package:database_diagrams/projects/models/project.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -74,10 +76,15 @@ class ProjectController extends StateNotifier<Option<Project>> {
           );
 
   /// Save project.
-  // Future<bool> saveProject() async => Task(
-  //       () => state.match(
-  //         () => null,
-  //         (project) => null,
-  //       ),
-  //     );
+  Future<bool> saveProject(BuildContext context) async => Task(
+        () => state.match(
+          () => openAddProjectDialog(context).then((value) => true),
+          (project) => Future.value(true),
+        ),
+      ).run();
+
+  Future<void> openAddProjectDialog(BuildContext context) => showDialog(
+        context: context,
+        builder: (context) => const Center(child: AddProjectDialog()),
+      );
 }

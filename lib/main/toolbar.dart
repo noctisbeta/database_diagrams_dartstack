@@ -4,6 +4,7 @@ import 'package:database_diagrams/collections/controllers/compiler.dart';
 import 'package:database_diagrams/common/toolbar_button.dart';
 import 'package:database_diagrams/profile/components/profile_avatar.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
+import 'package:database_diagrams/projects/controllers/project_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -18,6 +19,8 @@ class Toolbar extends HookConsumerWidget {
 
     final profileStream = ref.watch(ProfileController.profileStreamProvider);
 
+    final projectCtl = ref.watch(ProjectController.provider.notifier);
+
     return Container(
       height: 40,
       color: Colors.orange.shade700,
@@ -31,7 +34,7 @@ class Toolbar extends HookConsumerWidget {
               children: [
                 ToolbarButton(
                   label: 'Save',
-                  onTap: () {},
+                  onTap: () => projectCtl.saveProject(context),
                 ),
                 const SizedBox(
                   width: 16,

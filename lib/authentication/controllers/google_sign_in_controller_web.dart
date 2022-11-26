@@ -1,9 +1,9 @@
 import 'package:database_diagrams/authentication/controllers/google_sign_in_protocol.dart';
 import 'package:database_diagrams/authentication/models/google_sign_in_exception.dart';
+import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
 
 /// Google sign in controller.
 class GoogleSignInControllerWeb implements GoogleSignInProtocol {
@@ -33,7 +33,7 @@ class GoogleSignInControllerWeb implements GoogleSignInProtocol {
                             'Error signing in with Google on web.',
                       ),
                     ),
-                    () => Logger().e(
+                    () => myLog.e(
                       'Error signing in with Google on web.',
                       exception,
                       StackTrace.current,
@@ -41,7 +41,7 @@ class GoogleSignInControllerWeb implements GoogleSignInProtocol {
                   ),
                   (credential) => withEffect(
                     Right(credential),
-                    () => Logger().i('Signed in with Google on web.'),
+                    () => myLog.i('Signed in with Google on web.'),
                   ),
                 ),
               );

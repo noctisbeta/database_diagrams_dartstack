@@ -6,16 +6,21 @@ class ProjectTile extends StatelessWidget {
   /// Default constructor.
   const ProjectTile({
     required this.project,
+    required this.onTap,
     super.key,
   });
 
   /// Project.
   final Project project;
 
+  /// On tap.
+  final void Function() onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
       child: Container(
         width: 100,
         height: 100,
@@ -26,7 +31,11 @@ class ProjectTile extends StatelessWidget {
             color: Colors.grey,
           ),
         ),
-        child: const Icon(Icons.add),
+        child: Center(
+          child: Text(
+            project.title,
+          ),
+        ),
       ),
     );
   }

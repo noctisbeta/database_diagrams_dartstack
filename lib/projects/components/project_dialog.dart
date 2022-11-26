@@ -1,4 +1,4 @@
-import 'package:database_diagrams/projects/components/add_project_tile.dart';
+import 'package:database_diagrams/projects/components/create_project_tile.dart';
 import 'package:database_diagrams/projects/components/project_tile.dart';
 import 'package:database_diagrams/projects/controllers/project_controller.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,7 @@ class ProjectDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final projectStream = ref.watch(ProjectController.projectStreamProvider);
+    final projectCtl = ref.watch(ProjectController.provider.notifier);
 
     return Material(
       type: MaterialType.transparency,
@@ -26,11 +27,17 @@ class ProjectDialog extends ConsumerWidget {
         child: projectStream.when(
           data: (data) {
             return Wrap(
+              runSpacing: 16,
+              spacing: 16,
               children: [
-                const AddProjectTile(),
+                const CreateProjectTile(),
                 for (final project in data)
                   ProjectTile(
                     project: project,
+                    onTap: () {
+                      projectCtl.openProject(project);
+                      Navigator.of(context).pop();
+                    },
                   ),
               ],
             );

@@ -5,7 +5,9 @@ import 'package:database_diagrams/common/toolbar_button.dart';
 import 'package:database_diagrams/profile/components/profile_avatar.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:database_diagrams/projects/controllers/project_controller.dart';
+import 'package:database_diagrams/utilities/iterable_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Toolbar.
@@ -20,6 +22,7 @@ class Toolbar extends HookConsumerWidget {
     final profileStream = ref.watch(ProfileController.profileStreamProvider);
 
     final projectCtl = ref.watch(ProjectController.provider.notifier);
+    final projectState = ref.watch(ProjectController.provider);
 
     return Container(
       height: 40,
@@ -31,20 +34,15 @@ class Toolbar extends HookConsumerWidget {
           ),
           Expanded(
             child: Row(
-              children: [
-                ToolbarButton(
-                  label: 'Save',
-                  onTap: () => projectCtl.saveProject(context),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
+              children: <Widget>[
+                if (user is Some)
+                  ToolbarButton(
+                    label: 'Save',
+                    onTap: () => projectCtl.saveProject(context),
+                  ),
                 ToolbarButton(
                   label: 'Export',
                   onTap: () {},
-                ),
-                const SizedBox(
-                  width: 16,
                 ),
                 ToolbarButton(
                   label: 'Code editor',
@@ -52,12 +50,19 @@ class Toolbar extends HookConsumerWidget {
                       .read(Compiler.provider.notifier)
                       .toggleOverlay(details, context),
                 ),
-              ],
+              ].separatedByToList(
+                const SizedBox(
+                  width: 16,
+                ),
+              ),
             ),
           ),
-          const Text(
-            'untitled',
-            style: TextStyle(
+          Text(
+            projectState.project.match(
+              () => 'untitled',
+              (some) => some.title,
+            ),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
             ),

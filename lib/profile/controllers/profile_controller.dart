@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
+import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/profile/models/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
 
 /// Profile controller.
 class ProfileController {
@@ -66,7 +66,7 @@ class ProfileController {
             (either) => either.match(
               (exception) => withEffect(
                 left(exception),
-                () => Logger().e(
+                () => myLog.e(
                   'Error creating profile.',
                   exception,
                   StackTrace.current,
@@ -74,7 +74,7 @@ class ProfileController {
               ),
               (unit) => withEffect(
                 right(unit),
-                () => Logger().i('Created profile.'),
+                () => myLog.i('Created profile.'),
               ),
             ),
           );
@@ -94,10 +94,10 @@ class ProfileController {
             SetOptions(merge: true),
           );
 
-      Logger().i('Profile created: $user');
+      myLog.i('Profile created: $user');
       return true;
     } on FirebaseException catch (e) {
-      Logger().e('Error creating profile: ${e.message}', e, StackTrace.current);
+      myLog.e('Error creating profile: ${e.message}', e, StackTrace.current);
       return false;
     }
   }
@@ -105,7 +105,7 @@ class ProfileController {
   /// Signs the user out.
   Future<void> signOut() async {
     await _auth.signOut();
-    Logger().i('Signed out the user.');
+    myLog.i('Signed out the user.');
   }
 
   OverlayEntry? _profileMenuEntry;
@@ -128,15 +128,15 @@ class ProfileController {
   /// Returns true if the user already has a profile.
   Future<bool> userHasProfile() async {
     return _authStore.user.match(
-      () => withEffect(false, () => Logger().e('User is not logged in')),
+      () => withEffect(false, () => myLog.e('User is not logged in')),
       (user) => _db.collection('users').doc(user.uid).get().then(
             (value) => value.exists.match(
               ifFalse: () => withEffect(
                 false,
-                () => Logger().i('User does not have a profile'),
+                () => myLog.i('User does not have a profile'),
               ),
               ifTrue: () =>
-                  withEffect(true, () => Logger().i('User has a profile')),
+                  withEffect(true, () => myLog.i('User has a profile')),
             ),
           ),
     );

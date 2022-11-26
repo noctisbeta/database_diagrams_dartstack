@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 class Project {
   /// Default constructor.
   const Project({
+    required this.id,
     required this.title,
     required this.userIds,
     required this.createdAt,
@@ -17,19 +18,24 @@ class Project {
       : title = '',
         userIds = [],
         createdAt = Timestamp.now(),
-        saveData = {};
+        saveData = {},
+        id = '';
 
   /// From snapshot.
   factory Project.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data()! as Map<String, dynamic>;
 
     return Project(
+      id: snapshot.id,
       title: data['title'] ?? '',
       userIds: List<String>.from(data['userIds']),
       createdAt: data['createdAt'] ?? Timestamp.now(),
       saveData: data['saveData'] ?? {},
     );
   }
+
+  /// Id.
+  final String id;
 
   /// User ids.
   final List<String> userIds;
@@ -46,10 +52,25 @@ class Project {
   /// To map.
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'userIds': userIds,
       'createdAt': createdAt,
       'saveData': saveData,
+    };
+  }
+
+  /// Returns a map of the project used for creation on the backend while
+  /// requiring the needed parameters.
+  static Map<String, dynamic> forCreation({
+    required String title,
+    required List<String> userIds,
+    required FieldValue createdAt,
+  }) {
+    return {
+      'title': title,
+      'userIds': userIds,
+      'createdAt': createdAt,
     };
   }
 }

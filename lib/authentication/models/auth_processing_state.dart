@@ -1,5 +1,5 @@
 /// Processing state.
-enum ProcessingState {
+enum AuthProcessingState {
   ///
   loginLoading,
 

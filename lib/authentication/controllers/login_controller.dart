@@ -1,14 +1,14 @@
 import 'package:database_diagrams/authentication/controllers/google_sign_in_controller_web.dart';
 import 'package:database_diagrams/authentication/controllers/google_sign_in_protocol.dart';
+import 'package:database_diagrams/authentication/models/auth_processing_state.dart';
 import 'package:database_diagrams/authentication/models/login/login_data.dart';
 import 'package:database_diagrams/authentication/models/login/login_data_errors.dart';
 import 'package:database_diagrams/authentication/models/login/login_state.dart';
-import 'package:database_diagrams/authentication/models/processing_state.dart';
+import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
 
 /// Login controller.
 class LoginController extends StateNotifier<LoginState> {
@@ -47,7 +47,7 @@ class LoginController extends StateNotifier<LoginState> {
                 (exception) => withEffect(
                   false,
                   () => state =
-                      state.copyWith(processingState: ProcessingState.idle),
+                      state.copyWith(processingState: AuthProcessingState.idle),
                 ),
                 (userCredential) => Task(
                   _profileController.userHasProfile,
@@ -62,13 +62,13 @@ class LoginController extends StateNotifier<LoginState> {
                                 (exception) => withEffect(
                                   false,
                                   () => state = state.copyWith(
-                                    processingState: ProcessingState.idle,
+                                    processingState: AuthProcessingState.idle,
                                   ),
                                 ),
                                 (success) => withEffect(
                                   true,
                                   () => state = state.copyWith(
-                                    processingState: ProcessingState.idle,
+                                    processingState: AuthProcessingState.idle,
                                   ),
                                 ),
                               ),
@@ -76,7 +76,7 @@ class LoginController extends StateNotifier<LoginState> {
                         ifTrue: () => withEffect(
                           true,
                           () => state = state.copyWith(
-                            processingState: ProcessingState.idle,
+                            processingState: AuthProcessingState.idle,
                           ),
                         ),
                       ),
@@ -84,7 +84,7 @@ class LoginController extends StateNotifier<LoginState> {
               ),
             ),
         () => state = state.copyWith(
-          processingState: ProcessingState.googleLoading,
+          processingState: AuthProcessingState.googleLoading,
         ),
       );
 
@@ -99,14 +99,14 @@ class LoginController extends StateNotifier<LoginState> {
                   (right) => true,
                 ),
                 () => state = state.copyWith(
-                  processingState: ProcessingState.idle,
+                  processingState: AuthProcessingState.idle,
                 ),
               ),
             ),
         () => state = state.copyWith(
           loginData: loginData,
           loginDataErrors: LoginDataErrors.empty(),
-          processingState: ProcessingState.loginLoading,
+          processingState: AuthProcessingState.loginLoading,
         ),
       );
 
@@ -141,7 +141,7 @@ class LoginController extends StateNotifier<LoginState> {
       );
       return Right(userCredential);
     } on FirebaseAuthException catch (e, s) {
-      Logger().e('Error loging in user: ${e.message}', e, s);
+      myLog.e('Error loging in user: ${e.message}', e, s);
 
       late final String message;
 
@@ -190,7 +190,7 @@ class LoginController extends StateNotifier<LoginState> {
       loginDataErrors: state.loginDataErrors.copyWith(
         email: '',
       ),
-      processingState: ProcessingState.loginLoading,
+      processingState: AuthProcessingState.loginLoading,
     );
 
     if (email.isEmpty) {
@@ -198,7 +198,7 @@ class LoginController extends StateNotifier<LoginState> {
         loginDataErrors: state.loginDataErrors.copyWith(
           email: 'Email is required',
         ),
-        processingState: ProcessingState.idle,
+        processingState: AuthProcessingState.idle,
       );
       return false;
     }
@@ -217,15 +217,15 @@ class LoginController extends StateNotifier<LoginState> {
         actionCodeSettings: settings,
       );
 
-      Logger().i('Password reset email sent to $email');
+      myLog.i('Password reset email sent to $email');
 
       state = state.copyWith(
-        processingState: ProcessingState.idle,
+        processingState: AuthProcessingState.idle,
       );
 
       return true;
     } on FirebaseAuthException catch (e, s) {
-      Logger().e('Error resetting password: ${e.message}', e, s);
+      myLog.e('Error resetting password: ${e.message}', e, s);
 
       late final String message;
 
@@ -233,7 +233,7 @@ class LoginController extends StateNotifier<LoginState> {
         case 'invalid-email':
           message = 'Invalid email.';
           state = state.copyWith(
-            processingState: ProcessingState.idle,
+            processingState: AuthProcessingState.idle,
             loginDataErrors: state.loginDataErrors.copyWith(
               email: message,
             ),
@@ -242,7 +242,7 @@ class LoginController extends StateNotifier<LoginState> {
         case 'user-not-found':
           message = 'User not found.';
           state = state.copyWith(
-            processingState: ProcessingState.idle,
+            processingState: AuthProcessingState.idle,
             loginDataErrors: state.loginDataErrors.copyWith(
               email: message,
             ),
@@ -265,8 +265,7 @@ class LoginController extends StateNotifier<LoginState> {
             (either) => either.match(
               (exception) => withEffect(
                 false,
-                () => Logger()
-                    .e('Error resetting password: ${exception.message}'),
+                () => myLog.e('Error resetting password: ${exception.message}'),
               ),
               (unit) => true,
             ),

@@ -11,4 +11,7 @@ extension IterableExtension<T> on Iterable<T> {
       }
     }
   }
+
+  /// Separated by to list.
+  List<T> separatedByToList(T separator) => separatedBy(separator).toList();
 }

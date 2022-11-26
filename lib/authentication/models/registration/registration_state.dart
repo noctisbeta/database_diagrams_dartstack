@@ -1,4 +1,4 @@
-import 'package:database_diagrams/authentication/models/processing_state.dart';
+import 'package:database_diagrams/authentication/models/auth_processing_state.dart';
 import 'package:database_diagrams/authentication/models/registration/registration_data.dart';
 import 'package:database_diagrams/authentication/models/registration/registration_data_errors.dart';
 
@@ -15,7 +15,7 @@ class RegistrationState {
   RegistrationState.empty()
       : registrationData = RegistrationData.empty(),
         registrationDataErrors = RegistrationDataErrors.empty(),
-        processingState = ProcessingState.idle;
+        processingState = AuthProcessingState.idle;
 
   /// Registration data.
   final RegistrationData registrationData;
@@ -24,19 +24,21 @@ class RegistrationState {
   final RegistrationDataErrors registrationDataErrors;
 
   /// Processing state.
-  final ProcessingState processingState;
+  final AuthProcessingState processingState;
 
   /// True if the google sign in is loading.
-  bool get googleInProgress => processingState == ProcessingState.googleLoading;
+  bool get googleInProgress =>
+      processingState == AuthProcessingState.googleLoading;
 
   /// True if the state is loading.
-  bool get isLoading => processingState == ProcessingState.registrationLoading;
+  bool get isLoading =>
+      processingState == AuthProcessingState.registrationLoading;
 
   /// Copy with method.
   RegistrationState copyWith({
     RegistrationData? registrationData,
     RegistrationDataErrors? registrationDataErrors,
-    ProcessingState? processingState,
+    AuthProcessingState? processingState,
   }) {
     return RegistrationState(
       registrationData: registrationData ?? this.registrationData,

@@ -10,7 +10,6 @@ class Project {
     required this.title,
     required this.userIds,
     required this.createdAt,
-    required this.saveData,
   });
 
   /// Empty project.
@@ -18,7 +17,6 @@ class Project {
       : title = '',
         userIds = [],
         createdAt = Timestamp.now(),
-        saveData = {},
         id = '';
 
   /// From snapshot.
@@ -30,7 +28,6 @@ class Project {
       title: data['title'] ?? '',
       userIds: List<String>.from(data['userIds']),
       createdAt: data['createdAt'] ?? Timestamp.now(),
-      saveData: data['saveData'] ?? {},
     );
   }
 
@@ -46,9 +43,6 @@ class Project {
   /// CreatedAt.
   final Timestamp createdAt;
 
-  /// Save data.
-  final Map<String, dynamic> saveData;
-
   /// To map.
   Map<String, dynamic> toMap() {
     return {
@@ -56,7 +50,6 @@ class Project {
       'title': title,
       'userIds': userIds,
       'createdAt': createdAt,
-      'saveData': saveData,
     };
   }
 
@@ -72,5 +65,20 @@ class Project {
       'userIds': userIds,
       'createdAt': createdAt,
     };
+  }
+
+  /// Copy with method.
+  Project copyWith({
+    String? id,
+    String? title,
+    List<String>? userIds,
+    Timestamp? createdAt,
+  }) {
+    return Project(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      userIds: userIds ?? this.userIds,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }

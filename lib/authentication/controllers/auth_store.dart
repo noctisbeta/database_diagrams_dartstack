@@ -14,8 +14,8 @@ class AuthStore extends StateNotifier<Option<User>> {
     _subscription = auth.authStateChanges().listen(
           (user) => withEffect(
             Option.of(user).match(
-              () => state = const None(),
-              (user) => state = Some(user),
+              none: () => state = const None(),
+              some: (user) => state = Some(user),
             ),
             () => myLog.d('Auth state changed: $user'),
           ),
@@ -42,7 +42,7 @@ class AuthStore extends StateNotifier<Option<User>> {
   );
 
   /// Is logged in.
-  bool get isLoggedIn => state.match(() => false, (some) => true);
+  bool get isLoggedIn => state.match(none: () => false, some: (user) => true);
 
   /// Returns the current user.
   Option<User> get user => state;

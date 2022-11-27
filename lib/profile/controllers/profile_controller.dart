@@ -37,8 +37,8 @@ class ProfileController {
   /// Provides the profile stream.
   static final profileStreamProvider = StreamProvider.autoDispose(
     (ref) => ref.watch(AuthStore.provider).match(
-          () => Stream.value(Profile.empty()),
-          (user) => FirebaseFirestore.instance
+          none: () => Stream.value(Profile.empty()),
+          some: (user) => FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
               .snapshots()
@@ -128,8 +128,8 @@ class ProfileController {
   /// Returns true if the user already has a profile.
   Future<bool> userHasProfile() async {
     return _authStore.user.match(
-      () => withEffect(false, () => myLog.e('User is not logged in')),
-      (user) => _db.collection('users').doc(user.uid).get().then(
+      none: () => withEffect(false, () => myLog.e('User is not logged in')),
+      some: (user) => _db.collection('users').doc(user.uid).get().then(
             (value) => value.exists.match(
               ifFalse: () => withEffect(
                 false,

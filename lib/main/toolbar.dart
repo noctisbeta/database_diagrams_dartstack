@@ -4,6 +4,7 @@ import 'package:database_diagrams/collections/controllers/compiler.dart';
 import 'package:database_diagrams/common/toolbar_button.dart';
 import 'package:database_diagrams/profile/components/profile_avatar.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
+import 'package:database_diagrams/projects/components/create_project_dialog.dart';
 import 'package:database_diagrams/projects/controllers/project_controller.dart';
 import 'package:database_diagrams/utilities/iterable_extension.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,35 @@ class Toolbar extends HookConsumerWidget {
     final projectCtl = ref.watch(ProjectController.provider.notifier);
     final projectState = ref.watch(ProjectController.provider);
 
+    void handleSaveTapped() => projectCtl.handleSave().then(
+          (result) => result.peekLeft(
+            (err) => {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(err.toString()),
+                ),
+              ),
+              showDialog(
+                context: context,
+                builder: (_) => CreateProjectDialog(
+                  onCreatePressed: (title) =>
+                      projectCtl.createProject(title).then(
+                            (result) => result.match(
+                              (err) =>
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(err.toString()),
+                                ),
+                              ),
+                              (docref) => projectCtl.openProject(project),
+                            ),
+                          ),
+                ),
+              ),
+            },
+          ),
+        );
+
     return Container(
       height: 40,
       color: Colors.orange.shade700,
@@ -38,7 +68,7 @@ class Toolbar extends HookConsumerWidget {
                 if (user is Some)
                   ToolbarButton(
                     label: 'Save',
-                    onTap: () => projectCtl.saveProject(context),
+                    onTap: handleSaveTapped,
                   ),
                 ToolbarButton(
                   label: 'Export',
@@ -59,8 +89,8 @@ class Toolbar extends HookConsumerWidget {
           ),
           Text(
             projectState.project.match(
-              () => 'untitled',
-              (some) => some.title,
+              none: () => 'untitled',
+              some: (some) => some.title,
             ),
             style: const TextStyle(
               color: Colors.white,
@@ -71,8 +101,8 @@ class Toolbar extends HookConsumerWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: user.match(
-                () => const SignInButton(),
-                (user) => Row(
+                none: () => const SignInButton(),
+                some: (user) => Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     const Icon(

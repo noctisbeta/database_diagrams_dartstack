@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
+import 'package:database_diagrams/collections/controllers/collection_store.dart';
 import 'package:database_diagrams/logging/log_profile.dart';
-import 'package:database_diagrams/projects/components/create_project_dialog.dart';
 import 'package:database_diagrams/projects/models/project.dart';
 import 'package:database_diagrams/projects/models/project_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,6 +14,7 @@ class ProjectController extends StateNotifier<ProjectState> {
   ProjectController(
     this._auth,
     this._db,
+    this._collectionStore,
   ) : super(const ProjectState.initial());
 
   /// Firebase auth.
@@ -23,12 +23,16 @@ class ProjectController extends StateNotifier<ProjectState> {
   /// Firestore database.
   final FirebaseFirestore _db;
 
+  /// Collection store.
+  final CollectionStore _collectionStore;
+
   /// Provider.
   static final provider =
       StateNotifierProvider<ProjectController, ProjectState>(
     (ref) => ProjectController(
       FirebaseAuth.instance,
       FirebaseFirestore.instance,
+      ref.watch(CollectionStore.provider.notifier),
     ),
   );
 
@@ -36,8 +40,8 @@ class ProjectController extends StateNotifier<ProjectState> {
   static final projectStreamProvider =
       StreamProvider.autoDispose<List<Project>>(
     (ref) => ref.watch(AuthStore.provider).match(
-          () => Stream.value([]),
-          (user) => FirebaseFirestore.instance
+          none: () => Stream.value([]),
+          some: (user) => FirebaseFirestore.instance
               .collection('projects')
               .where(
                 'userIds',
@@ -50,8 +54,33 @@ class ProjectController extends StateNotifier<ProjectState> {
         ),
   );
 
+  // Future<Result<Object, Unit>> createOpenSave(String title) async =>
+  //     createProject(title).then(
+  //       (createEither) => createEither.map(
+  //         (docref) => Task.fromVoid(() => docref.get()).attempt(),
+  //       ),
+  //     );
+
+  Future<Result<Object, Unit>> createOpen(String title) =>
+      createProject(title).then(
+        (createEither) => createEither.bind(_getProjectFromReference),
+      );
+
+  Future<Result<Object, Project>> _getProjectFromReference(
+    DocumentReference docref,
+  ) async =>
+      Task(() => docref.get())
+          .attempt()
+          .peekEitherLeft(
+            (left) => myLog.e(
+              'Error getting project from reference: $left',
+            ),
+          )
+          .mapEitherRight(Project.fromSnapshot)
+          .run();
+
   /// Creates a new project.
-  Future<Either<Object, DocumentReference>> createProject(String title) async =>
+  Future<Result<Object, DocumentReference>> createProject(String title) async =>
       Task(
         () => _db.collection('projects').add(
               Project.forCreation(
@@ -60,121 +89,56 @@ class ProjectController extends StateNotifier<ProjectState> {
                 createdAt: FieldValue.serverTimestamp(),
               ),
             ),
-      ).attempt().run().then(
-            (either) => either.match(
-              (exception) => tap(
-                Left(exception),
-                () => myLog.e(
+      )
+          .attempt()
+          .peekEither(
+            (exception) => () => myLog.e(
                   'Error creating project.',
                   exception,
                   StackTrace.current,
                 ),
-              ),
-              (reference) => tap(
-                Right(reference),
-                () => myLog.i('Created project $title.'),
-              ),
-            ),
-          );
+            (docref) => () => myLog.i('Created project $title.'),
+          )
+          .run();
 
-  /// Save project.
-  Future<bool> saveProject(BuildContext context) async => Task(
-        () => state.project.match(
-          () => promptNewProject(context).then(
-            (value) => value
-                ? tap(
-                    false,
-                    () => saveProject(context),
-                  )
-                : false,
-          ),
-          _saveRaw,
-        ),
-      ).run();
+  /// Attempts to save the currently opened project.
+  Future<Result<Object, Unit>> handleSave() async => state.project.match(
+        none: () => const Err('No project is currently open.'),
+        some: _saveSaveables,
+      );
 
-  Future<bool> _saveRaw(Project project) => Task.fromVoid(
-        () => _db.collection('projects').doc(project.id).set(
-              project.toMap(),
-              SetOptions(merge: true),
-            ),
-      ).attempt().run().then(
+  /// Saves all of the saveable data in the currently opened project.
+  Future<Result<Object, Unit>> _saveSaveables(Project project) =>
+      _saveCollections(project.id);
+
+  /// Saves all of the collections in the currently opened project.
+  Future<Result<Object, Unit>> _saveCollections(String projectId) =>
+      Task.fromVoid(
+        () => _db
+            .collection('projects')
+            .doc(projectId)
+            .collection('saveData')
+            .doc('collections')
+            .set({'data': _collectionStore.serialize()}),
+      )
+          .attempt()
+          .peek(
             (either) => either.match(
-              (exception) => tap(
-                false,
-                () => myLog.e(
-                  'Error saving project.',
-                  exception,
-                  StackTrace.current,
-                ),
+              (exception) => myLog.e(
+                'Error saving collections.',
+                exception,
+                StackTrace.current,
               ),
-              (_) => tap(
-                true,
-                () => myLog.i('Saved project ${project.title}.'),
-              ),
+              (_) => myLog.i('Saved collections.'),
             ),
-          );
-
-  /// Prompts the user to create a new project and then opens it.
-  Future<bool> promptNewProject(BuildContext context) async => showDialog<bool>(
-        context: context,
-        builder: (context) => Center(
-          child: CreateProjectDialog(
-            onCreate: (name) => createProject(name)
-                .then(
-                  (createEither) => createEither.match<Future<bool>>(
-                    (exception) => tap(
-                      Future.value(false),
-                      () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Error creating project.',
-                          ),
-                        ),
-                      ),
-                    ),
-                    (docref) => Task(() => docref.get())
-                        .attempt()
-                        .map<Either<Object, Project>>(
-                          (getEither) => getEither.match(
-                            (exception) => tap(
-                              Left(exception),
-                              () => myLog.e(
-                                'Error getting project.',
-                                exception,
-                                StackTrace.current,
-                              ),
-                            ),
-                            (snapshot) => tap(
-                              Right(Project.fromSnapshot(snapshot)),
-                              () => myLog.i(
-                                'Got project ${snapshot.id}.',
-                              ),
-                            ),
-                          ),
-                        )
-                        .run()
-                        .then(
-                          (projectEither) => projectEither.match(
-                            (left) => false,
-                            (right) => tap(
-                              true,
-                              () =>
-                                  state = state.copyWith(project: Some(right)),
-                            ),
-                          ),
-                        ),
-                  ),
-                )
-                .then(
-                  (value) => Navigator.of(context).pop(value),
-                ),
-          ),
-        ),
-      ).then((value) => value ?? false);
+          )
+          .run();
 
   /// Sets the project.
   Unit openProject(Project project) {
     state = state.copyWith(project: Some(project));
+    myLog.d('Opened project ${project.title}.');
+
     return unit;
   }
 }

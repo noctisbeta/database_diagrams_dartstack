@@ -17,7 +17,7 @@ class CreateProjectTile extends ConsumerWidget {
           builder: (context) {
             return Center(
               child: CreateProjectDialog(
-                onCreate: (name) => ref
+                onCreatePressed: (name) => ref
                     .read(ProjectController.provider.notifier)
                     .createProject(
                       name,

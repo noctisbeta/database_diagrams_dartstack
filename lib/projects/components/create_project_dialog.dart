@@ -7,12 +7,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class CreateProjectDialog extends HookWidget {
   /// Default constructor.
   const CreateProjectDialog({
-    required this.onCreate,
+    required this.onCreatePressed,
     super.key,
   });
 
   /// On created callback.
-  final void Function(String projectName) onCreate;
+  final void Function(String projectName) onCreatePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class CreateProjectDialog extends HookWidget {
             const Spacer(),
             MyButton(
               label: 'Create',
-              onPressed: () => onCreate(textCtl.text),
+              onPressed: () => onCreatePressed(textCtl.text),
             ),
           ],
         ),

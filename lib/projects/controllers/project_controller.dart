@@ -61,9 +61,7 @@ class ProjectController extends StateNotifier<ProjectState> {
   /// Creates a new project and opens it.
   Task<Result<Object, Unit>> _createOpen(String title) => createProject(title)
       .bindEither(_getProjectFromReference)
-      .peekEitherRight(
-        (project) => state = state.copyWith(project: Some(project)),
-      )
+      .peekEitherRight(openProject)
       .mapEitherRight((project) => unit);
 
   /// Fetches a project from a reference.

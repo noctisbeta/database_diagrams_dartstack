@@ -129,9 +129,46 @@ class ProjectController extends StateNotifier<ProjectState> {
           )
           .run();
 
+  /// Opens a project and loads its data.
+  Task<Either<Object, Unit>> openProject(Project project) => tap(
+        _loadCollections(project).mapEitherRight((_) => unit),
+        () => _openProject(project),
+      );
+
   /// Sets the project.
-  Unit openProject(Project project) => effect(() {
+  Unit _openProject(Project project) => effect(() {
         state = state.copyWith(project: Some(project));
         myLog.d('Opened project ${project.title}.');
       });
+
+  Task<Either<Object, DocumentSnapshot>> _loadCollections(Project project) =>
+      Task(
+        () => _db
+            .collection('projects')
+            .doc(project.id)
+            .collection('saveData')
+            .doc('collections')
+            .get(),
+      )
+          .attempt()
+          .peekEitherLeft(
+            (exception) => myLog.e(
+              'Error fetching save data.',
+              exception,
+              StackTrace.current,
+            ),
+          )
+          .map<Either<Object, DocumentSnapshot>>(
+            (either) => either.match(
+              Left.new,
+              (docsnap) => docsnap.exists
+                  ? Right(docsnap)
+                  : const Left('No save data found.'),
+            ),
+          )
+          .peekEitherRight(
+            (docsnap) => _collectionStore.deserialize(
+              List.castFrom(docsnap.get('data')),
+            ),
+          );
 }

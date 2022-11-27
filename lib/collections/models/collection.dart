@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:database_diagrams/projects/models/saveable.dart';
 import 'package:flutter/material.dart';
 
 /// Schema for the collection.
@@ -8,7 +5,7 @@ typedef Schema = Map<String, String>;
 
 /// Collection.
 @immutable
-class Collection implements Saveable {
+class Collection {
   /// Default constructor.
   const Collection({
     required this.name,
@@ -19,12 +16,6 @@ class Collection implements Saveable {
   factory Collection.fromMap(Map<String, dynamic> data) => Collection(
         name: data['name'] as String,
         schema: data['schema'] as Schema,
-      );
-
-  /// From dynamic.
-  factory Collection.fromDynamic(dynamic data) => Collection(
-        name: jsonDecode(data['name']),
-        schema: jsonDecode(data['schema']),
       );
 
   /// Name.
@@ -57,17 +48,5 @@ class Collection implements Saveable {
       'name': name,
       'schema': schema,
     };
-  }
-
-  @override
-  String serialize() => jsonEncode({
-        'name': name,
-        'schema': schema,
-      });
-
-  @override
-  Collection deserialize(String data) {
-    final map = jsonDecode(data) as Map<String, dynamic>;
-    return Collection.fromMap(map);
   }
 }

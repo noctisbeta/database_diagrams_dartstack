@@ -35,7 +35,7 @@ class ProjectDialog extends ConsumerWidget {
                   ProjectTile(
                     project: project,
                     onTap: () {
-                      projectCtl.openProject(project);
+                      projectCtl.openProject(project).run();
                       Navigator.of(context).pop();
                     },
                   ),

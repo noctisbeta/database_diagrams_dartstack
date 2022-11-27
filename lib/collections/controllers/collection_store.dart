@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:database_diagrams/collections/controllers/compiler.dart';
 import 'package:database_diagrams/collections/models/collection.dart';
 import 'package:database_diagrams/collections/models/collection_item.dart';
-import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/main/canvas_controller.dart';
 import 'package:database_diagrams/projects/models/saveable.dart';
 import 'package:flutter/material.dart';
@@ -96,25 +93,22 @@ class CollectionStore extends StateNotifier<List<CollectionItem>>
       ];
 
   @override
-  Unit deserialize(String data) => tap(
-        unit,
-        () {
-          myLog.d(data);
-
-          final json = jsonDecode(data) as Map<String, dynamic>;
-
-          state = [
-            for (final item in json['collections'] as List)
-              CollectionItem(
-                collection: Collection.fromDynamic(
-                  (jsonDecode(item))['collection'],
-                ),
-                position: Offset(
-                  (jsonDecode(item))['position_x'] as double,
-                  (jsonDecode(item))['position_y'] as double,
+  Unit deserialize(covariant List<Map<String, dynamic>> data) => effect(() {
+        state = [
+          for (final item in data)
+            CollectionItem(
+              collection: Collection(
+                name: item['name'],
+                schema: Map.fromIterables(
+                  Iterable.castFrom(item['schema_keys']),
+                  Iterable.castFrom(item['schema_values']),
                 ),
               ),
-          ];
-        },
-      );
+              position: Offset(
+                item['x_pos'],
+                item['y_pos'],
+              ),
+            )
+        ];
+      });
 }

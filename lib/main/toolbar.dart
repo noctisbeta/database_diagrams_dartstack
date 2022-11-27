@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/controllers/compiler.dart';

@@ -4,6 +4,7 @@ import 'package:database_diagrams/collections/controllers/collection_store.dart'
 import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/projects/models/project.dart';
 import 'package:database_diagrams/projects/models/project_state.dart';
+import 'package:database_diagrams/smartline/smartline_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:functional/functional.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,7 @@ class ProjectController extends StateNotifier<ProjectState> {
     this._auth,
     this._db,
     this._collectionStore,
+    this._smartlineController,
   ) : super(const ProjectState.initial());
 
   /// Firebase auth.
@@ -26,6 +28,9 @@ class ProjectController extends StateNotifier<ProjectState> {
   /// Collection store.
   final CollectionStore _collectionStore;
 
+  /// Smartline controller.
+  final SmartlineController _smartlineController;
+
   /// Provider.
   static final provider =
       StateNotifierProvider<ProjectController, ProjectState>(
@@ -33,6 +38,7 @@ class ProjectController extends StateNotifier<ProjectState> {
       FirebaseAuth.instance,
       FirebaseFirestore.instance,
       ref.watch(CollectionStore.provider.notifier),
+      ref.watch(SmartlineController.provider.notifier),
     ),
   );
 
@@ -96,18 +102,21 @@ class ProjectController extends StateNotifier<ProjectState> {
           );
 
   /// Attempts to save the currently opened project.
-  Future<Result<Object, Unit>> handleSave() async => state.project.match(
-        none: () =>
+  Task<Result<Object, Unit>> handleSave() => Task(
+        () => state.project.match(
+          none: () => Future.value(
             const Err('No project is currently open. Create one first.'),
-        some: _saveSaveables,
+          ),
+          some: (project) => _saveSaveables(project).run(),
+        ),
       );
 
   /// Saves all of the saveable data in the currently opened project.
-  Future<Result<Object, Unit>> _saveSaveables(Project project) =>
-      _saveCollections(project.id);
+  Task<Result<Object, Unit>> _saveSaveables(Project project) =>
+      _saveCollections(project.id).bind((_) => _saveSmartlines(project.id));
 
   /// Saves all of the collections in the currently opened project.
-  Future<Result<Object, Unit>> _saveCollections(String projectId) =>
+  Task<Result<Object, Unit>> _saveCollections(String projectId) =>
       Task.fromVoid(
         () => _db
             .collection('projects')
@@ -115,9 +124,7 @@ class ProjectController extends StateNotifier<ProjectState> {
             .collection('saveData')
             .doc('collections')
             .set({'data': _collectionStore.serialize()}),
-      )
-          .attempt()
-          .peek(
+      ).attempt().peek(
             (either) => either.match(
               (exception) => myLog.e(
                 'Error saving collections.',
@@ -126,17 +133,37 @@ class ProjectController extends StateNotifier<ProjectState> {
               ),
               (_) => myLog.i('Saved collections.'),
             ),
-          )
-          .run();
+          );
+
+  /// Saves all of the smartlines in the currently opened project.
+  Task<Result<Object, Unit>> _saveSmartlines(String projectId) => Task.fromVoid(
+        () => _db
+            .collection('projects')
+            .doc(projectId)
+            .collection('saveData')
+            .doc('smartlines')
+            .set({'data': _smartlineController.serialize()}),
+      ).attempt().peek(
+            (either) => either.match(
+              (exception) => myLog.e(
+                'Error saving smartlines.',
+                exception,
+                StackTrace.current,
+              ),
+              (_) => myLog.i('Saved smartlines.'),
+            ),
+          );
 
   /// Opens a project and loads its data.
   Task<Either<Object, Unit>> openProject(Project project) => tap(
-        _loadCollections(project).mapEitherRight((_) => unit),
-        () => _openProject(project),
+        _loadCollections(project)
+            .bind((_) => _loadSmartlines(project))
+            .mapEitherRight((_) => unit),
+        () => _openProjectRaw(project),
       );
 
   /// Sets the project.
-  Unit _openProject(Project project) => effect(() {
+  Unit _openProjectRaw(Project project) => effect(() {
         state = state.copyWith(project: Some(project));
         myLog.d('Opened project ${project.title}.');
       });
@@ -169,6 +196,37 @@ class ProjectController extends StateNotifier<ProjectState> {
           .peekEitherRight(
             (docsnap) => _collectionStore.deserialize(
               List.castFrom(docsnap.get('data')),
+            ),
+          );
+
+  Task<Either<Object, DocumentSnapshot>> _loadSmartlines(Project project) =>
+      Task(
+        () => _db
+            .collection('projects')
+            .doc(project.id)
+            .collection('saveData')
+            .doc('smartlines')
+            .get(),
+      )
+          .attempt()
+          .peekEitherLeft(
+            (exception) => myLog.e(
+              'Error fetching save data.',
+              exception,
+              StackTrace.current,
+            ),
+          )
+          .map<Either<Object, DocumentSnapshot>>(
+            (either) => either.match(
+              Left.new,
+              (docsnap) => docsnap.exists
+                  ? Right(docsnap)
+                  : const Left('No save data found.'),
+            ),
+          )
+          .peekEitherRight(
+            (docsnap) => _smartlineController.deserialize(
+              Map.castFrom(docsnap.get('data')),
             ),
           );
 }

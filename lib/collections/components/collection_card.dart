@@ -34,7 +34,7 @@ class CollectionCard extends HookConsumerWidget {
       mode == Mode.smartLine ? Colors.white : Colors.grey[850]!,
     );
 
-    final cardKey = useState(GlobalObjectKey(collection.hashCode));
+    final cardKey = useState(GlobalObjectKey(collection.name));
 
     useEffect(
       () {
@@ -102,7 +102,7 @@ class CollectionCard extends HookConsumerWidget {
                 children: collection.schema
                     .map(
                       (k, v) {
-                        final key = GlobalObjectKey(k.hashCode + v.hashCode + collection.hashCode);
+                        final key = GlobalObjectKey(k + v + collection.name);
 
                         return MapEntry<dynamic, Widget>(
                           k,

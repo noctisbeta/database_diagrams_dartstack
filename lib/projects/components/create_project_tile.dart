@@ -22,6 +22,7 @@ class CreateProjectTile extends ConsumerWidget {
                     .createProject(
                       name,
                     )
+                    .run()
                     .then(
                       (value) => Navigator.of(context).pop(),
                     ),

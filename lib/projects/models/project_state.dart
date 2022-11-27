@@ -23,6 +23,11 @@ class ProjectState {
   /// Processing state.
   final ProjectProcessingState processingState;
 
+  /// Set project.
+  ProjectState setProject(Project project) => copyWith(
+        project: Some(project),
+      );
+
   /// Copy with method.
   ProjectState copyWith({
     Option<Project>? project,

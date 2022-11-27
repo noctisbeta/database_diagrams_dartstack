@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/authentication/sign_in_button.dart';
 import 'package:database_diagrams/collections/controllers/compiler.dart';
@@ -28,27 +30,37 @@ class Toolbar extends HookConsumerWidget {
     void handleSaveTapped() => projectCtl.handleSave().then(
           (result) => result.peekLeft(
             (err) => {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(err.toString()),
-                ),
-              ),
               showDialog(
                 context: context,
-                builder: (_) => CreateProjectDialog(
-                  onCreatePressed: (title) =>
-                      projectCtl.createProject(title).then(
-                            (result) => result.match(
-                              (err) =>
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(err.toString()),
-                                ),
-                              ),
-                              (docref) => projectCtl.openProject(project),
-                            ),
-                          ),
-                ),
+                builder: (_) {
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(err.toString()),
+                        behavior: SnackBarBehavior.floating,
+                        shape: const StadiumBorder(),
+                        width: 309,
+                      ),
+                    ),
+                  );
+
+                  return Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => Navigator.of(context).pop(),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: CreateProjectDialog(
+                          onCreatePressed: (title) =>
+                              projectCtl.createOpenSave(title).run().then(
+                                    (result) => Navigator.of(context).pop(),
+                                  ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             },
           ),

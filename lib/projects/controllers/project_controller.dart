@@ -54,34 +54,33 @@ class ProjectController extends StateNotifier<ProjectState> {
         ),
   );
 
-  // Future<Result<Object, Unit>> createOpenSave(String title) async =>
-  //     createProject(title).then(
-  //       (createEither) => createEither.map(
-  //         (docref) => Task.fromVoid(() => docref.get()).attempt(),
-  //       ),
-  //     );
+  /// Creates a new project, opens it, and saves it.
+  Task<Result<Object, Unit>> createOpenSave(String title) =>
+      _createOpen(title).peekEitherRight((_) => handleSave());
 
-  Future<Result<Object, Unit>> createOpen(String title) =>
-      createProject(title).then(
-        (createEither) => createEither.bind(_getProjectFromReference),
-      );
+  /// Creates a new project and opens it.
+  Task<Result<Object, Unit>> _createOpen(String title) => createProject(title)
+      .bindEither(_getProjectFromReference)
+      .peekEitherRight(
+        (project) => state = state.copyWith(project: Some(project)),
+      )
+      .mapEitherRight((project) => unit);
 
-  Future<Result<Object, Project>> _getProjectFromReference(
+  /// Fetches a project from a reference.
+  Task<Result<Object, Project>> _getProjectFromReference(
     DocumentReference docref,
-  ) async =>
+  ) =>
       Task(() => docref.get())
           .attempt()
           .peekEitherLeft(
-            (left) => myLog.e(
-              'Error getting project from reference: $left',
+            (exception) => myLog.e(
+              'Error getting project from reference: $exception',
             ),
           )
-          .mapEitherRight(Project.fromSnapshot)
-          .run();
+          .mapEitherRight(Project.fromSnapshot);
 
   /// Creates a new project.
-  Future<Result<Object, DocumentReference>> createProject(String title) async =>
-      Task(
+  Task<Result<Object, DocumentReference>> createProject(String title) => Task(
         () => _db.collection('projects').add(
               Project.forCreation(
                 title: title,
@@ -89,21 +88,19 @@ class ProjectController extends StateNotifier<ProjectState> {
                 createdAt: FieldValue.serverTimestamp(),
               ),
             ),
-      )
-          .attempt()
-          .peekEither(
-            (exception) => () => myLog.e(
-                  'Error creating project.',
-                  exception,
-                  StackTrace.current,
-                ),
-            (docref) => () => myLog.i('Created project $title.'),
-          )
-          .run();
+      ).attempt().peekEither(
+            (exception) => myLog.e(
+              'Error creating project.',
+              exception,
+              StackTrace.current,
+            ),
+            (docref) => myLog.i('Created project $title.'),
+          );
 
   /// Attempts to save the currently opened project.
   Future<Result<Object, Unit>> handleSave() async => state.project.match(
-        none: () => const Err('No project is currently open.'),
+        none: () =>
+            const Err('No project is currently open. Create one first.'),
         some: _saveSaveables,
       );
 
@@ -135,10 +132,8 @@ class ProjectController extends StateNotifier<ProjectState> {
           .run();
 
   /// Sets the project.
-  Unit openProject(Project project) {
-    state = state.copyWith(project: Some(project));
-    myLog.d('Opened project ${project.title}.');
-
-    return unit;
-  }
+  Unit openProject(Project project) => effect(() {
+        state = state.copyWith(project: Some(project));
+        myLog.d('Opened project ${project.title}.');
+      });
 }

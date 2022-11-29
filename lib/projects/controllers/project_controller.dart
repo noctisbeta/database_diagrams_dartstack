@@ -156,10 +156,10 @@ class ProjectController extends StateNotifier<ProjectState> {
 
   /// Opens a project and loads its data.
   Task<Either<Object, Unit>> openProject(Project project) => tap(
-        _loadCollections(project)
+        tapped: _loadCollections(project)
             .bind((_) => _loadSmartlines(project))
             .mapEitherRight((_) => unit),
-        () => _openProjectRaw(project),
+        effect: () => _openProjectRaw(project),
       );
 
   /// Sets the project.

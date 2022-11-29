@@ -26,22 +26,22 @@ class GoogleSignInControllerWeb implements GoogleSignInProtocol {
             ),
           ).attempt<FirebaseAuthMultiFactorException>().run().then(
                 (either) => either.match(
-                  (exception) => withEffect(
-                    Left(
+                  (exception) => tap(
+                    tapped: Left(
                       GoogleSignInException(
                         exception.message ??
                             'Error signing in with Google on web.',
                       ),
                     ),
-                    () => myLog.e(
+                    effect: () => myLog.e(
                       'Error signing in with Google on web.',
                       exception,
                       StackTrace.current,
                     ),
                   ),
-                  (credential) => withEffect(
-                    Right(credential),
-                    () => myLog.i('Signed in with Google on web.'),
+                  (credential) => tap(
+                    tapped: Right(credential),
+                    effect: () => myLog.i('Signed in with Google on web.'),
                   ),
                 ),
               );

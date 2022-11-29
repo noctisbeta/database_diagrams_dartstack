@@ -12,13 +12,13 @@ class AuthStore extends StateNotifier<Option<User>> {
     this.auth,
   ) : super(const None()) {
     _subscription = auth.authStateChanges().listen(
-          (user) => withEffect(
+          (user) => effect(() {
             Option.of(user).match(
               none: () => state = const None(),
               some: (user) => state = Some(user),
-            ),
-            () => myLog.d('Auth state changed: $user'),
-          ),
+            );
+            myLog.d('Auth state changed: $user');
+          }),
         );
   }
 

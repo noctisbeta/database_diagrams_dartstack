@@ -182,7 +182,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: a419aab36f71fa22e631727931cd838572649308
+      resolved-ref: "7fcc01901d95d6c6a2567a49c06a19129038512f"
       url: "https://github.com/noctisbeta/functional"
     source: git
     version: "0.0.1"

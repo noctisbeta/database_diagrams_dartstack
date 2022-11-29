@@ -64,17 +64,17 @@ class ProfileController {
         ),
       ).attempt<Exception>().run().then(
             (either) => either.match(
-              (exception) => withEffect(
-                left(exception),
-                () => myLog.e(
+              (exception) => tap(
+                tapped: Left(exception),
+                effect: () => myLog.e(
                   'Error creating profile.',
                   exception,
                   StackTrace.current,
                 ),
               ),
-              (unit) => withEffect(
-                right(unit),
-                () => myLog.i('Created profile.'),
+              (unit) => tap(
+                tapped: Right(unit),
+                effect: () => myLog.i('Created profile.'),
               ),
             ),
           );
@@ -128,15 +128,18 @@ class ProfileController {
   /// Returns true if the user already has a profile.
   Future<bool> userHasProfile() async {
     return _authStore.user.match(
-      none: () => withEffect(false, () => myLog.e('User is not logged in')),
+      none: () =>
+          tap(tapped: false, effect: () => myLog.e('User is not logged in')),
       some: (user) => _db.collection('users').doc(user.uid).get().then(
             (value) => value.exists.match(
-              ifFalse: () => withEffect(
-                false,
-                () => myLog.i('User does not have a profile'),
+              ifFalse: () => tap(
+                tapped: false,
+                effect: () => myLog.i('User does not have a profile'),
               ),
-              ifTrue: () =>
-                  withEffect(true, () => myLog.i('User has a profile')),
+              ifTrue: () => tap(
+                tapped: true,
+                effect: () => myLog.i('User has a profile'),
+              ),
             ),
           ),
     );

@@ -52,7 +52,9 @@ class Compiler extends StateNotifier<CompilerState> {
               : details.globalPosition.dy == 45
                   ? details.localPosition.dy
                   : 45,
-          left: _overlayOffset != null ? _overlayOffset!.dx : details.globalPosition.dx,
+          left: _overlayOffset != null
+              ? _overlayOffset!.dx
+              : details.globalPosition.dx,
           child: Material(
             type: MaterialType.transparency,
             child: GestureDetector(
@@ -71,7 +73,7 @@ class Compiler extends StateNotifier<CompilerState> {
         );
       },
     );
-    Overlay.of(context)?.insert(entry);
+    Overlay.of(context).insert(entry);
     _overlayOffset ??= details.globalPosition;
     this.entry = entry;
   }
@@ -89,7 +91,8 @@ class Compiler extends StateNotifier<CompilerState> {
       collections: code,
     );
 
-    final storeCollections = ref.read(CollectionStore.provider).map((e) => e.collection);
+    final storeCollections =
+        ref.read(CollectionStore.provider).map((e) => e.collection);
 
     _compile().forEach(
       (c) {
@@ -117,10 +120,15 @@ class Compiler extends StateNotifier<CompilerState> {
       return [];
     }
 
-    String compileString = state.collections.replaceAll(' ', '').replaceAll('\n', '').replaceAll('\t', '');
+    String compileString = state.collections
+        .replaceAll(' ', '')
+        .replaceAll('\n', '')
+        .replaceAll('\t', '');
 
-    final leftCurlyCount = compileString.characters.where((p0) => p0 == '{').length;
-    final rightCurlyCount = compileString.characters.where((p0) => p0 == '}').length;
+    final leftCurlyCount =
+        compileString.characters.where((p0) => p0 == '{').length;
+    final rightCurlyCount =
+        compileString.characters.where((p0) => p0 == '}').length;
 
     if (leftCurlyCount != rightCurlyCount) {
       return [];
@@ -129,8 +137,14 @@ class Compiler extends StateNotifier<CompilerState> {
     final collections = <Collection>[];
 
     while (compileString.contains('Collection')) {
-      final collectionName = compileString.substring(compileString.indexOf('Collection') + 10, compileString.indexOf('{'));
-      final collectionCode = compileString.substring(compileString.indexOf('{') + 1, compileString.indexOf('}'));
+      final collectionName = compileString.substring(
+        compileString.indexOf('Collection') + 10,
+        compileString.indexOf('{'),
+      );
+      final collectionCode = compileString.substring(
+        compileString.indexOf('{') + 1,
+        compileString.indexOf('}'),
+      );
 
       final schemaCompileString = collectionCode.split(',');
 
@@ -160,7 +174,9 @@ class Compiler extends StateNotifier<CompilerState> {
   /// Add collection.
   void addCollection(Collection collection) {
     state = state.copyWith(
-      collections: state.collections.isEmpty ? collection.toCompileString() : '${state.collections}\n${collection.toCompileString()}',
+      collections: state.collections.isEmpty
+          ? collection.toCompileString()
+          : '${state.collections}\n${collection.toCompileString()}',
     );
   }
 }

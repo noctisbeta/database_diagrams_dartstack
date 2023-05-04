@@ -9,6 +9,7 @@ class MyTextField extends StatelessWidget {
     this.onChanged,
     this.textInputAction,
     this.controller,
+    this.focusNode,
     super.key,
   });
 
@@ -27,9 +28,13 @@ class MyTextField extends StatelessWidget {
   /// Controller.
   final TextEditingController? controller;
 
+  /// Focus node.
+  final FocusNode? focusNode;
+
   @override
   Widget build(BuildContext context) {
     return TextField(
+      focusNode: focusNode,
       controller: controller,
       textInputAction: textInputAction,
       onChanged: onChanged,

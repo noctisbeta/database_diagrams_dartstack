@@ -116,7 +116,7 @@ class ProfileController {
   /// Show overlay.
   void showProfileMenu(BuildContext context, OverlayEntry entry) {
     _profileMenuEntry = entry;
-    Overlay.of(context)!.insert(_profileMenuEntry!);
+    Overlay.of(context).insert(_profileMenuEntry!);
   }
 
   /// Hide overlay.

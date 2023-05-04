@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_diagrams/authentication/controllers/auth_store.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
+import 'package:database_diagrams/firebase/firebase_paths.dart';
 import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/projects/models/project.dart';
 import 'package:database_diagrams/projects/models/project_state.dart';
@@ -100,6 +101,11 @@ class ProjectController extends StateNotifier<ProjectState> {
             ),
             (docref) => myLog.i('Created project $title.'),
           );
+
+  AsyncResult deleteProject(String projectId) => Task.fromVoid(
+        () =>
+            _db.collection(FirebasePaths.projects.path).doc(projectId).delete(),
+      ).attemptAll();
 
   /// Attempts to save the currently opened project.
   Task<Result<Object, Unit>> handleSave() => Task(

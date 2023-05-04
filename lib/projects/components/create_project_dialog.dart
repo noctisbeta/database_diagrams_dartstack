@@ -1,3 +1,4 @@
+import 'package:database_diagrams/logging/log_profile.dart';
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +18,23 @@ class CreateProjectDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final textCtl = useTextEditingController();
+    final focusNode = useFocusNode();
 
     final isDisabled = useState(false);
     final isLoading = useState(false);
 
     textCtl.addListener(() {
       isDisabled.value = textCtl.text.isEmpty;
+      myLog.d('isDisabled: ${isDisabled.value}');
     });
+
+    useEffect(
+      () {
+        focusNode.requestFocus();
+        return null;
+      },
+      [],
+    );
 
     return Material(
       type: MaterialType.transparency,
@@ -46,6 +57,7 @@ class CreateProjectDialog extends HookWidget {
               ),
               const SizedBox(height: 16),
               MyTextField(
+                focusNode: focusNode,
                 label: 'Title',
                 controller: textCtl,
               ),

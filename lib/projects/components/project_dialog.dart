@@ -19,39 +19,72 @@ class ProjectDialog extends ConsumerWidget {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[100],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: projectStream.when(
-          data: (data) {
-            return Wrap(
-              runSpacing: 16,
-              spacing: 16,
-              children: [
-                const CreateProjectTile(),
-                for (final project in data)
-                  ProjectTile(
-                    project: project,
-                    onTap: () {
-                      projectCtl.openProject(project).run();
-                      Navigator.of(context).pop();
-                    },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.orange[700],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  const Text(
+                    'Projects',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
                   ),
-              ],
-            );
-          },
-          error: (error, stackTrace) {
-            return Center(
-              child: Text(error.toString()),
-            );
-          },
-          loading: () {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+                  const Spacer(),
+                  IconButton(
+                    onPressed: Navigator.of(context).pop,
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: projectStream.when(
+                data: (data) {
+                  return Wrap(
+                    runSpacing: 16,
+                    spacing: 16,
+                    children: [
+                      const CreateProjectTile(),
+                      for (final project in data)
+                        ProjectTile(
+                          project: project,
+                          onTap: () {
+                            projectCtl.openProject(project).run();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                    ],
+                  );
+                },
+                error: (error, stackTrace) {
+                  return Center(
+                    child: Text(error.toString()),
+                  );
+                },
+                loading: () {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

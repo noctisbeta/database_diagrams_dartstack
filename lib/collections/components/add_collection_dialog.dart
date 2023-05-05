@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:database_diagrams/collections/components/collection_card.dart';
 import 'package:database_diagrams/collections/controllers/collection_store.dart';
 import 'package:database_diagrams/collections/models/collection.dart';
-import 'package:database_diagrams/common/dialog_header.dart';
 import 'package:database_diagrams/common/my_dialog.dart';
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_dropdown_button.dart';
@@ -25,6 +22,8 @@ class AddCollectionDialog extends HookConsumerWidget {
     final fieldType = useState<String?>(null);
     final collection = useState<Collection?>(null);
     final fieldCtl = useTextEditingController();
+
+    // TODO(Janez): Stepper
 
     useEffect(
       () {

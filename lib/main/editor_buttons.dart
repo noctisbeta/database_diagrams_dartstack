@@ -88,7 +88,8 @@ class EditorButtons extends ConsumerWidget {
           onPressed: () {
             showDialog(
               barrierDismissible: false,
-              barrierColor: Colors.black.withOpacity(0.3),
+              // barrierColor: Colors.black.withOpacity(0.3),
+              barrierColor: Colors.transparent,
               context: context,
               builder: (context) {
                 return const AddCollectionDialog();

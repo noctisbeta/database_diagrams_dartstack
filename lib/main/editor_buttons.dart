@@ -19,9 +19,15 @@ class EditorButtons extends ConsumerWidget {
     return Column(
       children: [
         FloatingActionButton(
-          backgroundColor: mode == Mode.smartLine ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: mode == Mode.smartLine ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: mode == Mode.smartLine ? Colors.orange.shade700 : Colors.orange.shade900,
+          backgroundColor: mode == Mode.smartLine
+              ? Colors.orange.shade900
+              : Colors.orange.shade700,
+          hoverColor: mode == Mode.smartLine
+              ? Colors.orange.shade600
+              : Colors.orange.shade800,
+          splashColor: mode == Mode.smartLine
+              ? Colors.orange.shade700
+              : Colors.orange.shade900,
           onPressed: modeController.toogleSmartLine,
           child: const Icon(Icons.line_axis),
         ),
@@ -29,9 +35,15 @@ class EditorButtons extends ConsumerWidget {
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: mode == Mode.text ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: mode == Mode.text ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: mode == Mode.text ? Colors.orange.shade700 : Colors.orange.shade900,
+          backgroundColor: mode == Mode.text
+              ? Colors.orange.shade900
+              : Colors.orange.shade700,
+          hoverColor: mode == Mode.text
+              ? Colors.orange.shade600
+              : Colors.orange.shade800,
+          splashColor: mode == Mode.text
+              ? Colors.orange.shade700
+              : Colors.orange.shade900,
           onPressed: modeController.toggleText,
           child: const Icon(Icons.text_fields),
         ),
@@ -39,9 +51,15 @@ class EditorButtons extends ConsumerWidget {
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: mode == Mode.polyline ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: mode == Mode.polyline ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: mode == Mode.polyline ? Colors.orange.shade700 : Colors.orange.shade900,
+          backgroundColor: mode == Mode.polyline
+              ? Colors.orange.shade900
+              : Colors.orange.shade700,
+          hoverColor: mode == Mode.polyline
+              ? Colors.orange.shade600
+              : Colors.orange.shade800,
+          splashColor: mode == Mode.polyline
+              ? Colors.orange.shade700
+              : Colors.orange.shade900,
           onPressed: modeController.togglePolyline,
           child: const Icon(Icons.polyline),
         ),
@@ -49,9 +67,15 @@ class EditorButtons extends ConsumerWidget {
           height: 16,
         ),
         FloatingActionButton(
-          backgroundColor: mode == Mode.drawing ? Colors.orange.shade900 : Colors.orange.shade700,
-          hoverColor: mode == Mode.drawing ? Colors.orange.shade600 : Colors.orange.shade800,
-          splashColor: mode == Mode.drawing ? Colors.orange.shade700 : Colors.orange.shade900,
+          backgroundColor: mode == Mode.drawing
+              ? Colors.orange.shade900
+              : Colors.orange.shade700,
+          hoverColor: mode == Mode.drawing
+              ? Colors.orange.shade600
+              : Colors.orange.shade800,
+          splashColor: mode == Mode.drawing
+              ? Colors.orange.shade700
+              : Colors.orange.shade900,
           onPressed: modeController.toggleDrawing,
           child: const Icon(Icons.edit),
         ),

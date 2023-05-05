@@ -1,3 +1,4 @@
+import 'package:database_diagrams/common/dialog_header.dart';
 import 'package:database_diagrams/projects/components/create_project_tile.dart';
 import 'package:database_diagrams/projects/components/project_tile.dart';
 import 'package:database_diagrams/projects/controllers/project_controller.dart';
@@ -26,32 +27,7 @@ class ProjectDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.orange[700],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  const Text(
-                    'Projects',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: Navigator.of(context).pop,
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-            ),
+            const DialogHeader(heading: 'Projects'),
             Padding(
               padding: const EdgeInsets.all(16),
               child: projectStream.when(

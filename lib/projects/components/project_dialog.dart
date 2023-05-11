@@ -27,7 +27,7 @@ class ProjectDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const DialogHeader(heading: 'Projects'),
+            const OverlayDialogHeader(heading: 'Projects'),
             Padding(
               padding: const EdgeInsets.all(16),
               child: projectStream.when(

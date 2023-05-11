@@ -57,7 +57,7 @@ class AddCollectionDialog extends HookConsumerWidget {
               ),
         );
 
-    return MyDialog(
+    return OverlayDialog(
       heading: 'Add Collection',
       height: MediaQuery.of(context).size.height * 0.5,
       width: MediaQuery.of(context).size.width * 0.5,

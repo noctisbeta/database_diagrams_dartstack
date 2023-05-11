@@ -27,40 +27,38 @@ class Toolbar extends HookConsumerWidget {
 
     void handleSaveTapped() => projectCtl.handleSave().then(
           (result) => result.peekLeft(
-            (err) => {
-              showDialog(
-                context: context,
-                builder: (_) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(err.toString()),
-                        behavior: SnackBarBehavior.floating,
-                        shape: const StadiumBorder(),
-                        width: 309,
-                      ),
+            (err) => showDialog(
+              context: context,
+              builder: (_) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(err.toString()),
+                      behavior: SnackBarBehavior.floating,
+                      shape: const StadiumBorder(),
+                      width: 309,
                     ),
-                  );
+                  ),
+                );
 
-                  return Scaffold(
-                    backgroundColor: Colors.transparent,
-                    body: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => Navigator.of(context).pop(),
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: CreateProjectDialog(
-                          onCreatePressed: (title) =>
-                              projectCtl.createOpenSave(title).run().then(
-                                    (result) => Navigator.of(context).pop(),
-                                  ),
-                        ),
+                return Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Navigator.of(context).pop(),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: CreateProjectDialog(
+                        onCreatePressed: (title) =>
+                            projectCtl.createOpenSave(title).run().then(
+                                  (result) => Navigator.of(context).pop(),
+                                ),
                       ),
                     ),
-                  );
-                },
-              ),
-            },
+                  ),
+                );
+              },
+            ),
           ),
         );
 

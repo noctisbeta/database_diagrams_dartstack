@@ -1,10 +1,13 @@
+import 'package:database_diagrams/overlay_manager/overlay_label.dart';
+import 'package:database_diagrams/overlay_manager/overlay_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Dialog header.
-class DialogHeader extends HookWidget {
+class OverlayDialogHeader extends HookConsumerWidget {
   /// Default constructor.
-  const DialogHeader({
+  const OverlayDialogHeader({
     required this.heading,
     super.key,
   });
@@ -13,8 +16,10 @@ class DialogHeader extends HookWidget {
   final String heading;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isCloseButtonHovered = useState(false);
+
+    final overlayManager = ref.watch(OverlayManager.provider.notifier);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -38,7 +43,7 @@ class DialogHeader extends HookWidget {
             ),
             const Spacer(),
             GestureDetector(
-              onTap: Navigator.of(context).pop,
+              onTap: () => overlayManager.close(OverlayLabel.addCollection),
               child: MouseRegion(
                 onEnter: (_) => isCloseButtonHovered.value = true,
                 onExit: (_) => isCloseButtonHovered.value = false,

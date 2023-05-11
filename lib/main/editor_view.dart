@@ -7,6 +7,7 @@ import 'package:database_diagrams/main/mode.dart';
 import 'package:database_diagrams/main/mode_controller.dart';
 import 'package:database_diagrams/main/size_slider.dart';
 import 'package:database_diagrams/main/undo_redo_buttonds.dart';
+import 'package:database_diagrams/overlay_manager/overlay_manager.dart';
 import 'package:database_diagrams/polyline/polyline_painter_container.dart';
 import 'package:database_diagrams/smartline/smartline_painter_container.dart';
 import 'package:database_diagrams/text_tool/components/my_text_painter_container.dart';
@@ -24,6 +25,8 @@ class EditorView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(ModeController.provider);
+
+    final overlays = ref.watch(OverlayManager.provider);
 
     final focusStack = useState<List<Widget>>(
       [
@@ -111,14 +114,19 @@ class EditorView extends HookConsumerWidget {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(0)),
-                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(1)),
-                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(2)),
-                      focusStack.value.elementAt(focusStackIndexes.value.elementAt(3)),
+                      focusStack.value
+                          .elementAt(focusStackIndexes.value.elementAt(0)),
+                      focusStack.value
+                          .elementAt(focusStackIndexes.value.elementAt(1)),
+                      focusStack.value
+                          .elementAt(focusStackIndexes.value.elementAt(2)),
+                      focusStack.value
+                          .elementAt(focusStackIndexes.value.elementAt(3)),
                       Consumer(
                         builder: (context, ref, child) {
                           final cItems = ref.watch(CollectionStore.provider);
-                          final collItemsCtl = ref.watch(CollectionStore.provider.notifier);
+                          final collItemsCtl =
+                              ref.watch(CollectionStore.provider.notifier);
 
                           return Stack(
                             children: cItems
@@ -167,6 +175,7 @@ class EditorView extends HookConsumerWidget {
               right: 256,
               child: TextModeButtons(),
             ),
+            ...overlays.map((e) => e.widget),
           ],
         ),
       ),

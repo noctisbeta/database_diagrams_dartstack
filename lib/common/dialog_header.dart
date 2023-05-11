@@ -9,11 +9,15 @@ class OverlayDialogHeader extends HookConsumerWidget {
   /// Default constructor.
   const OverlayDialogHeader({
     required this.heading,
+    required this.label,
     super.key,
   });
 
   /// Heading
   final String heading;
+
+  /// Overlay label.
+  final OverlayLabel label;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,7 +47,7 @@ class OverlayDialogHeader extends HookConsumerWidget {
             ),
             const Spacer(),
             GestureDetector(
-              onTap: () => overlayManager.close(OverlayLabel.addCollection),
+              onTap: () => overlayManager.close(label),
               child: MouseRegion(
                 onEnter: (_) => isCloseButtonHovered.value = true,
                 onExit: (_) => isCloseButtonHovered.value = false,

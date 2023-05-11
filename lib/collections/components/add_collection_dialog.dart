@@ -5,6 +5,7 @@ import 'package:database_diagrams/common/my_dialog.dart';
 import 'package:database_diagrams/main/my_button.dart';
 import 'package:database_diagrams/main/my_dropdown_button.dart';
 import 'package:database_diagrams/main/my_text_field.dart';
+import 'package:database_diagrams/overlay_manager/overlay_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional/functional.dart';
@@ -59,8 +60,9 @@ class AddCollectionDialog extends HookConsumerWidget {
 
     return OverlayDialog(
       heading: 'Add Collection',
-      height: MediaQuery.of(context).size.height * 0.5,
-      width: MediaQuery.of(context).size.width * 0.5,
+      label: OverlayLabel.addCollection,
+      height: 0.5,
+      width: 0.5,
       actions: [
         MyButton(
           label: 'Cancel',

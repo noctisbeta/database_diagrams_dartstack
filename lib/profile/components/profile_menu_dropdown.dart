@@ -1,3 +1,5 @@
+import 'package:database_diagrams/overlay_manager/overlay_label.dart';
+import 'package:database_diagrams/overlay_manager/overlay_manager.dart';
 import 'package:database_diagrams/profile/components/profile_menu_button.dart';
 import 'package:database_diagrams/profile/controllers/profile_controller.dart';
 import 'package:database_diagrams/projects/components/project_dialog.dart';
@@ -14,6 +16,7 @@ class ProfileMenuDropdown extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileCtl = ref.watch(ProfileController.provider);
+    final overlayManager = ref.watch(OverlayManager.provider.notifier);
 
     return Container(
       width: 200,
@@ -29,11 +32,7 @@ class ProfileMenuDropdown extends HookConsumerWidget {
             label: 'Projects',
             onPressed: () {
               profileCtl.closeProfileMenu();
-
-              showDialog(
-                context: context,
-                builder: (context) => const Center(child: ProjectDialog()),
-              );
+              overlayManager.open(OverlayLabel.projects, const ProjectDialog());
             },
             icon: Icon(
               Icons.work,

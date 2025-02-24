@@ -1,0 +1,20 @@
+name: database_diagrams_server
+description: A server app using the shelf package and Docker.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+publish_to: none
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  database_diagrams_common:
+    path: ../database_diagrams_common
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  http: ^1.1.0
+  lints: ^5.0.0
+  test: ^1.24.0

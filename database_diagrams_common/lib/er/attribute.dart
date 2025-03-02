@@ -13,7 +13,7 @@ final class Attribute extends DataModel {
     this.type = AttributeType.simple,
     this.isPrimaryKey = false,
     this.isForeignKey = false,
-    this.isNullable = true,
+    this.isNullable = false,
     this.referencedEntityId,
   });
 

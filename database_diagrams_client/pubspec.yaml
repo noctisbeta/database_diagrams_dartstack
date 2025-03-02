@@ -35,6 +35,7 @@ dependencies:
     path: ../database_diagrams_common
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.0
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to

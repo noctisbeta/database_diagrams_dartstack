@@ -8,8 +8,13 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
+  crypto: ^3.0.6
+  cryptography: ^2.7.0
   database_diagrams_common:
     path: ../database_diagrams_common
+  dotenv: ^4.2.0
+  meta: ^1.16.0
+  postgres: ^3.5.4
   shelf: ^1.4.0
   shelf_router: ^1.1.0
 

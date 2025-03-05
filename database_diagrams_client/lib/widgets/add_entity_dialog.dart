@@ -1,4 +1,6 @@
+import 'package:database_diagrams_client/entity_card.dart';
 import 'package:database_diagrams_client/state/diagram_cubit.dart';
+import 'package:database_diagrams_client/widgets/attribute_row.dart';
 import 'package:database_diagrams_common/er/attribute.dart';
 import 'package:database_diagrams_common/er/attribute_type.dart';
 import 'package:database_diagrams_common/er/entity.dart';
@@ -14,9 +16,10 @@ class AddEntityDialog extends StatefulWidget {
 
 class _AddEntityDialogState extends State<AddEntityDialog> {
   final TextEditingController _nameController = TextEditingController();
-  final List<TextEditingController> _attributeNameControllers = [];
-  final List<TextEditingController> _attributeTypeControllers = [];
   final List<Attribute> _attributes = [];
+
+  // Add this field to track primary key index
+  int? _primaryKeyIndex;
 
   // Add this getter to get all available entities except the current one
   List<Entity> get availableEntities =>
@@ -25,39 +28,32 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
   @override
   void initState() {
     super.initState();
+
     // Start with one attribute
     _addAttribute();
   }
 
   void _addAttribute() {
-    final nameController = TextEditingController();
-    final typeController = TextEditingController();
-
     setState(() {
-      _attributeNameControllers.add(nameController);
-      _attributeTypeControllers.add(typeController);
       _attributes.add(
         Attribute(
           id: (_attributes.length + 1).toString(),
           name: '',
           dataType: '',
+          order: _attributes.length, // Add order
         ),
       );
     });
   }
 
   void _removeAttribute(int index) {
-    // Don't allow removing if this is the last attribute
+    // Do not allow removing the last attribute
     if (_attributes.length <= 1) {
       return;
     }
 
     setState(() {
       _attributes.removeAt(index);
-      _attributeNameControllers[index].dispose();
-      _attributeTypeControllers[index].dispose();
-      _attributeNameControllers.removeAt(index);
-      _attributeTypeControllers.removeAt(index);
     });
   }
 
@@ -72,13 +68,29 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
     String? referencedEntityId,
   }) {
     setState(() {
+      // Handle primary key changes
+      if (isPrimaryKey != null) {
+        if (isPrimaryKey) {
+          // Uncheck previous primary key if exists
+          if (_primaryKeyIndex != null && _primaryKeyIndex != index) {
+            _attributes[_primaryKeyIndex!] = _attributes[_primaryKeyIndex!]
+                .copyWith(isPrimaryKey: false);
+          }
+          _primaryKeyIndex = index;
+        } else {
+          if (_primaryKeyIndex == index) {
+            _primaryKeyIndex = null;
+          }
+        }
+      }
+
       _attributes[index] = _attributes[index].copyWith(
-        name: name ?? _attributeNameControllers[index].text,
-        dataType: dataType ?? _attributeTypeControllers[index].text,
+        name: name ?? _attributes[index].name,
+        dataType: dataType ?? _attributes[index].dataType,
         type: type,
-        isPrimaryKey: isPrimaryKey,
-        isForeignKey: isForeignKey,
-        isNullable: isNullable,
+        isPrimaryKey: isPrimaryKey ?? _attributes[index].isPrimaryKey,
+        isForeignKey: isForeignKey ?? _attributes[index].isForeignKey,
+        isNullable: isNullable ?? _attributes[index].isNullable,
         referencedEntityIdFactory:
             referencedEntityId == null ? null : () => referencedEntityId,
       );
@@ -88,65 +100,148 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
   @override
   Widget build(BuildContext context) => AlertDialog(
     title: const Text('Add New Entity'),
-    content: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 500,
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      child: IntrinsicHeight(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Entity name input
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Entity Name',
-                hintText: 'Enter entity name',
-                border: OutlineInputBorder(),
-              ),
-              autofocus: true,
-            ),
-            const SizedBox(height: 24),
-
-            // Attributes section header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    content: SizedBox(
+      height: 500,
+      width: 800,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side - Form
+          SizedBox(
+            height: 500,
+            width: 490,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Attributes',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // Entity name field
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Entity Name',
+                    hintText: 'Enter entity name',
+                    border: OutlineInputBorder(),
+                  ),
+                  autofocus: true,
+                  onChanged: (value) => setState(() {}),
                 ),
-                IconButton.filled(
-                  onPressed: _addAttribute,
-                  icon: const Icon(Icons.add),
-                  tooltip: 'Add Attribute',
+                const SizedBox(height: 24),
+                // Attributes table
+                Column(
+                  children: [
+                    // Table header
+                    const Row(
+                      children: [
+                        SizedBox(width: 46),
+                        Text('Flags'),
+                        SizedBox(width: 97),
+                        Text('Name'),
+                        SizedBox(width: 98),
+                        Text('Type'),
+                      ],
+                    ),
+                    const Divider(),
+                    // Attributes list
+                    SizedBox(
+                      width: 490,
+                      // height: 100,
+                      child: ReorderableListView.builder(
+                        shrinkWrap: true,
+                        buildDefaultDragHandles: false,
+                        itemCount: _attributes.length,
+                        onReorder: (oldIndex, newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final Attribute item = _attributes.removeAt(
+                              oldIndex,
+                            );
+                            _attributes.insert(newIndex, item);
+
+                            // Update orders for all attributes
+                            for (var i = 0; i < _attributes.length; i++) {
+                              _attributes[i] = _attributes[i].copyWith(
+                                order: i,
+                              );
+                            }
+
+                            // Update primary key index after reordering
+                            if (_primaryKeyIndex == oldIndex) {
+                              _primaryKeyIndex = newIndex;
+                            } else if (oldIndex < _primaryKeyIndex! &&
+                                newIndex >= _primaryKeyIndex!) {
+                              _primaryKeyIndex = _primaryKeyIndex! - 1;
+                            } else if (oldIndex > _primaryKeyIndex! &&
+                                newIndex <= _primaryKeyIndex!) {
+                              _primaryKeyIndex = _primaryKeyIndex! + 1;
+                            }
+                          });
+                        },
+                        itemBuilder:
+                            (context, index) => Expanded(
+                              key: ValueKey(_attributes[index].id),
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: AttributeRow(
+                                  index: index,
+                                  isPrimaryKey: _attributes[index].isPrimaryKey,
+                                  isForeignKey: _attributes[index].isForeignKey,
+                                  isNullable: _attributes[index].isNullable,
+                                  availableEntities: availableEntities,
+                                  onRemove: _removeAttribute,
+                                  onUpdate: _updateAttribute,
+                                ),
+                              ),
+                            ),
+                      ),
+                    ),
+
+                    // Add attribute button
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: OutlinedButton.icon(
+                        onPressed: _addAttribute,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Attribute'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+          ),
 
-            // Attributes list - always show
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (
-                      var index = 0;
-                      index < _attributes.length;
-                      index++
-                    ) ...[
-                      if (index > 0) const SizedBox(height: 8),
-                      _buildAttributeCard(index),
-                    ],
-                  ],
+          // Vertical Divider
+          SizedBox(
+            width: 20,
+            height: 500,
+            child: VerticalDivider(
+              width: 1,
+              color: Theme.of(context).dividerColor,
+            ),
+          ),
+
+          // Right side - Preview
+          SizedBox(
+            width: 290,
+            height: 500,
+            child: SingleChildScrollView(
+              child: EntityCard(
+                entity: Entity(
+                  id: '',
+                  name:
+                      _nameController.text.isEmpty
+                          ? 'Entity Name'
+                          : _nameController.text,
+                  attributes:
+                      _attributes.where((attr) => attr.name.isNotEmpty).toList()
+                        ..sort((a, b) => a.order.compareTo(b.order)),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
     actions: [
@@ -188,141 +283,9 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
     ],
   );
 
-  Widget _buildAttributeCard(int index) => Card(
-    elevation: 2,
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _attributeNameControllers[index],
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    hintText: 'Enter attribute name',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                  ),
-                  onChanged: (value) => _updateAttribute(index, name: value),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _attributeTypeControllers[index],
-                  decoration: const InputDecoration(
-                    labelText: 'Type',
-                    hintText: 'e.g., String, Int',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                  ),
-                  onChanged:
-                      (value) => _updateAttribute(index, dataType: value),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              ChoiceChip(
-                label: const Text('PK'),
-                selected: _attributes[index].isPrimaryKey,
-                onSelected:
-                    (value) => _updateAttribute(index, isPrimaryKey: value),
-              ),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('FK'),
-                selected: _attributes[index].isForeignKey,
-                onSelected: (value) {
-                  _updateAttribute(
-                    index,
-                    isForeignKey: value,
-                    // Reset referenced entity when FK is deselected
-                    referencedEntityId: value ? null : null,
-                  );
-                },
-              ),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('Nullable'),
-                selected: _attributes[index].isNullable,
-                onSelected:
-                    (value) => _updateAttribute(index, isNullable: value),
-              ),
-            ],
-          ),
-
-          // Show FK selector only when FK is selected
-          if (_attributes[index].isForeignKey) ...[
-            const SizedBox(height: 8),
-            _buildForeignKeySelector(index),
-          ],
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (_attributes.length > 1)
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.red[400],
-                  onPressed: () => _removeAttribute(index),
-                  tooltip: 'Remove Attribute',
-                ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
-
-  Widget _buildForeignKeySelector(int index) {
-    List<DropdownMenuItem<String>> buildDropdownItems() {
-      final items = <DropdownMenuItem<String>>[];
-
-      for (final Entity entity in availableEntities) {
-        final Attribute primaryKeyAttribute = entity.attributes.firstWhere(
-          (attr) => attr.isPrimaryKey,
-        );
-
-        final label = '${entity.name}.${primaryKeyAttribute.name}';
-
-        items.add(DropdownMenuItem(value: entity.id, child: Text(label)));
-      }
-
-      return items;
-    }
-
-    return DropdownButtonFormField<String>(
-      value: _attributes[index].referencedEntityId,
-      decoration: const InputDecoration(
-        labelText: 'References',
-        border: OutlineInputBorder(),
-        isDense: true,
-      ),
-      items: buildDropdownItems(),
-      onChanged: (entityId) {
-        if (entityId != null) {
-          _updateAttribute(index, referencedEntityId: entityId);
-        }
-      },
-    );
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
-    for (final TextEditingController controller in _attributeNameControllers) {
-      controller.dispose();
-    }
-    for (final TextEditingController controller in _attributeTypeControllers) {
-      controller.dispose();
-    }
     super.dispose();
   }
 }

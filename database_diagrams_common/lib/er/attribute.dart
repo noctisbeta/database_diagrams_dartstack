@@ -15,6 +15,7 @@ final class Attribute extends DataModel {
     this.isForeignKey = false,
     this.isNullable = false,
     this.referencedEntityId,
+    this.order = 0, // Add this field
   });
 
   @Throws([BadMapShapeException])
@@ -28,6 +29,7 @@ final class Attribute extends DataModel {
       'is_foreign_key': final bool isForeignKey,
       'is_nullable': final bool isNullable,
       'referenced_entity_id': final String? referencedEntityId,
+      'order': final int order, // Add this
     } =>
       Attribute(
         id: id,
@@ -38,10 +40,12 @@ final class Attribute extends DataModel {
         isForeignKey: isForeignKey,
         isNullable: isNullable,
         referencedEntityId: referencedEntityId,
+        order: order,
       ),
     _ => throw const BadMapShapeException('Bad map shape for Attribute'),
   };
 
+  final int order;
   final String id;
   final String name;
   final String dataType;
@@ -61,6 +65,7 @@ final class Attribute extends DataModel {
     bool? isForeignKey,
     bool? isNullable,
     String? Function()? referencedEntityIdFactory,
+    int? order,
   }) => Attribute(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -70,6 +75,7 @@ final class Attribute extends DataModel {
     isForeignKey: isForeignKey ?? this.isForeignKey,
     isNullable: isNullable ?? this.isNullable,
     referencedEntityId: referencedEntityIdFactory?.call() ?? referencedEntityId,
+    order: order ?? this.order,
   );
 
   @override
@@ -82,6 +88,7 @@ final class Attribute extends DataModel {
     isForeignKey,
     isNullable,
     referencedEntityId,
+    order,
   ];
 
   @override
@@ -94,5 +101,6 @@ final class Attribute extends DataModel {
     'is_foreign_key': isForeignKey,
     'is_nullable': isNullable,
     'referenced_entity_id': referencedEntityId,
+    'order': order,
   };
 }

@@ -127,86 +127,89 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                 ),
                 const SizedBox(height: 24),
                 // Attributes table
-                Column(
-                  children: [
-                    // Table header
-                    const Row(
-                      children: [
-                        SizedBox(width: 46),
-                        Text('Flags'),
-                        SizedBox(width: 97),
-                        Text('Name'),
-                        SizedBox(width: 98),
-                        Text('Type'),
-                      ],
-                    ),
-                    const Divider(),
-                    // Attributes list
-                    SizedBox(
-                      width: 490,
-                      // height: 100,
-                      child: ReorderableListView.builder(
-                        shrinkWrap: true,
-                        buildDefaultDragHandles: false,
-                        itemCount: _attributes.length,
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (oldIndex < newIndex) {
-                              newIndex -= 1;
-                            }
-                            final Attribute item = _attributes.removeAt(
-                              oldIndex,
-                            );
-                            _attributes.insert(newIndex, item);
-
-                            // Update orders for all attributes
-                            for (var i = 0; i < _attributes.length; i++) {
-                              _attributes[i] = _attributes[i].copyWith(
-                                order: i,
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Table header
+                      const Row(
+                        children: [
+                          SizedBox(width: 46),
+                          Text('Flags'),
+                          SizedBox(width: 97),
+                          Text('Name'),
+                          SizedBox(width: 98),
+                          Text('Type'),
+                        ],
+                      ),
+                      const Divider(),
+                      // Attributes list
+                      Expanded(
+                        child: ReorderableListView.builder(
+                          shrinkWrap: true,
+                          buildDefaultDragHandles: false,
+                          itemCount: _attributes.length,
+                          onReorder: (oldIndex, newIndex) {
+                            setState(() {
+                              if (oldIndex < newIndex) {
+                                newIndex -= 1;
+                              }
+                              final Attribute item = _attributes.removeAt(
+                                oldIndex,
                               );
-                            }
+                              _attributes.insert(newIndex, item);
 
-                            // Update primary key index after reordering
-                            if (_primaryKeyIndex == oldIndex) {
-                              _primaryKeyIndex = newIndex;
-                            } else if (oldIndex < _primaryKeyIndex! &&
-                                newIndex >= _primaryKeyIndex!) {
-                              _primaryKeyIndex = _primaryKeyIndex! - 1;
-                            } else if (oldIndex > _primaryKeyIndex! &&
-                                newIndex <= _primaryKeyIndex!) {
-                              _primaryKeyIndex = _primaryKeyIndex! + 1;
-                            }
-                          });
-                        },
-                        itemBuilder:
-                            (context, index) => Expanded(
-                              key: ValueKey(_attributes[index].id),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: AttributeRow(
-                                  index: index,
-                                  isPrimaryKey: _attributes[index].isPrimaryKey,
-                                  isForeignKey: _attributes[index].isForeignKey,
-                                  isNullable: _attributes[index].isNullable,
-                                  availableEntities: availableEntities,
-                                  onRemove: _removeAttribute,
-                                  onUpdate: _updateAttribute,
+                              // Update orders for all attributes
+                              for (var i = 0; i < _attributes.length; i++) {
+                                _attributes[i] = _attributes[i].copyWith(
+                                  order: i,
+                                );
+                              }
+
+                              // Update primary key index after reordering
+                              if (_primaryKeyIndex == oldIndex) {
+                                _primaryKeyIndex = newIndex;
+                              } else if (oldIndex < _primaryKeyIndex! &&
+                                  newIndex >= _primaryKeyIndex!) {
+                                _primaryKeyIndex = _primaryKeyIndex! - 1;
+                              } else if (oldIndex > _primaryKeyIndex! &&
+                                  newIndex <= _primaryKeyIndex!) {
+                                _primaryKeyIndex = _primaryKeyIndex! + 1;
+                              }
+                            });
+                          },
+                          itemBuilder:
+                              (context, index) => Material(
+                                key: ValueKey(_attributes[index].id),
+                                type: MaterialType.transparency,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: AttributeRow(
+                                    index: index,
+                                    isPrimaryKey:
+                                        _attributes[index].isPrimaryKey,
+                                    isForeignKey:
+                                        _attributes[index].isForeignKey,
+                                    isNullable: _attributes[index].isNullable,
+                                    availableEntities: availableEntities,
+                                    onRemove: _removeAttribute,
+                                    onUpdate: _updateAttribute,
+                                  ),
                                 ),
                               ),
-                            ),
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
 
-                    // Add attribute button
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: OutlinedButton.icon(
-                        onPressed: _addAttribute,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Attribute'),
-                      ),
-                    ),
-                  ],
+                // Add attribute button
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: OutlinedButton.icon(
+                    onPressed: _addAttribute,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Attribute'),
+                  ),
                 ),
               ],
             ),

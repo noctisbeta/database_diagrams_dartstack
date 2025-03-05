@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: BlocProvider(
       create: (context) => DiagramCubit(),
       child: const MainView(),

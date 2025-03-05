@@ -4,6 +4,7 @@ import 'package:database_diagrams_client/diagram_canvas.dart';
 import 'package:database_diagrams_client/state/diagram_cubit.dart';
 import 'package:database_diagrams_client/state/diagram_state.dart';
 import 'package:database_diagrams_client/widgets/add_entity_dialog.dart';
+import 'package:database_diagrams_client/widgets/toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,18 +32,8 @@ class MainView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              // Toolbar section
-              Container(
-                height: 60,
-                color: Colors.grey[200],
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    IconButton(icon: const Icon(Icons.save), onPressed: () {}),
-                  ],
-                ),
-              ),
-              // Diagram canvas section
+              // Replace the Container with Toolbar
+              Toolbar(onSave: () {}, onSignIn: () {}),
               Expanded(
                 child: DiagramCanvas(
                   entities: state.entities,

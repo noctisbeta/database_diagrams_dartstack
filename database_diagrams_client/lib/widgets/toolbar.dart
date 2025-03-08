@@ -1,24 +1,16 @@
 import 'dart:async';
 
+import 'package:database_diagrams_client/authentication/controllers/auth_bloc.dart';
+import 'package:database_diagrams_client/authentication/models/auth_event.dart';
+import 'package:database_diagrams_client/authentication/models/auth_state.dart';
 import 'package:database_diagrams_client/widgets/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Toolbar extends StatelessWidget {
-  const Toolbar({required this.onSave, required this.onSignIn, super.key});
+  const Toolbar({required this.onSave, super.key});
 
   final VoidCallback onSave;
-  final VoidCallback onSignIn;
-
-  Future<void> _showSignInDialog(BuildContext context) async {
-    final Map<String, String>? result = await showDialog<Map<String, String>>(
-      context: context,
-      builder: (context) => const SignInDialog(),
-    );
-
-    if (result != null) {
-      onSignIn();
-    }
-  }
 
   @override
   Widget build(BuildContext context) => Container(
@@ -33,10 +25,47 @@ class Toolbar extends StatelessWidget {
           tooltip: 'Save Diagram',
         ),
         const Spacer(),
-        FilledButton.icon(
-          onPressed: () => unawaited(_showSignInDialog(context)),
-          icon: const Icon(Icons.login),
-          label: const Text('Sign In'),
+        BlocBuilder<AuthBloc, AuthState>(
+          builder:
+              (context, state) => FilledButton.icon(
+                onPressed:
+                    state is AuthStateLoading
+                        ? null
+                        : () =>
+                            state is AuthStateAuthenticated
+                                ? context.read<AuthBloc>().add(
+                                  const AuthEventLogout(),
+                                )
+                                : unawaited(
+                                  showDialog<void>(
+                                    context: context,
+                                    builder:
+                                        (dialogContext) => BlocProvider.value(
+                                          value: context.read<AuthBloc>(),
+                                          child: const SignInDialog(),
+                                        ),
+                                  ),
+                                ),
+
+                icon:
+                    state is AuthStateLoading
+                        ? const SizedBox.square(
+                          dimension: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : Icon(
+                          state is AuthStateAuthenticated
+                              ? Icons.logout
+                              : Icons.login,
+                        ),
+                label: Text(
+                  state is AuthStateLoading
+                      ? 'Please wait...'
+                      : state is AuthStateAuthenticated
+                      ? 'Sign Out'
+                      : 'Sign In',
+                ),
+              ),
         ),
       ],
     ),

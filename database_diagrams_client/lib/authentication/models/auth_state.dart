@@ -1,4 +1,3 @@
-import 'package:database_diagrams_common/auth/tokens/jwtoken.dart';
 import 'package:database_diagrams_common/auth/user.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart' show immutable;
@@ -18,13 +17,12 @@ final class AuthStateUnauthenticated extends AuthState {
 
 @immutable
 final class AuthStateAuthenticated extends AuthState {
-  const AuthStateAuthenticated({required this.user, required this.token});
+  const AuthStateAuthenticated({required this.user});
 
   final User user;
-  final JWToken token;
 
   @override
-  List<Object?> get props => [user, token];
+  List<Object?> get props => [user];
 }
 
 @immutable

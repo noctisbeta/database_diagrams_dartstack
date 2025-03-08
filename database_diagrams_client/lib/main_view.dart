@@ -33,7 +33,7 @@ class MainView extends StatelessWidget {
           body: Column(
             children: [
               // Replace the Container with Toolbar
-              Toolbar(onSave: () {}, onSignIn: () {}),
+              Toolbar(onSave: () {}),
               Expanded(
                 child: DiagramCanvas(
                   entities: state.entities,

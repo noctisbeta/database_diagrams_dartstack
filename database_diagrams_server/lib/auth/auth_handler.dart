@@ -62,59 +62,6 @@ final class AuthHandler implements IAuthHandler {
   }
 
   @override
-  Future<Response> storeEncryptedSalt(Request request) async {
-    try {
-      final bool isValidContentType = request.validateContentType(
-        ContentType.json.mimeType,
-      );
-
-      if (!isValidContentType) {
-        return Response(
-          HttpStatus.badRequest,
-          body: 'Invalid request! Content-Type must be ${ContentType.json}',
-        );
-      }
-
-      @Throws([FormatException])
-      final Map<String, dynamic> json = await request.json();
-
-      final String? encryptedSalt = json['encrypted_salt'] as String?;
-      if (encryptedSalt == null) {
-        return Response(
-          HttpStatus.badRequest,
-          body: 'Missing encrypted_salt in request body',
-        );
-      }
-
-      final int userId = request.getUserId();
-
-      await _authRepository.storeEncryptedSalt(encryptedSalt, userId);
-
-      return Response(
-        HttpStatus.created,
-        body: 'Encrypted salt stored successfully!',
-      );
-    } on BadRequestContentTypeException catch (e) {
-      return Response(HttpStatus.badRequest, body: 'Invalid content type: $e');
-    } on FormatException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
-        body: 'Invalid request format: $e',
-      );
-    } on DatabaseException catch (e) {
-      return Response(
-        HttpStatus.internalServerError,
-        body: 'Database error: $e',
-      );
-    } on Exception catch (e) {
-      return Response(
-        HttpStatus.internalServerError,
-        body: 'Failed to store encrypted salt: $e',
-      );
-    }
-  }
-
-  @override
   Future<Response> login(Request request) async {
     try {
       final bool isValidContentType = request.validateContentType(
@@ -223,29 +170,6 @@ final class AuthHandler implements IAuthHandler {
       return Response(
         HttpStatus.internalServerError,
         body: 'An error occurred! $e',
-      );
-    }
-  }
-
-  @override
-  Future<Response> getEncryptedSalt(Request request) async {
-    try {
-      final int userId = request.getUserId();
-
-      final String encryptedSalt = await _authRepository.getEncryptedSalt(
-        userId,
-      );
-
-      return JsonResponse(body: {'encrypted_salt': encryptedSalt});
-    } on DBEemptyResult {
-      return JsonResponse(
-        statusCode: HttpStatus.notFound,
-        body: {'message': 'No encryption setup found for this user'},
-      );
-    } on Exception catch (e) {
-      return Response(
-        HttpStatus.internalServerError,
-        body: 'Failed to get encrypted salt: $e',
       );
     }
   }

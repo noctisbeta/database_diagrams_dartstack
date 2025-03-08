@@ -69,15 +69,6 @@ final class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<void> storeEncryptedSalt(String encryptedSalt, int userId) async {
-    await _authDataSource.storeEncryptedSalt(encryptedSalt, userId);
-  }
-
-  @override
-  Future<String> getEncryptedSalt(int userId) =>
-      _authDataSource.getEncryptedSalt(userId);
-
-  @override
   @Propagates([DatabaseException])
   Future<LoginResponse> login(LoginRequest loginRequest) async {
     @Throws([DatabaseException])

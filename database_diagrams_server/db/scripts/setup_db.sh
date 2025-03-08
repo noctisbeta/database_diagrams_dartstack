@@ -6,21 +6,21 @@ DB_NAME="database_diagrams"
 # Text colors
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}Setting up database_diagrams database...${NC}"
 
-# Drop existing database if it exists
-echo "Dropping existing database if it exists..."
-dropdb $DB_NAME 2>/dev/null
-
-# Create fresh database
-echo "Creating new database..."
-createdb $DB_NAME
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to create database${NC}"
-    exit 1
+# Check if database exists
+if psql -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+    echo -e "${YELLOW}Database already exists, skipping creation${NC}"
+else
+    echo "Creating new database..."
+    createdb $DB_NAME
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to create database. Make sure PostgreSQL is running and you have the right permissions${NC}"
+        exit 1
+    fi
 fi
 
 # Apply schema files in order

@@ -12,6 +12,7 @@ import 'package:database_diagrams_common/auth/tokens/refresh_token.dart';
 import 'package:database_diagrams_common/auth/tokens/refresh_token_request.dart';
 import 'package:database_diagrams_common/auth/tokens/refresh_token_response.dart';
 import 'package:database_diagrams_common/auth/tokens/refresh_token_wrapper.dart';
+import 'package:database_diagrams_common/auth/user.dart';
 import 'package:database_diagrams_common/logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,12 @@ final class AuthRepository {
   final DioWrapper _dio;
 
   final FlutterSecureStorage _storage;
+
+  Future<void> _saveUsername(String username) async {
+    await _storage.write(key: 'username', value: username);
+  }
+
+  Future<String?> _getUsername() => _storage.read(key: 'username');
 
   Future<void> _saveJWToken(JWToken token) async {
     await _storage.write(key: 'jw_token', value: token.value);
@@ -105,6 +112,50 @@ final class AuthRepository {
     }
   }
 
+  Future<User> getUser() async {
+    final String? username = await _getUsername();
+    final JWToken? token = await _getJWToken();
+
+    if (username == null || token == null) {
+      throw Exception('Username or token not found in secure storage');
+    }
+
+    final String? refreshTokenString = await _storage.read(
+      key: 'refresh_token',
+    );
+
+    if (refreshTokenString == null) {
+      throw Exception('Refresh token not found in secure storage');
+    }
+
+    final RefreshToken refreshToken = RefreshToken.fromRefreshTokenString(
+      refreshTokenString,
+    );
+
+    final String? refreshTokenExpiresAtString = await _storage.read(
+      key: 'refresh_token_expires_at',
+    );
+
+    if (refreshTokenExpiresAtString == null) {
+      throw Exception('Refresh token expires at not found in secure storage');
+    }
+
+    final DateTime refreshTokenExpiresAt = DateTime.parse(
+      refreshTokenExpiresAtString,
+    );
+
+    final RefreshTokenWrapper refreshTokenWrapper = RefreshTokenWrapper(
+      refreshToken: refreshToken,
+      refreshTokenExpiresAt: refreshTokenExpiresAt,
+    );
+
+    return User(
+      username: username,
+      token: token,
+      refreshTokenWrapper: refreshTokenWrapper,
+    );
+  }
+
   Future<bool> isAuthenticated() async {
     final JWToken? token = await _getJWToken();
 
@@ -139,6 +190,8 @@ final class AuthRepository {
       final LoginResponseSuccess loginResponse =
           LoginResponseSuccess.validatedFromMap(response.data);
 
+      await _saveUsername(loginRequest.username);
+
       await _saveJWToken(loginResponse.user.token);
 
       await _saveRefreshToken(
@@ -151,9 +204,11 @@ final class AuthRepository {
       LOG.e('Error logging in user: $e');
       switch (e.response?.statusCode) {
         case HttpStatus.unauthorized:
+          LOG.w('Unauthorized login attempt');
           return LoginResponseError.validatedFromMap(e.response?.data);
 
         case HttpStatus.notFound:
+          LOG.e('User not found');
           return const LoginResponseError(
             message: 'User not found',
             error: LoginError.userNotFound,
@@ -179,6 +234,7 @@ final class AuthRepository {
       final RegisterResponseSuccess registerResponse =
           RegisterResponseSuccess.validatedFromMap(response.data);
 
+      await _saveUsername(registerRequest.username);
       await _saveJWToken(registerResponse.user.token);
       await _saveRefreshToken(
         registerResponse.user.refreshTokenWrapper.refreshToken,

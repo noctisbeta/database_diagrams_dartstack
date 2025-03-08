@@ -43,17 +43,6 @@ final class AuthDataSource {
     return refreshTokenDB;
   }
 
-  Future<void> storeEncryptedSalt(String encryptedSalt, int userId) async {
-    @Throws([DatabaseException])
-    final Result _ = await _db.execute(
-      Sql.named('''
-        INSERT INTO encrypted_salts (user_id, encrypted_salt)
-        VALUES (@user_id, @encrypted_salt);
-      '''),
-      parameters: {'user_id': userId, 'encrypted_salt': encryptedSalt},
-    );
-  }
-
   RefreshToken _generateRefreshToken() {
     final random = Random.secure();
     final bytes = List<int>.generate(32, (_) => random.nextInt(256));
@@ -161,21 +150,5 @@ final class AuthDataSource {
     );
 
     return res.isEmpty;
-  }
-
-  Future<String> getEncryptedSalt(int userId) async {
-    @Throws([DatabaseException])
-    final Result result = await _db.execute(
-      Sql.named(
-        'SELECT encrypted_salt FROM encrypted_salts WHERE user_id = @user_id;',
-      ),
-      parameters: {'user_id': userId},
-    );
-
-    if (result.isEmpty) {
-      throw const DBEemptyResult('No encrypted salt found for user');
-    }
-
-    return result.first.toColumnMap()['encrypted_salt'] as String;
   }
 }

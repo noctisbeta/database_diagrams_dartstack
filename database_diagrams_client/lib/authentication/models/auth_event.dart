@@ -7,6 +7,14 @@ sealed class AuthEvent extends Equatable {
 }
 
 @immutable
+final class AuthEventCheckAuth extends AuthEvent {
+  const AuthEventCheckAuth();
+
+  @override
+  List<Object?> get props => [];
+}
+
+@immutable
 final class AuthEventLogin extends AuthEvent {
   const AuthEventLogin({required this.username, required this.password});
 

@@ -7,6 +7,7 @@ import 'package:database_diagrams_common/auth/login/login_response.dart';
 import 'package:database_diagrams_common/auth/register/register_error.dart';
 import 'package:database_diagrams_common/auth/register/register_request.dart';
 import 'package:database_diagrams_common/auth/register/register_response.dart';
+import 'package:database_diagrams_common/auth/user.dart';
 import 'package:database_diagrams_common/logger/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,11 +20,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AuthEventLogin() => await login(event, emit),
         AuthEventRegister() => await register(event, emit),
         AuthEventLogout() => await logout(event, emit),
+        AuthEventCheckAuth() => await checkAuth(event, emit),
       },
     );
   }
 
   final AuthRepository _authRepository;
+
+  Future<void> checkAuth(
+    AuthEventCheckAuth event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthStateLoading());
+
+    final bool isAuthenticated = await _authRepository.isAuthenticated();
+
+    if (isAuthenticated) {
+      final User user = await _authRepository.getUser();
+      emit(AuthStateAuthenticated(user: user));
+    } else {
+      emit(const AuthStateUnauthenticated());
+    }
+  }
 
   Future<void> logout(AuthEventLogout event, Emitter<AuthState> emit) async {
     try {
@@ -50,12 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     switch (loginResponse) {
       case LoginResponseSuccess():
-        emit(
-          AuthStateAuthenticated(
-            user: loginResponse.user,
-            token: loginResponse.user.token,
-          ),
-        );
+        emit(AuthStateAuthenticated(user: loginResponse.user));
       case LoginResponseError():
         switch (loginResponse.error) {
           case LoginError.wrongPassword:
@@ -85,12 +98,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     switch (registerResponse) {
       case RegisterResponseSuccess():
-        emit(
-          AuthStateAuthenticated(
-            user: registerResponse.user,
-            token: registerResponse.user.token,
-          ),
-        );
+        emit(AuthStateAuthenticated(user: registerResponse.user));
       case RegisterResponseError():
         switch (registerResponse.error) {
           case RegisterError.usernameAlreadyExists:

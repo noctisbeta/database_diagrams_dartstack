@@ -10,10 +10,6 @@ abstract interface class IAuthRepository {
     RefreshTokenRequest refreshTokenRequest,
   );
 
-  Future<void> storeEncryptedSalt(String encryptedSalt, int userId);
-
-  Future<String> getEncryptedSalt(int userId);
-
   Future<LoginResponse> login(LoginRequest loginRequest);
 
   Future<RegisterResponse> register(RegisterRequest registerRequest);

@@ -1,4 +1,3 @@
-import 'package:database_diagrams_client/dio_wrapper/configure_dio_web.dart';
 import 'package:database_diagrams_client/dio_wrapper/jwt_interceptor.dart';
 import 'package:database_diagrams_common/logger/logger.dart';
 import 'package:dio/dio.dart';
@@ -7,13 +6,30 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 @immutable
 final class DioWrapper {
+  // factory DioWrapper.authorized() {
+  //   final dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080/api/v1'))
+  //     ..interceptors.add(
+  //       JwtInterceptor(
+  //         secureStorage: const FlutterSecureStorage(),
+  //         unauthorizedDio: DioWrapper.unauthorized(),
+  //       ),
+  //     );
+
+  //   if (kDebugMode) {
+  //     configureDioAdapter(dio);
+  //   }
+
+  //   return DioWrapper._(dio);
+  // }
+
   const DioWrapper._(this._dio);
 
   factory DioWrapper.unauthorized() {
     final dio = Dio(
         BaseOptions(
           baseUrl: 'http://localhost:8080/api/v1',
-          validateStatus: (status) => status != null && status < 500,
+          validateStatus:
+              (status) => status != null && status >= 200 && status < 300,
         ),
       )
       ..interceptors.addAll([
@@ -21,27 +37,28 @@ final class DioWrapper {
         InterceptorsWrapper(onError: (e, handler) => handler.next(e)),
       ]);
 
-    if (kDebugMode) {
-      configureDioAdapter(dio);
-    }
+    // if (kDebugMode) {
+    //   configureDioAdapter(dio);
+    // }
 
     return DioWrapper._(dio);
   }
 
-  factory DioWrapper.authorized() {
-    final dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080/api/v1'))
-      ..interceptors.add(
-        JwtInterceptor(
-          secureStorage: const FlutterSecureStorage(),
-          unauthorizedDio: DioWrapper.unauthorized(),
-        ),
-      );
+  void addAuthInterceptor(FlutterSecureStorage storage) {
+    removeAuthInterceptor();
 
-    if (kDebugMode) {
-      configureDioAdapter(dio);
-    }
+    _dio.interceptors.add(
+      JwtInterceptor(
+        secureStorage: storage,
+        unauthorizedDio: DioWrapper.unauthorized(),
+      ),
+    );
+  }
 
-    return DioWrapper._(dio);
+  void removeAuthInterceptor() {
+    _dio.interceptors.removeWhere(
+      (interceptor) => interceptor is JwtInterceptor,
+    );
   }
 
   final Dio _dio;
@@ -93,6 +110,7 @@ final class DioWrapper {
     Options? options,
   }) async {
     try {
+      LOG.i('Posting data to $path');
       final Response response = await _dio.post(
         path,
         data: data,
@@ -100,6 +118,9 @@ final class DioWrapper {
         options: options,
       );
 
+      LOG.i(
+        'Successfully posted data to $path with response: ${response.data}',
+      );
       return response;
     } on DioException catch (e) {
       LOG.e('Error posting data: $e');

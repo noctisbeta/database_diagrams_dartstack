@@ -13,7 +13,7 @@ import 'package:common/auth/tokens/refresh_token_wrapper.dart';
 import 'package:common/auth/user.dart';
 import 'package:common/exceptions/propagates.dart';
 import 'package:common/exceptions/throws.dart';
-import 'package:server/auth/abstractions/auth_repository_interface.dart';
+import 'package:server/auth/abstractions/i_auth_repository.dart';
 import 'package:server/auth/auth_data_source.dart';
 import 'package:server/auth/hasher.dart';
 import 'package:server/auth/jwtoken_helper.dart';

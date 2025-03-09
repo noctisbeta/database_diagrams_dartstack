@@ -1,4 +1,4 @@
-import 'package:server/auth/abstractions/auth_repository_interface.dart';
+import 'package:server/auth/abstractions/i_auth_repository.dart';
 import 'package:server/auth/auth_data_source.dart';
 import 'package:server/auth/auth_handler.dart';
 import 'package:server/auth/auth_repository.dart';

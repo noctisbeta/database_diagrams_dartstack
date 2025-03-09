@@ -1,0 +1,1 @@
+enum GetProjectsError { databaseError, unauthorized }

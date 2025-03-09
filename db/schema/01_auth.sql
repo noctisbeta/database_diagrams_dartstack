@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY NOT NULL,
+    id GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     hashed_password VARCHAR(100) NOT NULL,
     salt VARCHAR(100) NOT NULL,
@@ -7,11 +7,14 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TRIGGER update_users_updated_at BEFORE
+UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TABLE refresh_tokens (
-    id SERIAL PRIMARY KEY,
+    id GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
     token VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     expires_at TIMESTAMP NOT NULL,
     ip_address VARCHAR(45),
     user_agent TEXT

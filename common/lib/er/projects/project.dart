@@ -15,7 +15,7 @@ final class Project extends DataModel {
 
   factory Project.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
-      'id': final String id,
+      'id': final int id,
       'name': final String name,
       'description': final String description,
       'diagram_ids': final List<dynamic> diagramIds,
@@ -33,7 +33,7 @@ final class Project extends DataModel {
     _ => throw const BadMapShapeException('Bad map shape for Project'),
   };
 
-  final String id;
+  final int id;
   final String name;
   final String description;
   final List<String> diagramIds;
@@ -62,7 +62,7 @@ final class Project extends DataModel {
 
   @override
   Project copyWith({
-    String? id,
+    int? id,
     String? name,
     String? description,
     List<String>? diagramIds,

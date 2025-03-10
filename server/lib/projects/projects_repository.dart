@@ -32,12 +32,14 @@ final class ProjectsRepository {
                     description: p.description,
                     createdAt: p.createdAt,
                     updatedAt: p.updatedAt,
-                    diagramIds: const [],
                   ),
                 )
                 .toList(),
       );
     } on DatabaseException catch (e) {
+      if (e is DBEemptyResult) {
+        return const GetProjectsResponseSuccess(projects: []);
+      }
       return GetProjectsResponseFailure(
         message: e.message,
         error: GetProjectsError.databaseError,
@@ -63,7 +65,6 @@ final class ProjectsRepository {
         description: projectDB.description,
         createdAt: projectDB.createdAt,
         updatedAt: projectDB.updatedAt,
-        diagramIds: const [],
       );
 
       return CreateProjectResponseSuccess(project: project);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:client/dio_wrapper/dio_wrapper.dart';
 import 'package:common/er/projects/create_project_error.dart';
 import 'package:common/er/projects/create_project_request.dart';
@@ -20,6 +22,9 @@ class ProjectsRepository {
 
       return success.projects;
     } on DioException catch (e) {
+      if (e.response?.statusCode == HttpStatus.notFound) {
+        return const [];
+      }
       throw Exception(e.message.toString());
     }
   }

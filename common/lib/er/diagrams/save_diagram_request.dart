@@ -1,7 +1,6 @@
 import 'package:common/abstractions/models.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
-import 'package:common/er/relation.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:meta/meta.dart';
 
@@ -10,7 +9,6 @@ final class SaveDiagramRequest extends DataModel {
   const SaveDiagramRequest({
     required this.name,
     required this.entities,
-    required this.relations,
     required this.entityPositions,
   });
 
@@ -19,16 +17,16 @@ final class SaveDiagramRequest extends DataModel {
   ) => switch (map) {
     {
       'name': final String name,
-      'entities': final List<Map<String, dynamic>> entities,
-      'relations': final List<Map<String, dynamic>> relations,
-      'entity_positions': final List<Map<String, dynamic>> entityPositions,
+      'entities': final List<dynamic> entities,
+      'entity_positions': final List<dynamic> entityPositions,
     } =>
       SaveDiagramRequest(
         name: name,
-        entities: entities.map(Entity.validatedFromMap).toList(),
-        relations: relations.map(Relation.validatedFromMap).toList(),
+        entities: entities.map((e) => Entity.validatedFromMap(e)).toList(),
         entityPositions:
-            entityPositions.map(EntityPosition.validatedFromMap).toList(),
+            entityPositions
+                .map((p) => EntityPosition.validatedFromMap(p))
+                .toList(),
       ),
     _ =>
       throw const BadMapShapeException('Bad map shape for SaveDiagramRequest'),
@@ -36,30 +34,26 @@ final class SaveDiagramRequest extends DataModel {
 
   final String name;
   final List<Entity> entities;
-  final List<Relation> relations;
   final List<EntityPosition> entityPositions;
 
   @override
   Map<String, dynamic> toMap() => {
     'name': name,
     'entities': entities.map((e) => e.toMap()).toList(),
-    'relations': relations.map((r) => r.toMap()).toList(),
     'entity_positions': entityPositions.map((p) => p.toMap()).toList(),
   };
 
   @override
-  List<Object?> get props => [name, entities, relations, entityPositions];
+  List<Object?> get props => [name, entities, entityPositions];
 
   @override
   SaveDiagramRequest copyWith({
     String? name,
     List<Entity>? entities,
-    List<Relation>? relations,
     List<EntityPosition>? entityPositions,
   }) => SaveDiagramRequest(
     name: name ?? this.name,
     entities: entities ?? this.entities,
-    relations: relations ?? this.relations,
     entityPositions: entityPositions ?? this.entityPositions,
   );
 }

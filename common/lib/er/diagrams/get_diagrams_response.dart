@@ -10,10 +10,10 @@ final class GetDiagramsResponse extends ResponseDTO {
   factory GetDiagramsResponse.validatedFromMap(
     Map<String, dynamic> map,
   ) => switch (map) {
-    {'diagrams': final List<Map<String, dynamic>> diagrams} =>
-      GetDiagramsResponse(
-        diagrams: diagrams.map(Diagram.validatedFromMap).toList(),
-      ),
+    {'diagrams': final List<dynamic> diagrams} => GetDiagramsResponse(
+      diagrams:
+          diagrams.map((diagram) => Diagram.validatedFromMap(diagram)).toList(),
+    ),
     _ =>
       throw const BadMapShapeException('Bad map shape for GetDiagramsResponse'),
   };

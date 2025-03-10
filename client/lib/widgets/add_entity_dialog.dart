@@ -2,7 +2,6 @@ import 'package:client/diagrams/diagram_cubit.dart';
 import 'package:client/entity_card.dart';
 import 'package:client/widgets/attribute_row.dart';
 import 'package:common/er/attribute.dart';
-import 'package:common/er/attribute_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +60,6 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
     int index, {
     String? name,
     String? dataType,
-    AttributeType? type,
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
@@ -87,7 +85,6 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
       _attributes[index] = _attributes[index].copyWith(
         name: name ?? _attributes[index].name,
         dataType: dataType ?? _attributes[index].dataType,
-        type: type,
         isPrimaryKey: isPrimaryKey ?? _attributes[index].isPrimaryKey,
         isForeignKey: isForeignKey ?? _attributes[index].isForeignKey,
         isNullable: isNullable ?? _attributes[index].isNullable,

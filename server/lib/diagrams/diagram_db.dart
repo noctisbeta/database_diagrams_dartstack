@@ -8,10 +8,10 @@ final class DiagramDB extends DataModel {
   const DiagramDB({
     required this.id,
     required this.name,
-    required this.projectId,
-    required this.createdBy,
+    required this.userId,
     required this.createdAt,
     required this.updatedAt,
+    this.projectId,
   });
 
   @Throws([DBEbadSchema])
@@ -19,8 +19,8 @@ final class DiagramDB extends DataModel {
     {
       'id': final int id,
       'name': final String name,
-      'project_id': final int projectId,
-      'created_by': final int createdBy,
+      'project_id': final int? projectId,
+      'user_id': final int userId,
       'created_at': final DateTime createdAt,
       'updated_at': final DateTime updatedAt,
     } =>
@@ -28,7 +28,7 @@ final class DiagramDB extends DataModel {
         id: id,
         name: name,
         projectId: projectId,
-        createdBy: createdBy,
+        userId: userId,
         createdAt: createdAt,
         updatedAt: updatedAt,
       ),
@@ -37,8 +37,8 @@ final class DiagramDB extends DataModel {
 
   final int id;
   final String name;
-  final int projectId;
-  final int createdBy;
+  final int? projectId;
+  final int userId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -47,7 +47,7 @@ final class DiagramDB extends DataModel {
     id,
     name,
     projectId,
-    createdBy,
+    userId,
     createdAt,
     updatedAt,
   ];
@@ -57,7 +57,7 @@ final class DiagramDB extends DataModel {
     'id': id,
     'name': name,
     'project_id': projectId,
-    'created_by': createdBy,
+    'user_id': userId,
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
   };
@@ -67,14 +67,14 @@ final class DiagramDB extends DataModel {
     int? id,
     String? name,
     int? projectId,
-    int? createdBy,
+    int? Function()? userIdFn,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => DiagramDB(
     id: id ?? this.id,
     name: name ?? this.name,
     projectId: projectId ?? this.projectId,
-    createdBy: createdBy ?? this.createdBy,
+    userId: userIdFn?.call() ?? userId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );

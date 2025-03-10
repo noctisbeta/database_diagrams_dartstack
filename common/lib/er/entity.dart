@@ -17,12 +17,13 @@ final class Entity extends DataModel {
     {
       'id': final String id,
       'name': final String name,
-      'attributes': final List<Map<String, dynamic>> attributes,
+      'attributes': final List<dynamic> attributes,
     } =>
       Entity(
         id: id,
         name: name,
-        attributes: attributes.map(Attribute.validatedFromMap).toList(),
+        attributes:
+            attributes.map((attr) => Attribute.validatedFromMap(attr)).toList(),
       ),
     _ => throw const BadMapShapeException('Bad map shape for Entity'),
   };

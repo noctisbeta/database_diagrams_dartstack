@@ -1,5 +1,3 @@
-CREATE TYPE attribute_type AS ENUM ('simple', 'composite', 'multiValued', 'derived');
-
 CREATE TABLE entities (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -16,7 +14,6 @@ CREATE TABLE attributes (
     entity_id INTEGER NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     data_type VARCHAR(255) NOT NULL,
-    type attribute_type NOT NULL DEFAULT 'simple',
     is_primary_key BOOLEAN NOT NULL DEFAULT FALSE,
     is_foreign_key BOOLEAN NOT NULL DEFAULT FALSE,
     is_nullable BOOLEAN NOT NULL DEFAULT FALSE,

@@ -35,9 +35,7 @@ class Toolbar extends StatelessWidget {
   }
 
   void _saveDiagram(BuildContext context) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Saving diagram...')));
+    unawaited(context.read<DiagramCubit>().saveDiagram());
   }
 
   Future<void> _showSignInPrompt(BuildContext context) async {
@@ -346,11 +344,27 @@ class ProfileMenu extends StatelessWidget {
     onSelected: (value) {
       if (value == 'signout') {
         context.read<AuthBloc>().add(const AuthEventLogout());
+      } else if (value == 'diagrams') {
+        unawaited(
+          showDialog<void>(
+            context: context,
+            builder:
+                (dialogContext) => BlocProvider.value(
+                  value: context.read<DiagramCubit>(),
+                  child: const Placeholder(),
+                ),
+          ),
+        );
       }
       // Add more options handling here in the future
     },
     itemBuilder:
         (context) => [
+          const ProfileMenuItem(
+            value: 'diagrams',
+            icon: Icons.dashboard,
+            text: 'My Diagrams',
+          ),
           const ProfileMenuItem(
             value: 'profile',
             icon: Icons.account_circle,

@@ -1,5 +1,4 @@
 import 'package:common/abstractions/models.dart';
-import 'package:common/er/attribute_type.dart';
 import 'package:common/exceptions/throws.dart';
 import 'package:meta/meta.dart';
 import 'package:server/postgres/exceptions/database_exception.dart';
@@ -11,7 +10,6 @@ final class AttributeDB extends DataModel {
     required this.entityId,
     required this.name,
     required this.dataType,
-    required this.type,
     required this.isPrimaryKey,
     required this.isForeignKey,
     required this.isNullable,
@@ -29,7 +27,6 @@ final class AttributeDB extends DataModel {
           'entity_id': final String entityId,
           'name': final String name,
           'data_type': final String dataType,
-          'type': final String type,
           'is_primary_key': final bool isPrimaryKey,
           'is_foreign_key': final bool isForeignKey,
           'is_nullable': final bool isNullable,
@@ -42,10 +39,6 @@ final class AttributeDB extends DataModel {
             entityId: entityId,
             name: name,
             dataType: dataType,
-            type: AttributeType.values.firstWhere(
-              (e) => e.name == type,
-              orElse: () => AttributeType.simple,
-            ),
             isPrimaryKey: isPrimaryKey,
             isForeignKey: isForeignKey,
             isNullable: isNullable,
@@ -61,7 +54,6 @@ final class AttributeDB extends DataModel {
   final String entityId;
   final String name;
   final String dataType;
-  final AttributeType type;
   final bool isPrimaryKey;
   final bool isForeignKey;
   final bool isNullable;
@@ -76,7 +68,6 @@ final class AttributeDB extends DataModel {
     entityId,
     name,
     dataType,
-    type,
     isPrimaryKey,
     isForeignKey,
     isNullable,
@@ -92,7 +83,6 @@ final class AttributeDB extends DataModel {
     'entity_id': entityId,
     'name': name,
     'data_type': dataType,
-    'type': type.name,
     'is_primary_key': isPrimaryKey,
     'is_foreign_key': isForeignKey,
     'is_nullable': isNullable,
@@ -108,7 +98,6 @@ final class AttributeDB extends DataModel {
     String? entityId,
     String? name,
     String? dataType,
-    AttributeType? type,
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
@@ -121,7 +110,6 @@ final class AttributeDB extends DataModel {
     entityId: entityId ?? this.entityId,
     name: name ?? this.name,
     dataType: dataType ?? this.dataType,
-    type: type ?? this.type,
     isPrimaryKey: isPrimaryKey ?? this.isPrimaryKey,
     isForeignKey: isForeignKey ?? this.isForeignKey,
     isNullable: isNullable ?? this.isNullable,

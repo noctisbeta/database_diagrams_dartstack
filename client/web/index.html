@@ -55,6 +55,22 @@
         },
         false
       );
+
+      // Prevent accidental refresh/navigation away
+      window.addEventListener("beforeunload", function (e) {
+        // Cancel the event
+        e.preventDefault();
+        // Chrome requires returnValue to be set
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?";
+        // Return a string for older browsers
+        return "You have unsaved changes. Are you sure you want to leave?";
+      });
+
+      // Optional: Allow the app to disable the warning when data is saved
+      window.allowPageUnload = function () {
+        window.onbeforeunload = null;
+      };
     </script>
   </head>
   <body>

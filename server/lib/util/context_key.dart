@@ -11,7 +11,10 @@ enum ContextKey {
   authDataSource('authDataSource'),
   projectsDataSource('projectsDataSource'),
   projectsRepository('projectsRepository'),
-  projectsHandler('projectsHandler');
+  projectsHandler('projectsHandler'),
+  diagramsDataSource('diagramsDataSource'),
+  diagramsRepository('diagramsRepository'),
+  diagramsHandler('diagramsHandler');
 
   const ContextKey(this.keyString);
 

@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_event.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/state/diagram_cubit.dart';
+import 'package:client/diagrams/diagram_cubit.dart';
 import 'package:client/widgets/sign_in_dialog.dart';
 import 'package:common/auth/user.dart';
 import 'package:file_saver/file_saver.dart';

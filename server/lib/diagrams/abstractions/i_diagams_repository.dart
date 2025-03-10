@@ -1,11 +1,17 @@
-import 'package:common/er/diagram.dart';
+import 'package:common/er/diagrams/get_diagrams_request.dart';
+import 'package:common/er/diagrams/get_diagrams_response.dart';
+import 'package:common/er/diagrams/save_diagram_request.dart';
+import 'package:common/er/diagrams/save_diagram_response.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 abstract interface class IDiagramsRepository {
-  Future<List<Diagram>> getDiagrams(int projectId);
-  Future<Diagram> createDiagram(Diagram diagram);
-  Future<Diagram> updateDiagram(int diagramId);
-  Future<void> deleteDiagram(int diagramId);
-  Future<Diagram> getDiagramById(int diagramId);
+  Future<SaveDiagramResponse> saveDiagram(
+    SaveDiagramRequest request,
+    int userId,
+  );
+  Future<GetDiagramsResponse> getDiagrams(
+    GetDiagramsRequest request,
+    int userId,
+  );
 }

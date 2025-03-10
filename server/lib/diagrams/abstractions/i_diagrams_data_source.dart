@@ -1,11 +1,10 @@
+import 'package:common/er/diagram.dart';
+import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/diagram_db.dart';
 
 @immutable
 abstract interface class IDiagramsDataSource {
-  Future<List<DiagramDB>> getDiagrams(int projectId);
-  Future<DiagramDB> createDiagram(DiagramDB diagram);
-  Future<DiagramDB> updateDiagram(int diagramId);
-  Future<void> deleteDiagram(int diagramId);
-  Future<DiagramDB> getDiagramById(int id);
+  Future<List<Diagram>> getDiagrams(int userId);
+  Future<DiagramDB> saveDiagram(SaveDiagramRequest request, int userId);
 }

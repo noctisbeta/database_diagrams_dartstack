@@ -71,8 +71,8 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         diagramsMap[diagramId] = {
           'id': diagramId.toString(),
           'name': row['diagram_name']! as String,
-          'created_at': row['diagram_created_at']! as String,
-          'updated_at': row['diagram_updated_at']! as String,
+          'created_at': row['diagram_created_at']! as DateTime,
+          'updated_at': row['diagram_updated_at']! as DateTime,
         };
         entitiesMap[diagramId] = {};
         attributesMap[diagramId] = {};
@@ -89,8 +89,8 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         entitiesMap[diagramId]![entityId] = {
           'id': entityId.toString(),
           'name': row['entity_name']! as String,
-          'created_at': row['entity_created_at']! as String,
-          'updated_at': row['entity_updated_at']! as String,
+          'created_at': row['entity_created_at']! as DateTime,
+          'updated_at': row['entity_updated_at']! as DateTime,
         };
         attributesMap[diagramId]![entityId] = [];
       }
@@ -118,8 +118,8 @@ final class DiagramsDataSource implements IDiagramsDataSource {
           'is_nullable': row['is_nullable']! as bool,
           'referenced_entity_id': row['referenced_entity_id']?.toString(),
           'order': row['order']! as int,
-          'created_at': row['attribute_created_at']! as String,
-          'updated_at': row['attribute_updated_at']! as String,
+          'created_at': row['attribute_created_at']! as DateTime,
+          'updated_at': row['attribute_updated_at']! as DateTime,
         });
       }
     }

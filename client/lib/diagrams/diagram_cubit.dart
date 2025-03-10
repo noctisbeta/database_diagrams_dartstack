@@ -1,5 +1,6 @@
 import 'package:client/diagrams/diagram_repository.dart';
 import 'package:client/diagrams/diagram_state.dart';
+import 'package:common/er/diagram.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/entity.dart';
@@ -17,6 +18,20 @@ class DiagramCubit extends Cubit<DiagramState> {
 
   final GlobalKey canvasBoundaryKey = GlobalKey();
 
+  Future<List<Diagram>> getDiagrams() async {
+    final GetDiagramsResponse response = await _diagramRepository.getDiagrams();
+    return response.diagrams;
+  }
+
+  void loadDiagram(Diagram diagram) {
+    emit(
+      DiagramState(
+        entities: diagram.entities,
+        entityPositions: diagram.entityPositions,
+      ),
+    );
+  }
+
   Future<void> saveDiagram() async {
     final request = SaveDiagramRequest(
       entities: state.entities,
@@ -27,21 +42,6 @@ class DiagramCubit extends Cubit<DiagramState> {
       await _diagramRepository.saveDiagram(request);
     } on Exception catch (e) {
       LOG.e('Failed to save diagram $e');
-    }
-  }
-
-  Future<void> loadDiagram(String diagramId) async {
-    try {
-      final GetDiagramsResponse response =
-          await _diagramRepository.getDiagrams();
-      emit(
-        state.copyWith(
-          entities: response.diagrams.first.entities,
-          entityPositions: response.diagrams.first.entityPositions,
-        ),
-      );
-    } on Exception catch (e) {
-      LOG.e('Failed to load diagram: $e');
     }
   }
 

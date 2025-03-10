@@ -42,6 +42,32 @@ final class Diagram extends DataModel {
         createdAt: DateTime.parse(createdAt),
         updatedAt: DateTime.parse(updatedAt),
       ),
+    {
+      'id': final String id,
+      'name': final String name,
+      'entities': final List<dynamic> entities,
+      'entity_positions': final List<dynamic> entityPositions,
+      'created_at': final DateTime createdAt,
+      'updated_at': final DateTime updatedAt,
+    } =>
+      Diagram(
+        id: id,
+        name: name,
+        entities:
+            entities
+                .map((e) => Entity.validatedFromMap(e as Map<String, dynamic>))
+                .toList(),
+        entityPositions:
+            entityPositions
+                .map(
+                  (p) => EntityPosition.validatedFromMap(
+                    p as Map<String, dynamic>,
+                  ),
+                )
+                .toList(),
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      ),
     _ => throw const BadMapShapeException('Bad map shape for Diagram'),
   };
 

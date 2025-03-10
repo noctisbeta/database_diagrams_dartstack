@@ -23,17 +23,6 @@ final class DiagramsHandler implements IDiagramsHandler {
   @override
   Future<Response> getDiagrams(Request request) async {
     try {
-      final bool isValidContentType = request.validateContentType(
-        ContentType.json.mimeType,
-      );
-
-      if (!isValidContentType) {
-        return Response(
-          HttpStatus.badRequest,
-          body: 'Invalid request! Content-Type must be ${ContentType.json}',
-        );
-      }
-
       final getDiagramsRequest = GetDiagramsRequest.validatedFromMap();
 
       final int userId = request.getUserId();

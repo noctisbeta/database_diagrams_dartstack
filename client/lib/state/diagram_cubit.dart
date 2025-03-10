@@ -1,10 +1,13 @@
 import 'package:client/state/diagram_state.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DiagramCubit extends Cubit<DiagramState> {
   DiagramCubit() : super(const DiagramState(entities: [], entityPositions: []));
+
+  final GlobalKey canvasBoundaryKey = GlobalKey();
 
   void addEntity(Entity entity) {
     final String id = (state.entities.length + 1).toString();

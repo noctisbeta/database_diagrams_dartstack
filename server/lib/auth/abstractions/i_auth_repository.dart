@@ -10,7 +10,15 @@ abstract interface class IAuthRepository {
     RefreshTokenRequest refreshTokenRequest,
   );
 
-  Future<LoginResponse> login(LoginRequest loginRequest);
+  Future<LoginResponse> login({
+    required LoginRequest loginRequest,
+    String? ipAddress,
+    String? userAgent,
+  });
 
-  Future<RegisterResponse> register(RegisterRequest registerRequest);
+  Future<RegisterResponse> register({
+    required RegisterRequest registerRequest,
+    String? ipAddress,
+    String? userAgent,
+  });
 }

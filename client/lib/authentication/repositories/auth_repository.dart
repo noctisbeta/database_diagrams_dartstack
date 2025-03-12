@@ -107,7 +107,10 @@ final class AuthRepository {
 
       return newJwToken;
     } on DioException catch (e) {
-      LOG.e('Error refreshing token: $e');
+      LOG.e(
+        'Error refreshing token. \n ${e.response?.statusCode} '
+        '\n ${e.response?.data}',
+      );
       return null;
     }
   }

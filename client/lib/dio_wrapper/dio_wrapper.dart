@@ -1,26 +1,21 @@
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
-import 'package:common/logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 @immutable
 final class DioWrapper {
-  // factory DioWrapper.authorized() {
-  //   final dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080/api/v1'))
-  //     ..interceptors.add(
-  //       JwtInterceptor(
-  //         secureStorage: const FlutterSecureStorage(),
-  //         unauthorizedDio: DioWrapper.unauthorized(),
-  //       ),
-  //     );
+  factory DioWrapper.authorized() {
+    final dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080/api/v1'))
+      ..interceptors.add(
+        JwtInterceptor(
+          secureStorage: const FlutterSecureStorage(),
+          unauthorizedDio: DioWrapper.unauthorized(),
+        ),
+      );
 
-  //   if (kDebugMode) {
-  //     configureDioAdapter(dio);
-  //   }
-
-  //   return DioWrapper._(dio);
-  // }
+    return DioWrapper._(dio);
+  }
 
   const DioWrapper._(this._dio);
 
@@ -36,10 +31,6 @@ final class DioWrapper {
         LogInterceptor(requestBody: true, responseBody: true),
         InterceptorsWrapper(onError: (e, handler) => handler.next(e)),
       ]);
-
-    // if (kDebugMode) {
-    //   configureDioAdapter(dio);
-    // }
 
     return DioWrapper._(dio);
   }
@@ -78,8 +69,7 @@ final class DioWrapper {
       );
 
       return response;
-    } on DioException catch (e) {
-      LOG.e('Error making request: $e');
+    } on DioException catch (_) {
       rethrow;
     }
   }
@@ -97,8 +87,7 @@ final class DioWrapper {
       );
 
       return response;
-    } on DioException catch (e) {
-      LOG.e('Error getting data: $e');
+    } on DioException catch (_) {
       rethrow;
     }
   }
@@ -110,7 +99,6 @@ final class DioWrapper {
     Options? options,
   }) async {
     try {
-      LOG.i('Posting data to $path');
       final Response response = await _dio.post(
         path,
         data: data,
@@ -118,12 +106,8 @@ final class DioWrapper {
         options: options,
       );
 
-      LOG.i(
-        'Successfully posted data to $path with response: ${response.data}',
-      );
       return response;
-    } on DioException catch (e) {
-      LOG.e('Error posting data: $e');
+    } on DioException catch (_) {
       rethrow;
     }
   }

@@ -81,9 +81,15 @@ final class AuthHandler implements IAuthHandler {
       @Throws([BadRequestBodyException])
       final loginRequest = LoginRequest.validatedFromMap(json);
 
+      // Get client information
+      final String? userAgent = request.headers['user-agent'];
+      final String? ipAddress = _getClientIp(request);
+
       @Throws([DatabaseException])
       final LoginResponse loginResponse = await _authRepository.login(
-        loginRequest,
+        loginRequest: loginRequest,
+        userAgent: userAgent,
+        ipAddress: ipAddress,
       );
 
       switch (loginResponse) {
@@ -113,6 +119,19 @@ final class AuthHandler implements IAuthHandler {
     }
   }
 
+  String? _getClientIp(Request request) {
+    // Try X-Forwarded-For header first (for clients behind proxy)
+    final String? forwardedFor = request.headers['x-forwarded-for'];
+    if (forwardedFor != null && forwardedFor.isNotEmpty) {
+      return forwardedFor.split(',').first.trim();
+    }
+
+    // Fall back to direct connection info if available
+    return (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)
+        ?.remoteAddress
+        .address;
+  }
+
   @override
   Future<Response> register(Request request) async {
     try {
@@ -133,9 +152,16 @@ final class AuthHandler implements IAuthHandler {
       @Throws([BadRequestBodyException])
       final registerRequest = RegisterRequest.validatedFromMap(json);
 
+      // Get client information
+      final String? userAgent = request.headers['user-agent'];
+      final String? ipAddress = _getClientIp(request);
+
       @Throws([DatabaseException])
       final RegisterResponse registerResponse = await _authRepository.register(
-        registerRequest,
+        registerRequest: registerRequest,
+
+        userAgent: userAgent,
+        ipAddress: ipAddress,
       );
 
       switch (registerResponse) {

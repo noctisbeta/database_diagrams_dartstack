@@ -40,6 +40,28 @@ final class AuthRepository implements IAuthRepository {
       refreshTokenRequest.refreshToken,
     );
 
+    // Check if token is revoked
+    if (refreshTokenDB.isRevoked) {
+      return const RefreshTokenResponseError(
+        message: 'Token has been revoked',
+        error: RefreshError.revoked,
+      );
+    }
+
+    // Check if this token has already been used
+    if (refreshTokenDB.isUsed) {
+      // This might indicate token theft! Revoke all tokens for this user
+      await _authDataSource.revokeAllUserTokens(
+        refreshTokenDB.userId,
+        reason: 'Potential token compromise',
+      );
+
+      return const RefreshTokenResponseError(
+        message: 'Security concern: Token already used',
+        error: RefreshError.compromised,
+      );
+    }
+
     final DateTime nowUtc = DateTime.now().toUtc();
 
     if (refreshTokenDB.expiresAt.toUtc().isBefore(nowUtc)) {
@@ -55,22 +77,34 @@ final class AuthRepository implements IAuthRepository {
 
     final int userId = refreshTokenDB.userId;
 
-    await _authDataSource.deleteRefreshToken(refreshTokenRequest.refreshToken);
+    // Rotate the token
+    final RefreshTokenDB newRefreshTokenDB = await _authDataSource
+        .rotateRefreshToken(refreshTokenRequest.refreshToken, userId);
 
-    final (
-      JWToken jwToken,
-      RefreshTokenWrapper refreshTokenWrapper,
-    ) = await _getTokensFromUserId(userId);
+    // Create new JWT
+    final JWToken jwToken = JWTokenHelper.createWith(userID: userId);
+
+    // Use the rotated token directly
+    final refreshToken = RefreshToken.fromRefreshTokenString(
+      newRefreshTokenDB.token,
+    );
 
     return RefreshTokenResponseSuccess(
-      refreshTokenWrapper: refreshTokenWrapper,
+      refreshTokenWrapper: RefreshTokenWrapper(
+        refreshToken: refreshToken,
+        refreshTokenExpiresAt: newRefreshTokenDB.expiresAt,
+      ),
       jwToken: jwToken,
     );
   }
 
   @override
   @Propagates([DatabaseException])
-  Future<LoginResponse> login(LoginRequest loginRequest) async {
+  Future<LoginResponse> login({
+    required LoginRequest loginRequest,
+    String? ipAddress,
+    String? userAgent,
+  }) async {
     @Throws([DatabaseException])
     final UserDB userDB = await _authDataSource.login(loginRequest.username);
 
@@ -90,7 +124,11 @@ final class AuthRepository implements IAuthRepository {
     final (
       JWToken token,
       RefreshTokenWrapper refreshTokenWrapper,
-    ) = await _getTokensFromUserId(userDB.id);
+    ) = await _getTokensFromUserId(
+      userId: userDB.id,
+      ipAddress: ipAddress,
+      userAgent: userAgent,
+    );
 
     final user = User(
       username: userDB.username,
@@ -105,7 +143,11 @@ final class AuthRepository implements IAuthRepository {
 
   @override
   @Propagates([DatabaseException])
-  Future<RegisterResponse> register(RegisterRequest registerRequest) async {
+  Future<RegisterResponse> register({
+    required RegisterRequest registerRequest,
+    String? ipAddress,
+    String? userAgent,
+  }) async {
     final bool isUsernameUnique = await _isUniqueUsername(
       registerRequest.username,
     );
@@ -130,7 +172,7 @@ final class AuthRepository implements IAuthRepository {
     final (
       JWToken token,
       RefreshTokenWrapper refreshTokenWrapper,
-    ) = await _getTokensFromUserId(userDB.id);
+    ) = await _getTokensFromUserId(userId: userDB.id);
 
     final user = User(
       username: userDB.username,
@@ -146,25 +188,29 @@ final class AuthRepository implements IAuthRepository {
   Future<bool> _isUniqueUsername(String username) =>
       _authDataSource.isUniqueUsername(username);
 
-  Future<(JWToken, RefreshTokenWrapper)> _getTokensFromUserId(
-    int userId,
-  ) async {
+  Future<(JWToken, RefreshTokenWrapper)> _getTokensFromUserId({
+    required int userId,
+    String? ipAddress,
+    String? userAgent,
+  }) async {
     final JWToken jwToken = JWTokenHelper.createWith(userID: userId);
 
     final RefreshTokenDB refreshTokenDB = await _authDataSource
-        .storeRefreshToken(userId);
+        .storeRefreshToken(
+          userId: userId,
+          ipAddress: ipAddress,
+          userAgent: userAgent,
+        );
 
     final refreshToken = RefreshToken.fromRefreshTokenString(
       refreshTokenDB.token,
     );
 
-    final DateTime expiresAt = refreshTokenDB.expiresAt;
-
     return (
       jwToken,
       RefreshTokenWrapper(
         refreshToken: refreshToken,
-        refreshTokenExpiresAt: expiresAt,
+        refreshTokenExpiresAt: refreshTokenDB.expiresAt,
       ),
     );
   }

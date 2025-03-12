@@ -13,6 +13,12 @@ final class RefreshTokenDB extends DataModel {
     required this.expiresAt,
     this.ipAddress,
     this.userAgent,
+    this.isUsed = false,
+    this.usedAt,
+    this.previousToken,
+    this.isRevoked = false,
+    this.revokedAt,
+    this.revokeReason,
   });
 
   @Throws([DBEbadSchema])
@@ -24,8 +30,14 @@ final class RefreshTokenDB extends DataModel {
           'token': final String token,
           'created_at': final DateTime createdAt,
           'expires_at': final DateTime expiresAt,
-          'ip_address': final String? ipAddress,
+          'is_used': final bool isUsed,
+          'used_at': final DateTime? usedAt,
+          'previous_token': final String? previousToken,
           'user_agent': final String? userAgent,
+          'ip_address': final String? ipAddress,
+          'is_revoked': final bool isRevoked,
+          'revoked_at': final DateTime? revokedAt,
+          'revoke_reason': final String? revokeReason,
         } =>
           RefreshTokenDB(
             id: id,
@@ -35,8 +47,14 @@ final class RefreshTokenDB extends DataModel {
             expiresAt: expiresAt,
             ipAddress: ipAddress,
             userAgent: userAgent,
+            isUsed: isUsed,
+            usedAt: usedAt,
+            previousToken: previousToken,
+            isRevoked: isRevoked,
+            revokedAt: revokedAt,
+            revokeReason: revokeReason,
           ),
-        _ => throw const DBEbadSchema('Invalid shape for RefreshTokenDB.'),
+        _ => throw DBEbadSchema('Invalid shape for RefreshTokenDB. Got $map'),
       };
 
   final int id;
@@ -44,8 +62,14 @@ final class RefreshTokenDB extends DataModel {
   final String token;
   final DateTime createdAt;
   final DateTime expiresAt;
-  final String? ipAddress;
+  final bool isUsed;
+  final DateTime? usedAt;
+  final String? previousToken;
   final String? userAgent;
+  final String? ipAddress;
+  final bool isRevoked;
+  final DateTime? revokedAt;
+  final String? revokeReason;
 
   @override
   List<Object?> get props => [
@@ -56,6 +80,12 @@ final class RefreshTokenDB extends DataModel {
     expiresAt,
     ipAddress,
     userAgent,
+    isUsed,
+    usedAt,
+    previousToken,
+    isRevoked,
+    revokedAt,
+    revokeReason,
   ];
 
   @override
@@ -67,16 +97,42 @@ final class RefreshTokenDB extends DataModel {
     'expires_at': expiresAt.toIso8601String(),
     'ip_address': ipAddress,
     'user_agent': userAgent,
+    'is_used': isUsed,
+    'used_at': usedAt?.toIso8601String(),
+    'previous_token': previousToken,
+    'is_revoked': isRevoked,
+    'revoked_at': revokedAt?.toIso8601String(),
+    'revoke_reason': revokeReason,
   };
 
   @override
-  DataModel copyWith() => RefreshTokenDB(
-    id: id,
-    userId: userId,
-    token: token,
-    createdAt: createdAt,
-    expiresAt: expiresAt,
-    ipAddress: ipAddress,
-    userAgent: userAgent,
+  RefreshTokenDB copyWith({
+    int? id,
+    int? userId,
+    String? token,
+    DateTime? createdAt,
+    DateTime? expiresAt,
+    String? Function()? ipAddressFn,
+    String? Function()? userAgentFn,
+    bool? isUsed,
+    DateTime? Function()? usedAtFn,
+    String? Function()? previousTokenFn,
+    bool? isRevoked,
+    DateTime? Function()? revokedAtFn,
+    String? Function()? revokeReasonFn,
+  }) => RefreshTokenDB(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    token: token ?? this.token,
+    createdAt: createdAt ?? this.createdAt,
+    expiresAt: expiresAt ?? this.expiresAt,
+    ipAddress: ipAddressFn?.call() ?? ipAddress,
+    userAgent: userAgentFn?.call() ?? userAgent,
+    isUsed: isUsed ?? this.isUsed,
+    usedAt: usedAtFn?.call() ?? usedAt,
+    previousToken: previousTokenFn?.call() ?? previousToken,
+    isRevoked: isRevoked ?? this.isRevoked,
+    revokedAt: revokedAtFn?.call() ?? revokedAt,
+    revokeReason: revokeReasonFn?.call() ?? revokeReason,
   );
 }

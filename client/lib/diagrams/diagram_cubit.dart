@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DiagramCubit extends Cubit<DiagramState> {
   DiagramCubit({required DiagramRepository diagramRepository})
     : _diagramRepository = diagramRepository,
-      super(const DiagramState(entities: [], entityPositions: []));
+      super(const DiagramState.initial());
 
   final DiagramRepository _diagramRepository;
 
@@ -26,6 +26,7 @@ class DiagramCubit extends Cubit<DiagramState> {
   void loadDiagram(Diagram diagram) {
     emit(
       DiagramState(
+        name: diagram.name,
         entities: diagram.entities,
         entityPositions: diagram.entityPositions,
       ),
@@ -34,8 +35,8 @@ class DiagramCubit extends Cubit<DiagramState> {
 
   Future<void> saveDiagram() async {
     final request = SaveDiagramRequest(
+      name: state.name,
       entities: state.entities,
-      name: 'New Diagram',
       entityPositions: state.entityPositions,
     );
     try {
@@ -45,8 +46,16 @@ class DiagramCubit extends Cubit<DiagramState> {
     }
   }
 
+  Future<void> updateDiagramTitle(String title) async {
+    if (state.name == title) {
+      return; // Title hasn't changed, no need to update
+    }
+
+    emit(state.copyWith(name: title));
+  }
+
   void resetDiagram() {
-    emit(const DiagramState(entities: [], entityPositions: []));
+    emit(const DiagramState.initial());
   }
 
   void addEntity(Entity entity) {

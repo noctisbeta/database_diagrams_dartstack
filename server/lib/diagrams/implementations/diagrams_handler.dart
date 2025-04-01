@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:common/annotations/throws.dart';
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
@@ -22,6 +23,7 @@ final class DiagramsHandler implements IDiagramsHandler {
   @override
   Future<Response> getDiagrams(Request request) async {
     try {
+      @Throws([BadMapShapeException])
       final getDiagramsRequest = GetDiagramsRequest.validatedFromMap();
 
       final int userId = request.getUserId();
@@ -31,13 +33,9 @@ final class DiagramsHandler implements IDiagramsHandler {
 
       return JsonResponse.ok(body: response.toMap());
     } on BadMapShapeException catch (e) {
-      return Future.value(
-        Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
     } on FormatException catch (e) {
-      return Future.value(
-        Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
     }
   }
 
@@ -72,9 +70,7 @@ final class DiagramsHandler implements IDiagramsHandler {
         Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
       );
     } on FormatException catch (e) {
-      return Future.value(
-        Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
     }
   }
 }

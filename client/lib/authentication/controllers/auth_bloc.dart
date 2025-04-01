@@ -23,30 +23,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AuthEventRegister() => await register(event, emit),
         AuthEventLogout() => await logout(event, emit),
         AuthEventCheckAuth() => await checkAuth(event, emit),
-        AuthEventTokenExpired() => await handleTokenExpired(
-          event,
-          emit,
-        ), // Add this handler
+        AuthEventTokenExpired() => await handleTokenExpired(event, emit),
         AuthEventRefreshToken() => await refreshToken(event, emit),
       },
     );
 
-    // Start monitoring token expiration when bloc is created
-    _startTokenExpirationMonitor();
+    // Store the subscription so we can cancel it later
+    _stateSubscription = stream.listen(_handleStateChanges);
+
+    // Initial check if we're already authenticated
+    add(const AuthEventCheckAuth());
   }
 
   final AuthRepository _authRepository;
   Timer? _tokenMonitorTimer;
+  StreamSubscription<AuthState>? _stateSubscription;
+
+  // Handle state changes to manage token monitor
+  void _handleStateChanges(AuthState state) {
+    if (state is AuthStateAuthenticated) {
+      // User became authenticated, ensure timer is running
+      _startTokenExpirationMonitor();
+    } else if (state is AuthStateUnauthenticated ||
+        state is AuthStateSessionExpired) {
+      // User is not authenticated, ensure timer is stopped
+      _stopTokenExpirationMonitor();
+    }
+  }
 
   void _startTokenExpirationMonitor() {
-    // Cancel any existing timer
-    _tokenMonitorTimer?.cancel();
+    // Cancel any existing timer first
+    _stopTokenExpirationMonitor();
+
+    LOG.i('Starting token expiration monitor');
 
     // Check token status every second
     _tokenMonitorTimer = Timer.periodic(
       const Duration(seconds: 1),
       (_) => unawaited(_checkTokenExpiration()),
     );
+  }
+
+  void _stopTokenExpirationMonitor() {
+    if (_tokenMonitorTimer != null) {
+      LOG.i('Stopping token expiration monitor');
+      _tokenMonitorTimer?.cancel();
+      _tokenMonitorTimer = null;
+    }
   }
 
   Future<void> _checkTokenExpiration() async {
@@ -123,7 +146,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Future<void> close() {
-    _tokenMonitorTimer?.cancel();
+    _stopTokenExpirationMonitor();
+    _stateSubscription?.cancel(); // Cancel the subscription when bloc is closed
     return super.close();
   }
 
@@ -138,18 +162,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (isAuthenticated) {
       final User user = await _authRepository.getUser();
       emit(AuthStateAuthenticated(user: user));
+      // Timer will be started by state change listener
     } else {
       emit(const AuthStateUnauthenticated());
+      // Timer will be stopped by state change listener
     }
   }
 
   Future<void> logout(AuthEventLogout event, Emitter<AuthState> emit) async {
+    emit(const AuthStateLoading());
     try {
       await _authRepository.logout();
       emit(const AuthStateUnauthenticated());
+      // Timer will be stopped by state change listener
     } on Exception catch (e) {
       LOG.e('Unknown logout error: $e');
-
       emit(const AuthStateErrorUnknown(message: 'Error logging out'));
     }
   }
@@ -169,6 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     switch (loginResponse) {
       case LoginResponseSuccess():
         emit(AuthStateAuthenticated(user: loginResponse.user));
+      // Timer will be started by state change listener
       case LoginResponseError():
         switch (loginResponse.error) {
           case LoginError.wrongPassword:
@@ -199,6 +227,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     switch (registerResponse) {
       case RegisterResponseSuccess():
         emit(AuthStateAuthenticated(user: registerResponse.user));
+      // Timer will be started by state change listener
       case RegisterResponseError():
         switch (registerResponse.error) {
           case RegisterError.usernameAlreadyExists:

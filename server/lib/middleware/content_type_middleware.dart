@@ -6,6 +6,11 @@ import 'package:shelf/shelf.dart';
 /// Middleware that enforces JSON content type for non-GET requests
 Middleware enforceJsonContentType() =>
     (Handler innerHandler) => (Request request) async {
+      // Skip content type validation for GET requests
+      if (request.method == 'GET') {
+        return await innerHandler(request);
+      }
+
       final bool isValidContentType = request.validateContentType(
         ContentType.json.mimeType,
       );

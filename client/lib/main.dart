@@ -6,10 +6,10 @@ import 'package:client/common/widgets/my_snackbar.dart';
 import 'package:client/diagrams/diagram_cubit.dart';
 import 'package:client/diagrams/diagram_repository.dart';
 import 'package:client/dio_wrapper/dio_wrapper.dart';
+import 'package:client/main_view.dart';
 import 'package:client/projects/controllers/projects_bloc.dart';
 import 'package:client/projects/models/projects_event.dart';
 import 'package:client/projects/repositories/projects_repository.dart';
-import 'package:client/routing/my_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -82,34 +82,34 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) => RouterWrapper(
-    builder:
-        (context, router) => BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            final DioWrapper dio = context.read<DioWrapper>();
-            final FlutterSecureStorage storage =
-                context.read<FlutterSecureStorage>();
+  Widget build(BuildContext context) => MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        final DioWrapper dio = context.read<DioWrapper>();
+        final FlutterSecureStorage storage =
+            context.read<FlutterSecureStorage>();
 
-            if (state is AuthStateAuthenticated) {
-              dio.addAuthInterceptor(storage);
-            } else if (state is AuthStateUnauthenticated) {
-              dio.removeAuthInterceptor();
-            }
-            if (state is AuthStateSessionExpired) {
-              MySnackBar.show(
-                context: context,
-                message: state.message,
-                type: SnackBarType.warning,
-              );
-            } else if (state is AuthStateError) {
-              MySnackBar.show(
-                context: context,
-                message: state.message,
-                type: SnackBarType.error,
-              );
-            }
-          },
-          child: router,
-        ),
+        if (state is AuthStateAuthenticated) {
+          dio.addAuthInterceptor(storage);
+        } else if (state is AuthStateUnauthenticated) {
+          dio.removeAuthInterceptor();
+        }
+        if (state is AuthStateSessionExpired) {
+          MySnackBar.show(
+            context: context,
+            message: state.message,
+            type: SnackBarType.warning,
+          );
+        } else if (state is AuthStateError) {
+          MySnackBar.show(
+            context: context,
+            message: state.message,
+            type: SnackBarType.error,
+          );
+        }
+      },
+      child: const MainView(),
+    ),
   );
 }

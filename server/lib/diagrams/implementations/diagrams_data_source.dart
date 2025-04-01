@@ -11,13 +11,14 @@ import 'package:server/postgres/postgres_service.dart';
 
 @immutable
 final class DiagramsDataSource implements IDiagramsDataSource {
-  const DiagramsDataSource({required PostgresService db}) : _db = db;
+  const DiagramsDataSource({required PostgresService postgresService})
+    : _ps = postgresService;
 
-  final PostgresService _db;
+  final PostgresService _ps;
 
   @override
   Future<List<Diagram>> getDiagrams(int userId) async {
-    final Result result = await _db.execute(
+    final Result result = await _ps.execute(
       Sql.named('''
       SELECT 
         d.id AS diagram_id, 
@@ -159,7 +160,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
 
   @override
   Future<DiagramDB> saveDiagram(SaveDiagramRequest request, int userId) async {
-    final Result result = await _db.execute(
+    final Result result = await _ps.execute(
       Sql.named('''
       INSERT INTO diagrams (user_id, name)
       VALUES (@user_id, @name)
@@ -172,7 +173,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
     final diagramDB = DiagramDB.validatedFromMap(rowMap);
 
     for (final Entity entity in request.entities) {
-      final Result entityResult = await _db.execute(
+      final Result entityResult = await _ps.execute(
         Sql.named('''
         INSERT INTO entities (name, diagram_id)
         VALUES (@name, @diagram_id)
@@ -187,7 +188,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       // Insert attributes
       for (int i = 0; i < entity.attributes.length; i++) {
         final Attribute attribute = entity.attributes[i];
-        await _db.execute(
+        await _ps.execute(
           Sql.named('''
           INSERT INTO attributes (
             entity_id,
@@ -225,7 +226,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
     }
 
     for (final EntityPosition entityPosition in request.entityPositions) {
-      await _db.execute(
+      await _ps.execute(
         Sql.named('''
         INSERT INTO entity_positions (entity_id, x, y)
         VALUES (@entity_id, @x, @y);

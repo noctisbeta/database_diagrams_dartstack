@@ -5,9 +5,14 @@ import 'package:server/auth/hasher.dart';
 import 'package:server/auth/implementations/auth_data_source.dart';
 import 'package:server/auth/implementations/auth_handler.dart';
 import 'package:server/auth/implementations/auth_repository.dart';
+import 'package:server/diagrams/implementations/diagrams_data_source.dart';
+import 'package:server/diagrams/implementations/diagrams_handler.dart';
+import 'package:server/diagrams/implementations/diagrams_repository.dart';
 import 'package:server/middleware/content_type_middleware.dart';
+import 'package:server/middleware/jwt_middleware.dart';
 import 'package:server/postgres/postgres_service.dart';
 import 'package:server/routes/api/v1/auth_router.dart';
+import 'package:server/routes/api/v1/diagrams_router.dart';
 import 'package:server/util/json_response.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -30,10 +35,26 @@ Future<Router> createV1Router() async {
       .addMiddleware(enforceJsonContentType())
       .addHandler(authRouter.call);
 
+  final DiagramsDataSource diagramsDataSource = DiagramsDataSource(
+    postgresService: postgresService,
+  );
+  final DiagramsRepository diagramsRepository = DiagramsRepository(
+    diagramsDataSource: diagramsDataSource,
+  );
+  final DiagramsHandler diagramsHandler = DiagramsHandler(
+    diagramsRepository: diagramsRepository,
+  );
+  final Router diagramsRouter = createDiagramsRouter(diagramsHandler);
+  final Handler diagramsHandlerWithMiddleware = const Pipeline()
+      .addMiddleware(enforceJsonContentType())
+      .addMiddleware(jwtMiddlewareProvider())
+      .addHandler(diagramsRouter.call);
+
   final router =
       Router()
         ..get('/health', (request) => _healthHandler(request, postgresService))
-        ..mount('/auth', authHandlerWithMiddleware);
+        ..mount('/auth', authHandlerWithMiddleware)
+        ..mount('/diagrams', diagramsHandlerWithMiddleware);
 
   return router;
 }

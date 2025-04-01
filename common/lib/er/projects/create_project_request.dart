@@ -1,5 +1,5 @@
 import 'package:common/abstractions/models.dart';
-import 'package:common/exceptions/request_exception.dart';
+import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -11,7 +11,7 @@ final class CreateProjectRequest extends RequestDTO {
         {'name': final String name, 'description': final String? description} =>
           CreateProjectRequest(name: name, description: description),
         _ =>
-          throw const BadRequestBodyException(
+          throw const BadMapShapeException(
             'Invalid map format for CreateProjectRequest',
           ),
       };

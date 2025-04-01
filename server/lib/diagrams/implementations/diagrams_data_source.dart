@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_data_source.dart';
 import 'package:server/diagrams/diagram_db.dart';
-import 'package:server/postgres/implementations/postgres_service.dart';
+import 'package:server/postgres/postgres_service.dart';
 
 @immutable
 final class DiagramsDataSource implements IDiagramsDataSource {

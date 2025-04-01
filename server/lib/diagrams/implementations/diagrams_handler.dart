@@ -5,7 +5,6 @@ import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
-import 'package:common/exceptions/request_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/abstractions/i_diagams_repository.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_handler.dart';
@@ -30,25 +29,14 @@ final class DiagramsHandler implements IDiagramsHandler {
       final GetDiagramsResponse response = await _diagramsRepository
           .getDiagrams(getDiagramsRequest, userId);
 
-      return JsonResponse(body: response.toMap());
-    } on BadRequestContentTypeException catch (e) {
+      return JsonResponse.ok(body: response.toMap());
+    } on BadMapShapeException catch (e) {
       return Future.value(
         Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
       );
     } on FormatException catch (e) {
       return Future.value(
         Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
-    } on BadMapShapeException catch (e) {
-      return Future.value(
-        Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
-    } on Exception catch (e) {
-      return Future.value(
-        Response(
-          HttpStatus.internalServerError,
-          body: 'Failed to save diagram: $e',
-        ),
       );
     }
   }
@@ -78,28 +66,14 @@ final class DiagramsHandler implements IDiagramsHandler {
       final SaveDiagramResponse response = await _diagramsRepository
           .saveDiagram(saveDiagramRequest, userId);
 
-      return JsonResponse(
-        statusCode: HttpStatus.created,
-        body: response.toMap(),
-      );
-    } on BadRequestContentTypeException catch (e) {
+      return JsonResponse.created(body: response.toMap());
+    } on BadMapShapeException catch (e) {
       return Future.value(
         Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
       );
     } on FormatException catch (e) {
       return Future.value(
         Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
-    } on BadMapShapeException catch (e) {
-      return Future.value(
-        Response(HttpStatus.badRequest, body: 'Invalid request! $e'),
-      );
-    } on Exception catch (e) {
-      return Future.value(
-        Response(
-          HttpStatus.internalServerError,
-          body: 'Failed to save diagram: $e',
-        ),
       );
     }
   }

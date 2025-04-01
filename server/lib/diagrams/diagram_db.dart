@@ -1,7 +1,7 @@
 import 'package:common/abstractions/models.dart';
-import 'package:common/exceptions/throws.dart';
+import 'package:common/annotations/throws.dart';
 import 'package:meta/meta.dart';
-import 'package:server/postgres/exceptions/database_exception.dart';
+import 'package:server/postgres/database_exception.dart';
 
 @immutable
 final class DiagramDB extends DataModel {

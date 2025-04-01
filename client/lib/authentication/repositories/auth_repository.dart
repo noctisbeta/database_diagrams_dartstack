@@ -8,9 +8,9 @@ import 'package:common/auth/register/register_error.dart';
 import 'package:common/auth/register/register_request.dart';
 import 'package:common/auth/register/register_response.dart';
 import 'package:common/auth/tokens/jwtoken.dart';
+import 'package:common/auth/tokens/refresh_jwtoken_request.dart';
+import 'package:common/auth/tokens/refresh_jwtoken_response.dart';
 import 'package:common/auth/tokens/refresh_token.dart';
-import 'package:common/auth/tokens/refresh_token_request.dart';
-import 'package:common/auth/tokens/refresh_token_response.dart';
 import 'package:common/auth/tokens/refresh_token_wrapper.dart';
 import 'package:common/auth/user.dart';
 import 'package:common/logger/logger.dart';
@@ -62,7 +62,7 @@ final class AuthRepository {
     );
   }
 
-  Future<JWToken?> _refreshJWToken() async {
+  Future<JWToken?> refreshJWToken() async {
     final String? refreshTokenString = await _storage.read(
       key: 'refresh_token',
     );
@@ -76,7 +76,7 @@ final class AuthRepository {
         refreshTokenString,
       );
 
-      final RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest(
+      final RefreshJWTokenRequest refreshTokenRequest = RefreshJWTokenRequest(
         refreshToken: refreshToken,
       );
 
@@ -85,8 +85,8 @@ final class AuthRepository {
         data: refreshTokenRequest.toMap(),
       );
 
-      final RefreshTokenResponseSuccess refreshTokenResponseSuccess =
-          RefreshTokenResponseSuccess.validatedFromMap(response.data);
+      final RefreshJWTokenResponseSuccess refreshTokenResponseSuccess =
+          RefreshJWTokenResponseSuccess.validatedFromMap(response.data);
 
       final RefreshTokenWrapper refreshTokenWrapper =
           refreshTokenResponseSuccess.refreshTokenWrapper;
@@ -170,7 +170,7 @@ final class AuthRepository {
 
     switch (isValid) {
       case false:
-        final JWToken? newJwToken = await _refreshJWToken();
+        final JWToken? newJwToken = await refreshJWToken();
         return newJwToken != null;
       case true:
         return true;
@@ -257,6 +257,30 @@ final class AuthRepository {
             error: RegisterError.unknownRegisterError,
           );
       }
+    }
+  }
+
+  Future<({DateTime jwtExpiresAt, DateTime refreshExpiresAt})?>
+  getTokenExpirations() async {
+    try {
+      final String? jwtString = await _storage.read(key: 'jw_token');
+      final String? refreshExp = await _storage.read(
+        key: 'refresh_token_expires_at',
+      );
+
+      if (jwtString == null || refreshExp == null) {
+        return null;
+      }
+
+      final JWToken jwt = JWToken.fromJwtString(jwtString);
+
+      final DateTime jwtExpiresAt = jwt.getExpiration();
+      final DateTime refreshExpiresAt = DateTime.parse(refreshExp);
+
+      return (jwtExpiresAt: jwtExpiresAt, refreshExpiresAt: refreshExpiresAt);
+    } on Exception catch (e) {
+      LOG.e('Error getting token info: $e');
+      return null;
     }
   }
 }

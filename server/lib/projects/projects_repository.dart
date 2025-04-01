@@ -1,11 +1,11 @@
+import 'package:common/annotations/propagates.dart';
 import 'package:common/er/projects/create_project_error.dart';
 import 'package:common/er/projects/create_project_request.dart';
 import 'package:common/er/projects/create_project_response.dart';
 import 'package:common/er/projects/get_projects_error.dart';
 import 'package:common/er/projects/get_projects_response.dart';
 import 'package:common/er/projects/project.dart';
-import 'package:common/exceptions/propagates.dart';
-import 'package:server/postgres/exceptions/database_exception.dart';
+import 'package:server/postgres/database_exception.dart';
 import 'package:server/projects/project_db.dart';
 import 'package:server/projects/projects_data_source.dart';
 

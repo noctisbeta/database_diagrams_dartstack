@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:common/annotations/throws.dart';
 import 'package:common/er/projects/create_project_request.dart';
 import 'package:common/er/projects/create_project_response.dart';
 import 'package:common/er/projects/get_projects_response.dart';
-import 'package:common/exceptions/request_exception.dart';
-import 'package:common/exceptions/throws.dart';
+import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:server/projects/abstractions/i_projects_handler.dart';
 import 'package:server/projects/projects_repository.dart';
 import 'package:server/util/context_key.dart';
@@ -27,9 +27,8 @@ final class ProjectsHandler implements IProjectsHandler {
           .getProjects(userId);
 
       return switch (response) {
-        GetProjectsResponseSuccess() => JsonResponse(body: response.toMap()),
-        GetProjectsResponseFailure() => JsonResponse(
-          statusCode: HttpStatus.internalServerError,
+        GetProjectsResponseSuccess() => JsonResponse.ok(body: response.toMap()),
+        GetProjectsResponseFailure() => JsonResponse.internalServerError(
           body: response.toMap(),
         ),
       };
@@ -60,33 +59,24 @@ final class ProjectsHandler implements IProjectsHandler {
       @Throws([FormatException])
       final Map<String, dynamic> json = await request.json();
 
-      @Throws([BadRequestBodyException])
+      @Throws([BadMapShapeException])
       final createProjectRequest = CreateProjectRequest.validatedFromMap(json);
 
       final CreateProjectResponse response = await _projectsRepository
           .createProject(request: createProjectRequest, userId: userId);
 
       return switch (response) {
-        CreateProjectResponseSuccess() => JsonResponse(
-          statusCode: HttpStatus.created,
+        CreateProjectResponseSuccess() => JsonResponse.created(
           body: response.toMap(),
         ),
-        CreateProjectResponseFailure() => JsonResponse(
-          statusCode: HttpStatus.internalServerError,
+        CreateProjectResponseFailure() => JsonResponse.internalServerError(
           body: response.toMap(),
         ),
       };
-    } on BadRequestContentTypeException catch (e) {
+    } on BadMapShapeException catch (e) {
       return Response(HttpStatus.badRequest, body: 'Invalid request! $e');
     } on FormatException catch (e) {
       return Response(HttpStatus.badRequest, body: 'Invalid request! $e');
-    } on BadRequestBodyException catch (e) {
-      return Response(HttpStatus.badRequest, body: 'Invalid request! $e');
-    } on Exception catch (e) {
-      return Response(
-        HttpStatus.internalServerError,
-        body: 'Failed to create project: $e',
-      );
     }
   }
 }

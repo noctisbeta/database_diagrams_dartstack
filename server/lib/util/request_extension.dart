@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:common/exceptions/throws.dart';
+import 'package:common/annotations/throws.dart';
 import 'package:server/util/context_key.dart';
 import 'package:shelf/shelf.dart';
 
@@ -18,7 +18,9 @@ extension RequestExtension on Request {
   int getUserId() {
     final userId = context[ContextKey.userId.keyString] as int?;
     if (userId == null) {
-      throw StateError('userId not found in request context');
+      throw StateError(
+        '${ContextKey.userId.keyString} not found in request context',
+      );
     }
     return userId;
   }

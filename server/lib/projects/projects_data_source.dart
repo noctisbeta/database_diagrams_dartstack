@@ -1,8 +1,8 @@
-import 'package:common/exceptions/propagates.dart';
-import 'package:common/exceptions/throws.dart';
+import 'package:common/annotations/propagates.dart';
+import 'package:common/annotations/throws.dart';
 import 'package:postgres/postgres.dart';
-import 'package:server/postgres/exceptions/database_exception.dart';
-import 'package:server/postgres/implementations/postgres_service.dart';
+import 'package:server/postgres/database_exception.dart';
+import 'package:server/postgres/postgres_service.dart';
 import 'package:server/projects/project_db.dart';
 
 final class ProjectsDataSource {

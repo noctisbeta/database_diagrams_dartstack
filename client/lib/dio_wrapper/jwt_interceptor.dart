@@ -1,8 +1,8 @@
 import 'package:client/dio_wrapper/dio_wrapper.dart';
 import 'package:common/auth/tokens/jwtoken.dart';
+import 'package:common/auth/tokens/refresh_jwtoken_request.dart';
+import 'package:common/auth/tokens/refresh_jwtoken_response.dart';
 import 'package:common/auth/tokens/refresh_token.dart';
-import 'package:common/auth/tokens/refresh_token_request.dart';
-import 'package:common/auth/tokens/refresh_token_response.dart';
 import 'package:common/auth/tokens/refresh_token_wrapper.dart';
 import 'package:common/logger/logger.dart';
 import 'package:dio/dio.dart';
@@ -11,10 +11,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class JwtInterceptor extends InterceptorsWrapper {
   JwtInterceptor({
     required FlutterSecureStorage secureStorage,
-    required this.unauthorizedDio,
+    required this.dioWrapper,
   }) : _storage = secureStorage;
 
-  final DioWrapper unauthorizedDio;
+  final DioWrapper dioWrapper;
   final FlutterSecureStorage _storage;
 
   Future<JWToken?> _refreshToken(
@@ -58,20 +58,23 @@ class JwtInterceptor extends InterceptorsWrapper {
       );
     }
 
-    final RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest(
+    final RefreshJWTokenRequest refreshTokenRequest = RefreshJWTokenRequest(
       refreshToken: refreshToken,
     );
 
     try {
-      final Response response = await unauthorizedDio.post(
+      final Response response = await dioWrapper.post(
         '/auth/refresh',
         data: refreshTokenRequest.toMap(),
       );
 
-      final RefreshTokenResponseSuccess refreshTokenResponse =
-          RefreshTokenResponseSuccess.validatedFromMap(
+      final RefreshJWTokenResponseSuccess refreshTokenResponse =
+          RefreshJWTokenResponseSuccess.validatedFromMap(
             response.data as Map<String, dynamic>,
           );
+      RefreshJWTokenResponseSuccess.validatedFromMap(
+        response.data as Map<String, dynamic>,
+      );
 
       final RefreshTokenWrapper refreshTokenWrapper =
           refreshTokenResponse.refreshTokenWrapper;
@@ -143,7 +146,7 @@ class JwtInterceptor extends InterceptorsWrapper {
 
         requestOptions.headers['Authorization'] = 'Bearer $newToken';
 
-        final Response response = await unauthorizedDio.request(
+        final Response response = await dioWrapper.request(
           requestOptions.path,
           options: Options(
             method: requestOptions.method,

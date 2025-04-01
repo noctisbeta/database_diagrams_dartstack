@@ -46,8 +46,7 @@ class ProviderWrapper extends StatelessWidget {
         BlocProvider(
           create:
               (context) =>
-                  AuthBloc(authRepository: context.read<AuthRepository>())
-                    ..add(const AuthEventCheckAuth()), // Add this line
+                  AuthBloc(authRepository: context.read<AuthRepository>()),
         ),
         BlocProvider(
           create:
@@ -62,20 +61,7 @@ class ProviderWrapper extends StatelessWidget {
               )..add(ProjectsEventLoad()),
         ),
       ],
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          final DioWrapper dio = context.read<DioWrapper>();
-          final FlutterSecureStorage storage =
-              context.read<FlutterSecureStorage>();
-
-          if (state is AuthStateAuthenticated) {
-            dio.addAuthInterceptor(storage);
-          } else {
-            dio.removeAuthInterceptor();
-          }
-        },
-        child: const MyApp(),
-      ),
+      child: const MyApp(),
     ),
   );
 }
@@ -100,6 +86,15 @@ class _MyAppState extends State<MyApp> {
     builder:
         (context, router) => BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
+            final DioWrapper dio = context.read<DioWrapper>();
+            final FlutterSecureStorage storage =
+                context.read<FlutterSecureStorage>();
+
+            if (state is AuthStateAuthenticated) {
+              dio.addAuthInterceptor(storage);
+            } else if (state is AuthStateUnauthenticated) {
+              dio.removeAuthInterceptor();
+            }
             if (state is AuthStateSessionExpired) {
               MySnackBar.show(
                 context: context,

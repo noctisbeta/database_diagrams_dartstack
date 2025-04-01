@@ -60,23 +60,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await _authRepository.getTokenExpirations();
 
       if (tokenInfo == null) {
-        // No token info means we're not authenticated
         return;
       }
 
       final now = DateTime.now();
 
-      // If JWT is expired, log the user out immediately
-      if (tokenInfo.jwtExpiresAt.isBefore(now)) {
-        LOG.i('JWT token expired, logging out user');
+      // Check refresh token expiration first
+      if (tokenInfo.refreshExpiresAt.isBefore(now)) {
+        LOG.i('Refresh token expired, logging out user');
         add(const AuthEventTokenExpired());
         return;
       }
 
-      // Also check if refresh token is expired
-      if (tokenInfo.refreshExpiresAt.isBefore(now)) {
-        LOG.i('Refresh token expired, logging out user');
-        add(const AuthEventTokenExpired());
+      // If JWT is already expired but refresh token is valid, try refresh
+      if (tokenInfo.jwtExpiresAt.isBefore(now)) {
+        LOG.i('JWT token expired, attempting refresh');
+        add(const AuthEventRefreshToken());
         return;
       }
     } on Exception catch (e) {

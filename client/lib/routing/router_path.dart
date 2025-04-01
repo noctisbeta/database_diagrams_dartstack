@@ -1,7 +1,7 @@
 /// An enum that defines all available routes in the application.
 enum RouterPath {
   auth('/auth'),
-  dashboard('/dashboard');
+  main('/main');
 
   /// Creates a [RouterPath] with the given [path].
   const RouterPath(this.path);

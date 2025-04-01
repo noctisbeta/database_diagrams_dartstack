@@ -4,7 +4,6 @@ import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/common/widgets/my_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
@@ -51,9 +50,7 @@ class _AuthViewState extends State<AuthView>
   Widget build(BuildContext context) => Scaffold(
     body: BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthStateAuthenticated) {
-          context.goNamed('dashboard');
-        } else if (state is AuthStateError) {
+        if (state is AuthStateError) {
           MySnackBar.show(
             context: context,
             message: state.message,

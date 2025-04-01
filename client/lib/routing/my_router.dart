@@ -1,6 +1,7 @@
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/repositories/auth_repository.dart';
 import 'package:client/authentication/views/auth_view.dart';
+import 'package:client/main_view.dart';
 import 'package:client/routing/refresh_listenable.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:flutter/foundation.dart';
@@ -36,6 +37,11 @@ class _RouterWrapperState extends State<RouterWrapper> {
           name: RouterPath.auth.name,
           builder: (context, state) => const AuthView(),
         ),
+        GoRoute(
+          path: RouterPath.main.path,
+          name: RouterPath.main.name,
+          builder: (context, state) => const MainView(),
+        ),
       ],
       initialLocation: RouterPath.auth.path,
       redirect: _redirect,
@@ -52,7 +58,7 @@ class _RouterWrapperState extends State<RouterWrapper> {
 
     switch ((isAuthenticated, isOnAuth)) {
       case (true, true):
-        return RouterPath.dashboard.path;
+        return RouterPath.main.path;
       case (false, false):
         return RouterPath.auth.path;
       case (true, false):

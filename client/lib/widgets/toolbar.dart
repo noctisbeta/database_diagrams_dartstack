@@ -344,7 +344,11 @@ class ProfileMenu extends StatelessWidget {
     ),
     onSelected: (value) {
       if (value == 'signout') {
-        context.read<AuthBloc>().add(const AuthEventLogout());
+        void asd() {
+          context.read<AuthBloc>().add(const AuthEventLogout());
+        }
+
+        Future.delayed(const Duration(seconds: 2), asd);
       } else if (value == 'diagrams') {
         unawaited(
           showDialog<void>(
@@ -357,7 +361,6 @@ class ProfileMenu extends StatelessWidget {
           ),
         );
       }
-      // Add more options handling here in the future
     },
     itemBuilder:
         (context) => [
@@ -408,7 +411,9 @@ class _ProfileMenuItemState extends State<ProfileMenuItem> {
     leading: Icon(widget.icon),
     title: Text(widget.text),
     onTap: () {
-      Navigator.pop(context, widget.value);
+      // Simply return the value without direct navigation
+      Navigator.of(context).pop<String>(widget.value);
+      // Don't add any code after this - it won't execute reliably
     },
   );
 }

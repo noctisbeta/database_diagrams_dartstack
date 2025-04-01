@@ -14,4 +14,9 @@ abstract interface class IDiagramsRepository {
     GetDiagramsRequest request,
     int userId,
   );
+  Future<SaveDiagramResponse> updateDiagram(
+    SaveDiagramRequest request,
+    int userId,
+    int diagramId,
+  );
 }

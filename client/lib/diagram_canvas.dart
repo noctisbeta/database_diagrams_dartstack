@@ -20,7 +20,7 @@ class DiagramCanvas extends StatefulWidget {
 
   final List<Entity> entities;
   final List<EntityPosition> entityPositions;
-  final void Function(String entityId, Offset position) onEntityMoved;
+  final void Function(int entityId, Offset position) onEntityMoved;
 
   @override
   State<DiagramCanvas> createState() => _DiagramCanvasState();
@@ -107,7 +107,7 @@ class _DraggableEntity extends StatefulWidget {
 
   final Entity entity;
   final EntityPosition position;
-  final void Function(String entityId, Offset position) onMoved;
+  final void Function(int entityId, Offset position) onMoved;
 
   @override
   State<_DraggableEntity> createState() => _DraggableEntityState();

@@ -6,6 +6,7 @@ import 'package:common/er/diagrams/save_diagram_response.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/abstractions/i_diagams_repository.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_data_source.dart';
+import 'package:server/diagrams/models/diagram_db.dart';
 
 @immutable
 final class DiagramsRepository implements IDiagramsRepository {
@@ -20,6 +21,7 @@ final class DiagramsRepository implements IDiagramsRepository {
     int userId,
   ) async {
     final List<Diagram> res = await _diagramsDataSource.getDiagrams(userId);
+
     return GetDiagramsResponse(diagrams: res);
   }
 
@@ -28,8 +30,26 @@ final class DiagramsRepository implements IDiagramsRepository {
     SaveDiagramRequest request,
     int userId,
   ) async {
-    await _diagramsDataSource.saveDiagram(request, userId);
+    final DiagramDB diagramDB = await _diagramsDataSource.createDiagram(
+      request,
+      userId,
+    );
 
-    return const SaveDiagramResponse();
+    return SaveDiagramResponse(id: diagramDB.id);
+  }
+
+  @override
+  Future<SaveDiagramResponse> updateDiagram(
+    SaveDiagramRequest request,
+    int userId,
+    int diagramId,
+  ) async {
+    // Update the diagram
+    final DiagramDB updatedDiagram = await _diagramsDataSource.updateDiagram(
+      request,
+      userId,
+    );
+
+    return SaveDiagramResponse(id: updatedDiagram.id);
   }
 }

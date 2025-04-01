@@ -73,4 +73,25 @@ final class DiagramsHandler implements IDiagramsHandler {
       return JsonResponse.badRequest(body: 'Invalid request! $e');
     }
   }
+
+  @override
+  Future<Response> updateDiagram(Request request, String id) async {
+    try {
+      final Map<String, dynamic> json = await request.json();
+
+      final saveDiagramRequest = SaveDiagramRequest.validatedFromMap(json);
+
+      final int userId = request.getUserId();
+      final int diagramId = int.parse(id);
+
+      final SaveDiagramResponse response = await _diagramsRepository
+          .updateDiagram(saveDiagramRequest, userId, diagramId);
+
+      return JsonResponse.ok(body: response.toMap());
+    } on BadMapShapeException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
+    } on FormatException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
+    }
+  }
 }

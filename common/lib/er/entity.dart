@@ -15,7 +15,7 @@ final class Entity extends DataModel {
   @Throws([BadMapShapeException])
   factory Entity.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
-      'id': final String id,
+      'id': final int id,
       'name': final String name,
       'attributes': final List<dynamic> attributes,
     } =>
@@ -28,12 +28,12 @@ final class Entity extends DataModel {
     _ => throw const BadMapShapeException('Bad map shape for Entity'),
   };
 
-  final String id;
+  final int id;
   final String name;
   final List<Attribute> attributes;
 
   @override
-  Entity copyWith({String? id, String? name, List<Attribute>? attributes}) =>
+  Entity copyWith({int? id, String? name, List<Attribute>? attributes}) =>
       Entity(
         id: id ?? this.id,
         name: name ?? this.name,

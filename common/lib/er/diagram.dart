@@ -17,7 +17,7 @@ final class Diagram extends DataModel {
 
   factory Diagram.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
-      'id': final String id,
+      'id': final int id,
       'name': final String name,
       'entities': final List<dynamic> entities,
       'entity_positions': final List<dynamic> entityPositions,
@@ -43,7 +43,7 @@ final class Diagram extends DataModel {
         updatedAt: DateTime.parse(updatedAt),
       ),
     {
-      'id': final String id,
+      'id': final int id,
       'name': final String name,
       'entities': final List<dynamic> entities,
       'entity_positions': final List<dynamic> entityPositions,
@@ -68,10 +68,10 @@ final class Diagram extends DataModel {
         createdAt: createdAt,
         updatedAt: updatedAt,
       ),
-    _ => throw const BadMapShapeException('Bad map shape for Diagram'),
+    _ => throw const BadMapShapeException('Bad map shape for Diagram.'),
   };
 
-  final String id;
+  final int id;
   final String name;
   final List<Entity> entities;
   final List<EntityPosition> entityPositions;
@@ -100,7 +100,7 @@ final class Diagram extends DataModel {
 
   @override
   Diagram copyWith({
-    String? id,
+    int? id,
     String? name,
     List<Entity>? entities,
     List<EntityPosition>? entityPositions,

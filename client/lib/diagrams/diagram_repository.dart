@@ -13,8 +13,20 @@ final class DiagramRepository {
 
   Future<SaveDiagramResponse> saveDiagram(SaveDiagramRequest request) async {
     try {
-      await _dio.post('/diagrams', data: request.toMap());
-      return SaveDiagramResponse.validatedFromMap();
+      final Response response;
+
+      if (request.id != null) {
+        // Update existing diagram
+        response = await _dio.put(
+          '/diagrams/${request.id}',
+          data: request.toMap(),
+        );
+      } else {
+        // Create new diagram
+        response = await _dio.post('/diagrams', data: request.toMap());
+      }
+
+      return SaveDiagramResponse.validatedFromMap(response.data);
     } catch (e) {
       rethrow;
     }

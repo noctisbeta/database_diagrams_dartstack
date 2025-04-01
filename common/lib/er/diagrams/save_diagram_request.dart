@@ -10,17 +10,20 @@ final class SaveDiagramRequest extends DataModel {
     required this.name,
     required this.entities,
     required this.entityPositions,
+    this.id,
   });
 
   factory SaveDiagramRequest.validatedFromMap(
     Map<String, dynamic> map,
   ) => switch (map) {
     {
+      'id': final int? id,
       'name': final String name,
       'entities': final List<dynamic> entities,
       'entity_positions': final List<dynamic> entityPositions,
     } =>
       SaveDiagramRequest(
+        id: id,
         name: name,
         entities: entities.map((e) => Entity.validatedFromMap(e)).toList(),
         entityPositions:
@@ -32,26 +35,30 @@ final class SaveDiagramRequest extends DataModel {
       throw const BadMapShapeException('Bad map shape for SaveDiagramRequest'),
   };
 
+  final int? id;
   final String name;
   final List<Entity> entities;
   final List<EntityPosition> entityPositions;
 
   @override
   Map<String, dynamic> toMap() => {
+    'id': id,
     'name': name,
     'entities': entities.map((e) => e.toMap()).toList(),
     'entity_positions': entityPositions.map((p) => p.toMap()).toList(),
   };
 
   @override
-  List<Object?> get props => [name, entities, entityPositions];
+  List<Object?> get props => [id, name, entities, entityPositions];
 
   @override
   SaveDiagramRequest copyWith({
+    int? Function()? idFn,
     String? name,
     List<Entity>? entities,
     List<EntityPosition>? entityPositions,
   }) => SaveDiagramRequest(
+    id: idFn?.call() ?? id,
     name: name ?? this.name,
     entities: entities ?? this.entities,
     entityPositions: entityPositions ?? this.entityPositions,

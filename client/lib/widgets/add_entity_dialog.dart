@@ -36,7 +36,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
     setState(() {
       _attributes.add(
         Attribute(
-          id: (_attributes.length + 1).toString(),
+          id: _attributes.length + 1,
           name: '',
           dataType: '',
           order: _attributes.length, // Add order
@@ -63,7 +63,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
-    String? referencedEntityId,
+    int? referencedEntityId,
   }) {
     setState(() {
       // Handle primary key changes
@@ -229,7 +229,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
             child: SingleChildScrollView(
               child: EntityCard(
                 entity: Entity(
-                  id: '',
+                  id: -1,
                   name:
                       _nameController.text.isEmpty
                           ? 'Entity Name'
@@ -269,7 +269,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
           }
 
           final entity = Entity(
-            id: '',
+            id: -1,
             name: _nameController.text,
             attributes:
                 _attributes.where((attr) => attr.name.isNotEmpty).toList(),

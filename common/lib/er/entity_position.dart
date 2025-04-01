@@ -13,12 +13,12 @@ final class EntityPosition extends DataModel {
   factory EntityPosition.validatedFromMap(
     Map<String, dynamic> map,
   ) => switch (map) {
-    {'entity_id': final String entityId, 'x': final num x, 'y': final num y} =>
+    {'entity_id': final int entityId, 'x': final num x, 'y': final num y} =>
       EntityPosition(entityId: entityId, x: x.toDouble(), y: y.toDouble()),
-    _ => throw const BadMapShapeException('Bad map shape for EntityPosition'),
+    _ => throw const BadMapShapeException('Bad map shape for EntityPosition.'),
   };
 
-  final String entityId;
+  final int entityId;
   final double x;
   final double y;
 
@@ -29,7 +29,7 @@ final class EntityPosition extends DataModel {
   List<Object?> get props => [entityId, x, y];
 
   @override
-  EntityPosition copyWith({String? entityId, double? x, double? y}) =>
+  EntityPosition copyWith({int? entityId, double? x, double? y}) =>
       EntityPosition(
         entityId: entityId ?? this.entityId,
         x: x ?? this.x,

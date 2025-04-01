@@ -6,7 +6,8 @@ import 'package:common/er/entity_position.dart';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_data_source.dart';
-import 'package:server/diagrams/diagram_db.dart';
+import 'package:server/diagrams/models/diagram_db.dart';
+import 'package:server/diagrams/models/entity_db.dart';
 import 'package:server/postgres/postgres_service.dart';
 
 @immutable
@@ -70,7 +71,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       // Create diagram entry if it doesn't exist
       if (!diagramsMap.containsKey(diagramId)) {
         diagramsMap[diagramId] = {
-          'id': diagramId.toString(),
+          'id': diagramId,
           'name': row['diagram_name']! as String,
           'created_at': row['diagram_created_at']! as DateTime,
           'updated_at': row['diagram_updated_at']! as DateTime,
@@ -88,7 +89,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       // Create entity entry if it doesn't exist
       if (!entitiesMap[diagramId]!.containsKey(entityId)) {
         entitiesMap[diagramId]![entityId] = {
-          'id': entityId.toString(),
+          'id': entityId,
           'name': row['entity_name']! as String,
           'created_at': row['entity_created_at']! as DateTime,
           'updated_at': row['entity_updated_at']! as DateTime,
@@ -101,7 +102,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
           row['y'] != null &&
           !positionsMap[diagramId]!.containsKey(entityId)) {
         positionsMap[diagramId]![entityId] = {
-          'entity_id': entityId.toString(),
+          'entity_id': entityId,
           'x': row['x']! as double,
           'y': row['y']! as double,
         };
@@ -111,13 +112,13 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       final attributeId = row['attribute_id'] as int?;
       if (attributeId != null) {
         attributesMap[diagramId]![entityId]!.add({
-          'id': attributeId.toString(),
+          'id': attributeId,
           'name': row['attribute_name']! as String,
           'data_type': row['data_type']! as String,
           'is_primary_key': row['is_primary_key']! as bool,
           'is_foreign_key': row['is_foreign_key']! as bool,
           'is_nullable': row['is_nullable']! as bool,
-          'referenced_entity_id': row['referenced_entity_id']?.toString(),
+          'referenced_entity_id': row['referenced_entity_id'],
           'order': row['order']! as int,
           'created_at': row['attribute_created_at']! as DateTime,
           'updated_at': row['attribute_updated_at']! as DateTime,
@@ -129,8 +130,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
     for (final int diagramId in diagramsMap.keys) {
       final entities = <Map<String, dynamic>>[];
       final entityPositions = <Map<String, dynamic>>[];
-      final relations =
-          <Map<String, dynamic>>[]; // Relations will be empty for now
 
       for (final int entityId in entitiesMap[diagramId]!.keys) {
         final Map<String, dynamic> entity = entitiesMap[diagramId]![entityId]!;
@@ -147,7 +146,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
           'id': diagramsMap[diagramId]!['id'],
           'name': diagramsMap[diagramId]!['name'],
           'entities': entities,
-          'relations': relations,
           'entity_positions': entityPositions,
           'created_at': diagramsMap[diagramId]!['created_at'],
           'updated_at': diagramsMap[diagramId]!['updated_at'],
@@ -159,35 +157,52 @@ final class DiagramsDataSource implements IDiagramsDataSource {
   }
 
   @override
-  Future<DiagramDB> saveDiagram(SaveDiagramRequest request, int userId) async {
-    final Result result = await _ps.execute(
-      Sql.named('''
+  Future<DiagramDB> createDiagram(
+    SaveDiagramRequest request,
+    int userId,
+  ) async {
+    final DiagramDB diagramDB = await _ps.executeAndMap(
+      query: Sql.named('''
       INSERT INTO diagrams (user_id, name)
       VALUES (@user_id, @name)
       RETURNING *;
       '''),
       parameters: {'user_id': userId, 'name': request.name},
+      mapper: DiagramDB.validatedFromMap,
+      emptyResultMessage: 'Failed to create diagram',
     );
 
-    final Map<String, dynamic> rowMap = result.first.toColumnMap();
-    final diagramDB = DiagramDB.validatedFromMap(rowMap);
-
     for (final Entity entity in request.entities) {
-      final Result entityResult = await _ps.execute(
-        Sql.named('''
+      final EntityDB entityDB = await _ps.executeAndMap(
+        query: Sql.named('''
         INSERT INTO entities (name, diagram_id)
         VALUES (@name, @diagram_id)
         RETURNING *;
         '''),
         parameters: {'name': entity.name, 'diagram_id': diagramDB.id},
+        mapper: EntityDB.validatedFromMap,
+        emptyResultMessage: 'Failed to create entity',
       );
 
-      final Map<String, dynamic> entityMap = entityResult.first.toColumnMap();
-      final entityId = entityMap['id'] as int;
+      final EntityPosition entityPosition = request.entityPositions.firstWhere(
+        (position) => position.entityId == entity.id,
+      );
 
-      // Insert attributes
-      for (int i = 0; i < entity.attributes.length; i++) {
-        final Attribute attribute = entity.attributes[i];
+      final int dbEntityId = entityDB.id;
+
+      await _ps.execute(
+        Sql.named('''
+        INSERT INTO entity_positions (entity_id, x, y)
+        VALUES (@entity_id, @x, @y);
+        '''),
+        parameters: {
+          'entity_id': dbEntityId,
+          'x': entityPosition.x,
+          'y': entityPosition.y,
+        },
+      );
+
+      for (final Attribute attribute in entity.attributes) {
         await _ps.execute(
           Sql.named('''
           INSERT INTO attributes (
@@ -212,7 +227,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
           );
           '''),
           parameters: {
-            'entity_id': entityId,
+            'entity_id': dbEntityId,
             'name': attribute.name,
             'data_type': attribute.dataType,
             'is_primary_key': attribute.isPrimaryKey,
@@ -225,18 +240,104 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       }
     }
 
-    for (final EntityPosition entityPosition in request.entityPositions) {
+    return diagramDB;
+  }
+
+  @override
+  Future<DiagramDB> updateDiagram(
+    SaveDiagramRequest request,
+    int userId,
+  ) async {
+    // 1. Update the diagram and verify ownership
+    final DiagramDB diagramDB = await _ps.executeAndMap(
+      query: Sql.named('''
+      UPDATE diagrams
+      SET name = @name, updated_at = NOW()
+      WHERE id = @diagram_id AND user_id = @user_id
+      RETURNING *;
+      '''),
+      parameters: {
+        'name': request.name,
+        'diagram_id': request.id,
+        'user_id': userId,
+      },
+      mapper: DiagramDB.validatedFromMap,
+      emptyResultMessage: 'Failed to update diagram or access denied',
+    );
+
+    // 2. Delete existing entities (cascade will delete attributes and positions)
+    await _ps.execute(
+      Sql.named('DELETE FROM entities WHERE diagram_id = @diagram_id'),
+      parameters: {'diagram_id': diagramDB.id},
+    );
+
+    // 3. Re-create entities, positions and attributes (same as in createDiagram)
+    for (final Entity entity in request.entities) {
+      final EntityDB entityDB = await _ps.executeAndMap(
+        query: Sql.named('''
+        INSERT INTO entities (name, diagram_id)
+        VALUES (@name, @diagram_id)
+        RETURNING *;
+        '''),
+        parameters: {'name': entity.name, 'diagram_id': diagramDB.id},
+        mapper: EntityDB.validatedFromMap,
+        emptyResultMessage: 'Failed to create entity',
+      );
+
+      final EntityPosition entityPosition = request.entityPositions.firstWhere(
+        (position) => position.entityId == entity.id,
+      );
+
+      final int dbEntityId = entityDB.id;
+
       await _ps.execute(
         Sql.named('''
         INSERT INTO entity_positions (entity_id, x, y)
         VALUES (@entity_id, @x, @y);
         '''),
         parameters: {
-          'entity_id': entityPosition.entityId,
+          'entity_id': dbEntityId,
           'x': entityPosition.x,
           'y': entityPosition.y,
         },
       );
+
+      for (final Attribute attribute in entity.attributes) {
+        await _ps.execute(
+          Sql.named('''
+          INSERT INTO attributes (
+            entity_id,
+            name,
+            data_type,
+            is_primary_key,
+            is_foreign_key,
+            is_nullable,
+            referenced_entity_id,
+            "order"
+          )
+          VALUES (
+            @entity_id,
+            @name,
+            @data_type,
+            @is_primary_key,
+            @is_foreign_key,
+            @is_nullable,
+            @referenced_entity_id,
+            @order
+          );
+          '''),
+          parameters: {
+            'entity_id': dbEntityId,
+            'name': attribute.name,
+            'data_type': attribute.dataType,
+            'is_primary_key': attribute.isPrimaryKey,
+            'is_foreign_key': attribute.isForeignKey,
+            'is_nullable': attribute.isNullable,
+            'referenced_entity_id': attribute.referencedEntityId,
+            'order': attribute.order,
+          },
+        );
+      }
     }
 
     return diagramDB;

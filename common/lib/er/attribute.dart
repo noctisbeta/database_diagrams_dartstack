@@ -19,13 +19,13 @@ final class Attribute extends DataModel {
   @Throws([BadMapShapeException])
   factory Attribute.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
-      'id': final String id,
+      'id': final int id,
       'name': final String name,
       'data_type': final String dataType,
       'is_primary_key': final bool isPrimaryKey,
       'is_foreign_key': final bool isForeignKey,
       'is_nullable': final bool isNullable,
-      'referenced_entity_id': final String? referencedEntityId,
+      'referenced_entity_id': final int? referencedEntityId,
       'order': final int order, // Add this
     } =>
       Attribute(
@@ -42,23 +42,23 @@ final class Attribute extends DataModel {
   };
 
   final int order;
-  final String id;
+  final int id;
   final String name;
   final String dataType;
   final bool isPrimaryKey;
   final bool isForeignKey;
   final bool isNullable;
-  final String? referencedEntityId;
+  final int? referencedEntityId;
 
   @override
   Attribute copyWith({
-    String? id,
+    int? id,
     String? name,
     String? dataType,
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
-    String? Function()? referencedEntityIdFactory,
+    int? Function()? referencedEntityIdFactory,
     int? order,
   }) => Attribute(
     id: id ?? this.id,

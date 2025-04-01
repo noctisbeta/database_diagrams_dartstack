@@ -28,7 +28,7 @@ class AttributeRow extends StatefulWidget {
     bool? isNullable,
     String? name,
     String? dataType,
-    String? referencedEntityId, // Add this
+    int? referencedEntityId,
   })
   onUpdate;
 
@@ -39,7 +39,7 @@ class AttributeRow extends StatefulWidget {
 class _AttributeRowState extends State<AttributeRow> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
-  String? selectedEntityId;
+  int? selectedEntityId;
 
   @override
   void dispose() {
@@ -110,7 +110,7 @@ class _AttributeRowState extends State<AttributeRow> {
       // Entity selector (shown when FK is checked)
       if (widget.isForeignKey) ...[
         Expanded(
-          child: DropdownButtonFormField<String>(
+          child: DropdownButtonFormField<int>(
             value: selectedEntityId,
             decoration: const InputDecoration(
               hintText: 'Select referenced entity',

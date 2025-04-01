@@ -5,4 +5,5 @@ import 'package:shelf/shelf.dart';
 abstract interface class IDiagramsHandler {
   Future<Response> saveDiagram(Request request);
   Future<Response> getDiagrams(Request request);
+  Future<Response> updateDiagram(Request request, String id);
 }

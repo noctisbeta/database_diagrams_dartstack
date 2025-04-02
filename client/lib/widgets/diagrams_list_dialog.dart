@@ -18,9 +18,12 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
       context.read<DiagramCubit>().getDiagrams();
 
   // Function to refresh diagrams list
-  void _refreshDiagrams() {
+  Future<void> _refreshDiagrams() async {
+    final Future<List<Diagram>> newDiagrams =
+        context.read<DiagramCubit>().getDiagrams();
+
     setState(() {
-      diagramsFuture = context.read<DiagramCubit>().getDiagrams();
+      diagramsFuture = newDiagrams;
     });
   }
 
@@ -29,6 +32,18 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
     BuildContext context,
     Diagram diagram,
   ) async {
+    void onError() {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to delete diagram')));
+    }
+
+    void onSuccess() {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Diagram deleted successfully')),
+      );
+    }
+
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder:
@@ -58,15 +73,10 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
 
     if (confirmed ?? false) {
       try {
-        await context.read<DiagramCubit>().deleteDiagram(diagram.id);
-        _refreshDiagrams(); // Refresh the list after deletion
+        onSuccess();
       } on Exception catch (e) {
         LOG.e('Error deleting diagram: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete diagram: $e')),
-          );
-        }
+        onError();
       }
     }
   }
@@ -128,7 +138,9 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
                             color: Theme.of(context).colorScheme.error,
                             tooltip: 'Delete diagram',
                             onPressed:
-                                () => _showDeleteConfirmation(context, diagram),
+                                () => unawaited(
+                                  _showDeleteConfirmation(context, diagram),
+                                ),
                           ),
                         ],
                       ),

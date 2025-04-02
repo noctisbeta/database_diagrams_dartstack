@@ -99,7 +99,6 @@ final class DiagramsHandler implements IDiagramsHandler {
   @override
   Future<Response> deleteDiagram(Request request, String id) async {
     try {
-      print('here');
       final int userId = request.getUserId();
       final int diagramId = int.parse(id);
 

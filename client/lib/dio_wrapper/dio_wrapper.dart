@@ -54,6 +54,26 @@ final class DioWrapper {
     }
   }
 
+  Future<Response> delete(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    try {
+      final Response response = await _dio.delete(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+
+      return response;
+    } on DioException catch (_) {
+      rethrow;
+    }
+  }
+
   Future<Response> put(
     String path, {
     Object? data,

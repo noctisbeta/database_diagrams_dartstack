@@ -7,7 +7,12 @@ import 'package:shelf/shelf.dart';
 Middleware enforceJsonContentType() =>
     (Handler innerHandler) => (Request request) async {
       // Skip content type validation for GET requests
-      if (request.method == 'GET') {
+      if (request.method == 'GET' ||
+          request.method == 'HEAD' ||
+          request.method == 'OPTIONS' ||
+          request.method == 'TRACE' ||
+          request.method == 'CONNECT' ||
+          request.method == 'DELETE') {
         return await innerHandler(request);
       }
 

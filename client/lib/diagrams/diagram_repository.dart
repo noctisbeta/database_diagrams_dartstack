@@ -44,4 +44,16 @@ final class DiagramRepository {
       rethrow;
     }
   }
+
+  Future<void> deleteDiagram(int diagramId) async {
+    try {
+      final Response response = await _dio.delete('/diagrams/$diagramId');
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete diagram: ${response.statusMessage}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

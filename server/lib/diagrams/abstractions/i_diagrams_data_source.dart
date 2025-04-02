@@ -8,4 +8,5 @@ abstract interface class IDiagramsDataSource {
   Future<List<Diagram>> getDiagrams(int userId);
   Future<DiagramDB> createDiagram(SaveDiagramRequest request, int userId);
   Future<DiagramDB> updateDiagram(SaveDiagramRequest request, int userId);
+  Future<void> deleteDiagram(int diagramId, int userId); // Add this method
 }

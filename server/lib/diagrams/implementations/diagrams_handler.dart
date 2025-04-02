@@ -9,6 +9,7 @@ import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/abstractions/i_diagams_repository.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_handler.dart';
+import 'package:server/postgres/database_exception.dart';
 import 'package:server/util/json_response.dart';
 import 'package:server/util/request_extension.dart';
 import 'package:shelf/shelf.dart';
@@ -92,6 +93,25 @@ final class DiagramsHandler implements IDiagramsHandler {
       return JsonResponse.badRequest(body: 'Invalid request! $e');
     } on FormatException catch (e) {
       return JsonResponse.badRequest(body: 'Invalid request! $e');
+    }
+  }
+
+  @override
+  Future<Response> deleteDiagram(Request request, String id) async {
+    try {
+      print('here');
+      final int userId = request.getUserId();
+      final int diagramId = int.parse(id);
+
+      await _diagramsRepository.deleteDiagram(diagramId, userId);
+
+      return JsonResponse.ok(body: {'message': 'Diagram deleted successfully'});
+    } on FormatException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid diagram ID: $e');
+    } on DatabaseException catch (e) {
+      return JsonResponse.internalServerError(
+        body: 'Failed to delete diagram: $e',
+      );
     }
   }
 }

@@ -410,4 +410,26 @@ final class DiagramsDataSource implements IDiagramsDataSource {
 
     return diagramDB;
   }
+
+  @override
+  Future<void> deleteDiagram(int diagramId, int userId) async {
+    // First verify ownership
+    final Result ownershipCheck = await _ps.execute(
+      Sql.named('''
+      SELECT id FROM diagrams 
+      WHERE id = @diagram_id AND user_id = @user_id
+      '''),
+      parameters: {'diagram_id': diagramId, 'user_id': userId},
+    );
+
+    if (ownershipCheck.isEmpty) {
+      throw Exception('Diagram not found or access denied');
+    }
+
+    // Delete the diagram (cascade will handle entities, attributes, positions)
+    await _ps.execute(
+      Sql.named('DELETE FROM diagrams WHERE id = @diagram_id'),
+      parameters: {'diagram_id': diagramId},
+    );
+  }
 }

@@ -119,4 +119,17 @@ class DiagramCubit extends Cubit<DiagramState> {
       ),
     );
   }
+
+  Future<void> deleteDiagram(int diagramId) async {
+    try {
+      await _diagramRepository.deleteDiagram(diagramId);
+      // If the deleted diagram is currently loaded, clear it
+      final DiagramState currentState = state;
+      if (currentState.id == diagramId) {
+        emit(const DiagramState.initial());
+      }
+    } on Exception catch (e) {
+      LOG.e('Failed to delete diagram: $e');
+    }
+  }
 }

@@ -52,4 +52,9 @@ final class DiagramsRepository implements IDiagramsRepository {
 
     return SaveDiagramResponse(id: updatedDiagram.id);
   }
+
+  @override
+  Future<void> deleteDiagram(int diagramId, int userId) async {
+    await _diagramsDataSource.deleteDiagram(diagramId, userId);
+  }
 }

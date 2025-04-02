@@ -8,7 +8,8 @@ Router createDiagramsRouter(DiagramsHandler diagramsHandler) {
       Router()
         ..post('/', diagramsHandler.saveDiagram)
         ..get('/', diagramsHandler.getDiagrams)
-        ..put('/<id>', diagramsHandler.updateDiagram);
+        ..put('/<id>', diagramsHandler.updateDiagram)
+        ..delete('/<id>', diagramsHandler.deleteDiagram);
 
   return router;
 }

@@ -19,4 +19,5 @@ abstract interface class IDiagramsRepository {
     int userId,
     int diagramId,
   );
+  Future<void> deleteDiagram(int diagramId, int userId);
 }

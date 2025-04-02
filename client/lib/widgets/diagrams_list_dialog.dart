@@ -17,6 +17,60 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
   late Future<List<Diagram>> diagramsFuture =
       context.read<DiagramCubit>().getDiagrams();
 
+  // Function to refresh diagrams list
+  void _refreshDiagrams() {
+    setState(() {
+      diagramsFuture = context.read<DiagramCubit>().getDiagrams();
+    });
+  }
+
+  // Show delete confirmation dialog
+  Future<void> _showDeleteConfirmation(
+    BuildContext context,
+    Diagram diagram,
+  ) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (BuildContext dialogContext) => AlertDialog(
+            title: const Text('Delete Diagram'),
+            content: Text(
+              'Are you sure you want to delete "${diagram.name}"?\n\n'
+              'This action cannot be undone. All entities and relationships '
+              'in this diagram will be permanently deleted.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                ),
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed ?? false) {
+      try {
+        await context.read<DiagramCubit>().deleteDiagram(diagram.id);
+        _refreshDiagrams(); // Refresh the list after deletion
+      } on Exception catch (e) {
+        LOG.e('Error deleting diagram: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete diagram: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Dialog(
     child: Container(
@@ -31,60 +85,85 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          FutureBuilder<List<Diagram>>(
-            future: diagramsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                LOG.e('Error loading diagrams: ${snapshot.error}');
-              }
-              return Flexible(
-                child: switch (snapshot.connectionState) {
-                  ConnectionState.waiting ||
-                  ConnectionState.none ||
-                  ConnectionState.active => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  ConnectionState.done =>
-                    snapshot.hasError
-                        ? const Center(child: Text('Error loading diagrams'))
-                        : snapshot.data!.isEmpty
-                        ? const Center(child: Text('No diagrams found'))
-                        : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            final List<Diagram> diagrams = snapshot.data!;
-                            final Diagram diagram = diagrams[index];
-                            return ListTile(
-                              title: Text(diagram.name),
-                              subtitle: Text(diagram.name),
-                              trailing: Text(
-                                '${diagram.createdAt.day}/${diagram.createdAt.month}/${diagram.createdAt.year}',
-                              ),
-                              onTap: () {
-                                context.read<DiagramCubit>().loadDiagram(
-                                  diagram,
-                                );
-                                Navigator.of(context).pop();
-                              },
-                            );
-                          },
-                        ),
-                },
-              );
-            },
+
+          // Set a fixed height container for the list content
+          SizedBox(
+            height: 300, // Fixed height to prevent resizing
+            child: FutureBuilder<List<Diagram>>(
+              future: diagramsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  LOG.e('Error loading diagrams: ${snapshot.error}');
+                }
+
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading diagrams'));
+                }
+
+                if (snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No diagrams found'));
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final List<Diagram> diagrams = snapshot.data!;
+                    final Diagram diagram = diagrams[index];
+                    return ListTile(
+                      title: Text(diagram.name),
+                      subtitle: Text(
+                        'Last modified: ${_formatDate(diagram.updatedAt)}',
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_formatDate(diagram.createdAt)),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            color: Theme.of(context).colorScheme.error,
+                            tooltip: 'Delete diagram',
+                            onPressed:
+                                () => _showDeleteConfirmation(context, diagram),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        context.read<DiagramCubit>().loadDiagram(diagram);
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
 
           const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: _refreshDiagrams,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+            ],
           ),
         ],
       ),
     ),
   );
+
+  // Helper method to format dates consistently
+  String _formatDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 }

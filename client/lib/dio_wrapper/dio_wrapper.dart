@@ -8,7 +8,10 @@ final class DioWrapper {
   DioWrapper()
     : _dio = Dio(
           BaseOptions(
-            baseUrl: 'http://localhost:8080/api/v1',
+            baseUrl:
+                kReleaseMode
+                    ? 'http://188.245.233.82:8080'
+                    : 'http://localhost:8080/api/v1',
             validateStatus:
                 (status) => status != null && status >= 200 && status < 300,
           ),

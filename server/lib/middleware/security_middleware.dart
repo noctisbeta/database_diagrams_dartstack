@@ -9,8 +9,22 @@ Middleware securityMiddleware() =>
 
       final String? origin = request.headers['origin'];
 
+      // List of allowed origins
+      final allowedOrigins = [
+        'https://diagrams.fractalfable.com',
+        'http://localhost:3000', // for local development
+        'http://localhost:8080', // for local development
+      ];
+
+      // Determine if the origin is allowed
+      final String corsOrigin =
+          origin != null && allowedOrigins.contains(origin)
+              ? origin
+              : allowedOrigins
+                  .first; // Default to primary domain if not matched
+
       final Map<String, String> corsHeaders = {
-        'Access-Control-Allow-Origin': origin ?? '',
+        'Access-Control-Allow-Origin': corsOrigin,
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
         'Access-Control-Allow-Headers':
             'Content-Type, Authorization, Referrer-Policy',
@@ -50,6 +64,7 @@ const _securityHeaders = {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
       "style-src 'self' 'unsafe-inline'; "
       "img-src 'self' data: https:; "
-      "connect-src 'self' ws: wss: http: https:",
+      "connect-src 'self' ws: wss: http: https:; "
+      "frame-ancestors 'self' https://diagrams.fractalfable.com;",
   'Referrer-Policy': 'strict-origin-when-cross-origin',
 };

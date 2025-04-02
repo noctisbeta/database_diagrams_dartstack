@@ -172,6 +172,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       emptyResultMessage: 'Failed to create diagram',
     );
 
+    final List<({int idFromRequest, EntityDB dbEntity})> insertedEntities = [];
     for (final Entity entity in request.entities) {
       final EntityDB entityDB = await _ps.executeAndMap(
         query: Sql.named('''
@@ -183,6 +184,8 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         mapper: EntityDB.validatedFromMap,
         emptyResultMessage: 'Failed to create entity',
       );
+
+      insertedEntities.add((idFromRequest: entity.id, dbEntity: entityDB));
 
       final EntityPosition entityPosition = request.entityPositions.firstWhere(
         (position) => position.entityId == entity.id,
@@ -212,7 +215,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             is_primary_key,
             is_foreign_key,
             is_nullable,
-            referenced_entity_id,
             "order"
           )
           VALUES (
@@ -222,7 +224,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             @is_primary_key,
             @is_foreign_key,
             @is_nullable,
-            @referenced_entity_id,
             @order
           );
           '''),
@@ -233,8 +234,42 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             'is_primary_key': attribute.isPrimaryKey,
             'is_foreign_key': attribute.isForeignKey,
             'is_nullable': attribute.isNullable,
-            'referenced_entity_id': attribute.referencedEntityId,
             'order': attribute.order,
+          },
+        );
+      }
+    }
+
+    for (final Entity entity in request.entities) {
+      for (final Attribute attribute in entity.attributes.where(
+        (a) => a.referencedEntityId != null,
+      )) {
+        final int attributeOwnerEntityDbId =
+            insertedEntities
+                .firstWhere((e) => e.idFromRequest == entity.id)
+                .dbEntity
+                .id;
+
+        final int referencedEntityDbId =
+            insertedEntities
+                .firstWhere(
+                  (e) => e.idFromRequest == attribute.referencedEntityId!,
+                )
+                .dbEntity
+                .id;
+
+        await _ps.execute(
+          Sql.named('''
+          UPDATE attributes 
+          SET
+            referenced_entity_id = @referenced_entity_id
+          WHERE (
+            entity_id = @entity_id
+          );
+          '''),
+          parameters: {
+            'entity_id': attributeOwnerEntityDbId,
+            'referenced_entity_id': referencedEntityDbId,
           },
         );
       }
@@ -265,13 +300,12 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       emptyResultMessage: 'Failed to update diagram or access denied',
     );
 
-    // 2. Delete existing entities (cascade will delete attributes and positions)
     await _ps.execute(
       Sql.named('DELETE FROM entities WHERE diagram_id = @diagram_id'),
       parameters: {'diagram_id': diagramDB.id},
     );
 
-    // 3. Re-create entities, positions and attributes (same as in createDiagram)
+    final List<({int idFromRequest, EntityDB dbEntity})> insertedEntities = [];
     for (final Entity entity in request.entities) {
       final EntityDB entityDB = await _ps.executeAndMap(
         query: Sql.named('''
@@ -283,6 +317,8 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         mapper: EntityDB.validatedFromMap,
         emptyResultMessage: 'Failed to create entity',
       );
+
+      insertedEntities.add((idFromRequest: entity.id, dbEntity: entityDB));
 
       final EntityPosition entityPosition = request.entityPositions.firstWhere(
         (position) => position.entityId == entity.id,
@@ -312,7 +348,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             is_primary_key,
             is_foreign_key,
             is_nullable,
-            referenced_entity_id,
             "order"
           )
           VALUES (
@@ -322,7 +357,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             @is_primary_key,
             @is_foreign_key,
             @is_nullable,
-            @referenced_entity_id,
             @order
           );
           '''),
@@ -333,8 +367,42 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             'is_primary_key': attribute.isPrimaryKey,
             'is_foreign_key': attribute.isForeignKey,
             'is_nullable': attribute.isNullable,
-            'referenced_entity_id': attribute.referencedEntityId,
             'order': attribute.order,
+          },
+        );
+      }
+    }
+
+    for (final Entity entity in request.entities) {
+      for (final Attribute attribute in entity.attributes.where(
+        (a) => a.referencedEntityId != null,
+      )) {
+        final int attributeOwnerEntityDbId =
+            insertedEntities
+                .firstWhere((e) => e.idFromRequest == entity.id)
+                .dbEntity
+                .id;
+
+        final int referencedEntityDbId =
+            insertedEntities
+                .firstWhere(
+                  (e) => e.idFromRequest == attribute.referencedEntityId!,
+                )
+                .dbEntity
+                .id;
+
+        await _ps.execute(
+          Sql.named('''
+          UPDATE attributes 
+          SET
+            referenced_entity_id = @referenced_entity_id
+          WHERE (
+            entity_id = @entity_id
+          );
+          '''),
+          parameters: {
+            'entity_id': attributeOwnerEntityDbId,
+            'referenced_entity_id': referencedEntityDbId,
           },
         );
       }

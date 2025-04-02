@@ -4,6 +4,7 @@ import 'package:client/diagrams/diagram_cubit.dart';
 import 'package:client/entity_card.dart';
 import 'package:client/relationship_painter.dart';
 import 'package:client/widgets/add_entity_dialog.dart';
+import 'package:client/widgets/edit_entity_dialog.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/logger/logger.dart';
@@ -170,13 +171,25 @@ class _DraggableEntityState extends State<_DraggableEntity> {
           PopupMenuItem(
             child: const Text('Edit Entity'),
             onTap: () {
-              // Handle edit action
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showDialog(
+                  context: context,
+                  builder:
+                      (dialogContext) => BlocProvider.value(
+                        value: context.read<DiagramCubit>(),
+                        child: EditEntityDialog(entity: widget.entity),
+                      ),
+                );
+              });
             },
           ),
           PopupMenuItem(
             child: const Text('Delete Entity'),
             onTap: () {
-              // Handle delete action
+              // Show confirmation dialog after menu is dismissed
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _showDeleteConfirmationDialog(context);
+              });
             },
           ),
           // More options
@@ -184,4 +197,39 @@ class _DraggableEntityState extends State<_DraggableEntity> {
       ),
     );
   }
+
+  void _showDeleteConfirmationDialog(BuildContext context) => unawaited(
+    showDialog(
+      context: context,
+      builder:
+          (BuildContext dialogContext) => AlertDialog(
+            title: const Text('Delete Entity'),
+            content: Text(
+              'Are you sure you want to delete "${widget.entity.name}"?\n\n'
+              'This action cannot be undone and will remove all relationships '
+              'connected to this entity.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop(); // Close dialog
+                },
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                ),
+                onPressed: () {
+                  // Perform the delete operation
+                  context.read<DiagramCubit>().deleteEntity(widget.entity.id);
+                  Navigator.of(dialogContext).pop(); // Close dialog
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    ),
+  );
 }

@@ -96,4 +96,27 @@ class DiagramCubit extends Cubit<DiagramState> {
 
     emit(state.copyWith(entityPositions: positions));
   }
+
+  void updateEntity(int entityId, Entity updatedEntity) {
+    final List<Entity> updatedEntities =
+        state.entities.map((entity) {
+          if (entity.id == entityId) {
+            return updatedEntity;
+          }
+          return entity;
+        }).toList();
+
+    emit(state.copyWith(entities: updatedEntities));
+  }
+
+  void deleteEntity(int entityId) {
+    emit(
+      state.copyWith(
+        entities: [
+          for (final e in state.entities)
+            if (e.id != entityId) e,
+        ],
+      ),
+    );
+  }
 }

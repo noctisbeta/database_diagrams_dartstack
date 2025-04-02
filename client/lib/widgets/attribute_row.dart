@@ -11,15 +11,17 @@ class AttributeRow extends StatefulWidget {
     required this.isNullable,
     required this.onRemove,
     required this.onUpdate,
-    required this.availableEntities, // Add this
+    required this.availableEntities,
+    this.attribute,
     super.key,
   });
 
+  final Attribute? attribute;
   final int index;
   final bool isPrimaryKey;
   final bool isForeignKey;
   final bool isNullable;
-  final List<Entity> availableEntities; // Add this
+  final List<Entity> availableEntities;
   final void Function(int index) onRemove;
   final void Function(
     int index, {
@@ -40,6 +42,16 @@ class _AttributeRowState extends State<AttributeRow> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
   int? selectedEntityId;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.attribute != null) {
+      nameController.text = widget.attribute!.name;
+      typeController.text = widget.attribute!.dataType;
+      selectedEntityId = widget.attribute!.referencedEntityId;
+    }
+  }
 
   @override
   void dispose() {

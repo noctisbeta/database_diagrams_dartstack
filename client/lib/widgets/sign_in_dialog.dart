@@ -18,6 +18,7 @@ class _SignInDialogState extends State<SignInDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isObscured = true;
   bool _isRegistering = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -33,18 +34,18 @@ class _SignInDialogState extends State<SignInDialog> {
       final String password = _passwordController.text;
 
       if (username.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill in all fields')),
-        );
+        setState(() {
+          _errorMessage = 'Please fill in all fields';
+        });
         return;
       }
 
       if (_isRegistering) {
         final String confirmPassword = _confirmPasswordController.text;
         if (password != confirmPassword) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Passwords do not match')),
-          );
+          setState(() {
+            _errorMessage = 'Passwords do not match';
+          });
           return;
         }
 
@@ -65,9 +66,9 @@ class _SignInDialogState extends State<SignInDialog> {
       if (state is AuthStateAuthenticated) {
         Navigator.pop(context);
       } else if (state is AuthStateError) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(state.message)));
+        setState(() {
+          _errorMessage = state.message;
+        });
       }
     },
     child: AlertDialog(
@@ -152,6 +153,13 @@ class _SignInDialogState extends State<SignInDialog> {
                     }
                     return null;
                   },
+                ),
+              ],
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ],
               const SizedBox(height: 16),

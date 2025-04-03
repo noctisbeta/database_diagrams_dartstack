@@ -9,19 +9,28 @@ Middleware securityMiddleware() =>
 
       final String? origin = request.headers['origin'];
 
-      // List of allowed origins
-      final allowedOrigins = [
-        'https://diagrams.fractalfable.com',
-        'http://localhost:3000', // for local development
-        'http://localhost:8080', // for local development
-      ];
+      // Primary production origin
+      const String productionOrigin = 'https://diagrams.fractalfable.com';
 
       // Determine if the origin is allowed
-      final String corsOrigin =
-          origin != null && allowedOrigins.contains(origin)
-              ? origin
-              : allowedOrigins
-                  .first; // Default to primary domain if not matched
+      final String corsOrigin;
+      if (origin != null) {
+        // Allow any localhost origin regardless of port
+        if (origin.startsWith('http://localhost:')) {
+          corsOrigin = origin;
+        }
+        // Allow the production origin
+        else if (origin == productionOrigin) {
+          corsOrigin = origin;
+        }
+        // Default to production origin if not allowed
+        else {
+          corsOrigin = productionOrigin;
+        }
+      } else {
+        // Default when no origin is provided
+        corsOrigin = productionOrigin;
+      }
 
       final Map<String, String> corsHeaders = {
         'Access-Control-Allow-Origin': corsOrigin,

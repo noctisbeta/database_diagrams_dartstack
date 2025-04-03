@@ -29,7 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     // Store the subscription so we can cancel it later
-    _stateSubscription = stream.listen(_handleStateChanges);
+    // _stateSubscription = stream.listen(_handleStateChanges);
 
     // Initial check if we're already authenticated
     add(const AuthEventCheckAuth());

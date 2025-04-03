@@ -39,7 +39,7 @@ final class AuthDataSource implements IAuthDataSource {
       UPDATE refresh_tokens 
       SET is_used = true, 
           is_revoked = true, 
-          revocation_reason = 'Token expired'
+          revoke_reason = 'Token expired'
       WHERE token = @token;
     '''),
       parameters: {'token': token},
@@ -216,7 +216,7 @@ final class AuthDataSource implements IAuthDataSource {
       SET 
         is_revoked = TRUE,
         revoked_at = @revoked_at,
-        revoked_reason = @reason
+        revoke_reason = @reason
       WHERE 
         user_id = @user_id AND
         is_revoked = FALSE

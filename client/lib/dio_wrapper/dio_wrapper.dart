@@ -9,9 +9,9 @@ final class DioWrapper {
     : _dio = Dio(
           BaseOptions(
             baseUrl:
-                kReleaseMode
-                    ? 'http://188.245.233.82:8080'
-                    : 'http://localhost:8080/api/v1',
+                kDebugMode
+                    ? 'http://localhost:8080/api/v1'
+                    : 'https://api.diagrams.fractalfable.com/api/v1',
             validateStatus:
                 (status) => status != null && status >= 200 && status < 300,
           ),

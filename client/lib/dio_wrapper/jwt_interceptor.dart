@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:client/dio_wrapper/dio_wrapper.dart';
 import 'package:common/auth/tokens/jwtoken.dart';
 import 'package:common/auth/tokens/refresh_jwtoken_request.dart';
@@ -17,10 +19,7 @@ class JwtInterceptor extends InterceptorsWrapper {
   final DioWrapper dioWrapper;
   final FlutterSecureStorage _storage;
 
-  Future<JWToken?> _refreshToken(
-    RequestOptions options,
-    ErrorInterceptorHandler handler,
-  ) async {
+  Future<JWToken?> _refreshToken() async {
     final String? refreshTokenString = await _storage.read(
       key: 'refresh_token',
     );
@@ -49,13 +48,8 @@ class JwtInterceptor extends InterceptorsWrapper {
     );
 
     if (DateTime.now().isAfter(refreshTokenExpiresAt)) {
-      handler.resolve(
-        Response(
-          requestOptions: options,
-          data: 'Refresh Token is expired',
-          statusCode: 401,
-        ),
-      );
+      // Don't call handler here, just return null or throw
+      return null;
     }
 
     final RefreshJWTokenRequest refreshTokenRequest = RefreshJWTokenRequest(
@@ -72,9 +66,6 @@ class JwtInterceptor extends InterceptorsWrapper {
           RefreshJWTokenResponseSuccess.validatedFromMap(
             response.data as Map<String, dynamic>,
           );
-      RefreshJWTokenResponseSuccess.validatedFromMap(
-        response.data as Map<String, dynamic>,
-      );
 
       final RefreshTokenWrapper refreshTokenWrapper =
           refreshTokenResponse.refreshTokenWrapper;
@@ -94,11 +85,6 @@ class JwtInterceptor extends InterceptorsWrapper {
       return newJwToken;
     } on DioException catch (e) {
       LOG.e('Failed to refresh token: $e');
-
-      await _storage.delete(key: 'refresh_token');
-      await _storage.delete(key: 'refresh_token_expires_at');
-      await _storage.delete(key: 'jw_token');
-
       return null;
     }
   }
@@ -126,12 +112,9 @@ class JwtInterceptor extends InterceptorsWrapper {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401) {
+    if (err.response?.statusCode == HttpStatus.unauthorized) {
       try {
-        final JWToken? newToken = await _refreshToken(
-          err.requestOptions,
-          handler,
-        );
+        final JWToken? newToken = await _refreshToken();
 
         if (newToken == null) {
           return handler.reject(
@@ -160,7 +143,7 @@ class JwtInterceptor extends InterceptorsWrapper {
         return handler.reject(
           DioException(
             requestOptions: err.requestOptions,
-            error: 'Token refresh failed $e',
+            error: 'Token refresh failed. $e',
           ),
         );
       }

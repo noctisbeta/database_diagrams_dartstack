@@ -20,14 +20,14 @@ Middleware jwtMiddlewareProvider() =>
       );
 
       if (token.isExpired()) {
-        return Response(HttpStatus.unauthorized, body: 'Token expired');
+        return Response(HttpStatus.unauthorized, body: 'JWToken expired');
       }
 
       try {
         final bool isVerified = JWTokenHelper.verifyToken(token);
 
         if (!isVerified) {
-          return Response(HttpStatus.unauthorized, body: 'Invalid token');
+          return Response(HttpStatus.unauthorized, body: 'Invalid JWToken');
         }
 
         final int userId = token.getUserId();
@@ -38,6 +38,6 @@ Middleware jwtMiddlewareProvider() =>
 
         return await handler(newRequest);
       } on Exception catch (e) {
-        return Response(HttpStatus.unauthorized, body: 'Invalid token: $e');
+        return Response(HttpStatus.unauthorized, body: 'Invalid JWToken: $e');
       }
     };

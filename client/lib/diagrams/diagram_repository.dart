@@ -1,59 +1,31 @@
-import 'package:client/dio_wrapper/dio_wrapper.dart';
+import 'package:client/diagrams/diagram_data_provider.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
-import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 final class DiagramRepository {
-  const DiagramRepository({required DioWrapper dio}) : _dio = dio;
+  const DiagramRepository({required DiagramDataProvider dataProvider})
+    : _dataProvider = dataProvider;
 
-  final DioWrapper _dio;
+  final DiagramDataProvider _dataProvider;
 
   Future<SaveDiagramResponse> saveDiagram(SaveDiagramRequest request) async {
-    try {
-      final Response response;
+    final SaveDiagramResponse saveDiagramResponse = await _dataProvider
+        .saveDiagram(request);
 
-      if (request.id != null) {
-        // Update existing diagram
-        response = await _dio.put(
-          '/diagrams/${request.id}',
-          data: request.toMap(),
-        );
-      } else {
-        // Create new diagram
-        response = await _dio.post('/diagrams', data: request.toMap());
-      }
-
-      return SaveDiagramResponse.validatedFromMap(response.data);
-    } catch (e) {
-      rethrow;
-    }
+    return saveDiagramResponse;
   }
 
   Future<GetDiagramsResponse> getDiagrams() async {
-    try {
-      final Response response = await _dio.get('/diagrams');
+    final GetDiagramsResponse getDiagramsResponse =
+        await _dataProvider.getDiagrams();
 
-      final GetDiagramsResponse getDiagramsResponse =
-          GetDiagramsResponse.validatedFromMap(response.data);
-
-      return getDiagramsResponse;
-    } catch (e) {
-      rethrow;
-    }
+    return getDiagramsResponse;
   }
 
   Future<void> deleteDiagram(int diagramId) async {
-    try {
-      final Response response = await _dio.delete('/diagrams/$diagramId');
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to delete diagram: ${response.statusMessage}');
-      }
-    } catch (e) {
-      rethrow;
-    }
+    await _dataProvider.deleteDiagram(diagramId);
   }
 }

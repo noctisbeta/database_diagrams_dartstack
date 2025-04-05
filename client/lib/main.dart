@@ -1,18 +1,15 @@
 import 'package:client/authentication/controllers/auth_bloc.dart';
+import 'package:client/authentication/controllers/auth_provider_wrapper.dart';
 import 'package:client/authentication/models/auth_event.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/authentication/repositories/auth_repository.dart';
 import 'package:client/common/widgets/my_snackbar.dart';
 import 'package:client/diagrams/diagram_cubit.dart';
+import 'package:client/diagrams/diagram_data_provider.dart';
 import 'package:client/diagrams/diagram_repository.dart';
-import 'package:client/dio_wrapper/dio_wrapper.dart';
+import 'package:client/dio_wrapper/jwt_interceptor.dart';
 import 'package:client/main_view.dart';
-import 'package:client/projects/controllers/projects_bloc.dart';
-import 'package:client/projects/models/projects_event.dart';
-import 'package:client/projects/repositories/projects_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(const ProviderWrapper());
@@ -22,46 +19,33 @@ class ProviderWrapper extends StatelessWidget {
   const ProviderWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) => MultiRepositoryProvider(
-    providers: [
-      RepositoryProvider(create: (context) => DioWrapper()),
-      RepositoryProvider(create: (context) => const FlutterSecureStorage()),
-      RepositoryProvider(
-        create:
-            (context) => AuthRepository(
-              dio: context.read<DioWrapper>(),
-              storage: context.read<FlutterSecureStorage>(),
-            ),
-      ),
-      RepositoryProvider(
-        create:
-            (context) => ProjectsRepository(dio: context.read<DioWrapper>()),
-      ),
-      RepositoryProvider(
-        create: (context) => DiagramRepository(dio: context.read<DioWrapper>()),
-      ),
-    ],
-    child: MultiBlocProvider(
+  Widget build(BuildContext context) => AuthProviderWrapper(
+    child: MultiRepositoryProvider(
       providers: [
-        BlocProvider(
+        RepositoryProvider(
           create:
-              (context) =>
-                  AuthBloc(authRepository: context.read<AuthRepository>()),
-        ),
-        BlocProvider(
-          create:
-              (context) => DiagramCubit(
-                diagramRepository: context.read<DiagramRepository>(),
+              (context) => DiagramDataProvider(
+                jwtInterceptor: context.read<JwtInterceptor>(),
               ),
         ),
-        BlocProvider(
+        RepositoryProvider(
           create:
-              (context) => ProjectsBloc(
-                projectsRepository: context.read<ProjectsRepository>(),
-              )..add(ProjectsEventLoad()),
+              (context) => DiagramRepository(
+                dataProvider: context.read<DiagramDataProvider>(),
+              ),
         ),
       ],
-      child: const MyApp(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create:
+                (context) => DiagramCubit(
+                  diagramRepository: context.read<DiagramRepository>(),
+                ),
+          ),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -78,6 +62,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
+    context.read<JwtInterceptor>().onRefreshFailedCallback = () {
+      context.read<AuthBloc>().add(const AuthEventTokenExpired());
+    };
+
     context.read<AuthBloc>().add(const AuthEventCheckAuth());
   }
 
@@ -86,21 +74,14 @@ class _MyAppState extends State<MyApp> {
     debugShowCheckedModeBanner: false,
     home: BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        final DioWrapper dio = context.read<DioWrapper>();
-        final FlutterSecureStorage storage =
-            context.read<FlutterSecureStorage>();
-
-        if (state is AuthStateAuthenticated) {
-          dio.addAuthInterceptor(storage);
-        } else if (state is AuthStateUnauthenticated) {
-          dio.removeAuthInterceptor();
-        }
         if (state is AuthStateSessionExpired) {
           MySnackBar.show(
             context: context,
             message: state.message,
             type: SnackBarType.warning,
           );
+
+          Navigator.of(context).popUntil((route) => route.isFirst);
         } else if (state is AuthStateError) {
           MySnackBar.show(
             context: context,

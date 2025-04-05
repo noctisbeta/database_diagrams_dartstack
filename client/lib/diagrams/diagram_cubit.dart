@@ -21,7 +21,14 @@ class DiagramCubit extends Cubit<DiagramState> {
 
   Future<List<Diagram>> getDiagrams() async {
     final GetDiagramsResponse response = await _diagramRepository.getDiagrams();
-    return response.diagrams;
+
+    switch (response) {
+      case GetDiagramsResponseSuccess():
+        return response.diagrams;
+      case GetDiagramsResponseError():
+        LOG.e('Failed to get diagrams: ${response.message}');
+        return [];
+    }
   }
 
   void loadDiagram(Diagram diagram) {
@@ -48,9 +55,13 @@ class DiagramCubit extends Cubit<DiagramState> {
         request,
       );
 
-      // If this was a new diagram, update state with the new ID
-      if (state.isNewDiagram) {
-        emit(state.copyWith(idFn: () => response.id));
+      switch (response) {
+        case SaveDiagramResponseSuccess():
+          if (state.isNewDiagram) {
+            emit(state.copyWith(idFn: () => response.id));
+          }
+        case SaveDiagramResponseError():
+          return;
       }
     } on Exception catch (e) {
       LOG.e('Failed to save diagram $e');

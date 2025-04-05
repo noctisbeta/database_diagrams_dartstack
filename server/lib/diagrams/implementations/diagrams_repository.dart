@@ -22,7 +22,7 @@ final class DiagramsRepository implements IDiagramsRepository {
   ) async {
     final List<Diagram> res = await _diagramsDataSource.getDiagrams(userId);
 
-    return GetDiagramsResponse(diagrams: res);
+    return GetDiagramsResponseSuccess(diagrams: res);
   }
 
   @override
@@ -35,7 +35,7 @@ final class DiagramsRepository implements IDiagramsRepository {
       userId,
     );
 
-    return SaveDiagramResponse(id: diagramDB.id);
+    return SaveDiagramResponseSuccess(id: diagramDB.id);
   }
 
   @override
@@ -50,7 +50,7 @@ final class DiagramsRepository implements IDiagramsRepository {
       userId,
     );
 
-    return SaveDiagramResponse(id: updatedDiagram.id);
+    return SaveDiagramResponseSuccess(id: updatedDiagram.id);
   }
 
   @override

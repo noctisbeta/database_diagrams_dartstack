@@ -38,6 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   Timer? _tokenMonitorTimer;
   StreamSubscription<AuthState>? _stateSubscription;
+  StreamSubscription<bool>? _refreshFailedSubscription;
 
   // Handle state changes to manage token monitor
   void _handleStateChanges(AuthState state) {
@@ -147,7 +148,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
   Future<void> close() {
     _stopTokenExpirationMonitor();
-    _stateSubscription?.cancel(); // Cancel the subscription when bloc is closed
+    _stateSubscription?.cancel();
+    _refreshFailedSubscription
+        ?.cancel(); // Cancel the refresh failed subscription
     return super.close();
   }
 

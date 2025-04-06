@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:client/diagram_canvas.dart';
+import 'package:client/common/widgets/toolbar.dart';
+import 'package:client/diagrams/components/add_entity_dialog.dart';
+import 'package:client/diagrams/components/diagram_canvas.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/models/diagram_state.dart';
-import 'package:client/widgets/add_entity_dialog.dart';
-import 'package:client/widgets/toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

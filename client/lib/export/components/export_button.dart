@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:client/export_format.dart';
-import 'package:client/exporter.dart';
+import 'package:client/export/controllers/exporter.dart';
+import 'package:client/export/models/export_format.dart';
 import 'package:flutter/material.dart';
 
 class ExportButton extends StatelessWidget {

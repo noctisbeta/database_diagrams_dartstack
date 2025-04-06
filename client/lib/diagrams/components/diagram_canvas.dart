@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:client/diagrams/components/add_entity_dialog.dart';
+import 'package:client/diagrams/components/edit_entity_dialog.dart';
+import 'package:client/diagrams/components/entity_card.dart';
+import 'package:client/diagrams/components/relationship_painter.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
-import 'package:client/entity_card.dart';
-import 'package:client/relationship_painter.dart';
-import 'package:client/widgets/add_entity_dialog.dart';
-import 'package:client/widgets/edit_entity_dialog.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/logger/logger.dart';

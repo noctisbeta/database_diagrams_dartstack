@@ -1,36 +1,47 @@
+import 'package:client/diagrams/components/attribute_row.dart';
+import 'package:client/diagrams/components/entity_card.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
-import 'package:client/entity_card.dart';
-import 'package:client/widgets/attribute_row.dart';
 import 'package:common/er/attribute.dart';
 import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddEntityDialog extends StatefulWidget {
-  const AddEntityDialog({super.key});
+class EditEntityDialog extends StatefulWidget {
+  const EditEntityDialog({required this.entity, super.key});
+
+  final Entity entity;
 
   @override
-  State<AddEntityDialog> createState() => _AddEntityDialogState();
+  State<EditEntityDialog> createState() => _EditEntityDialogState();
 }
 
-class _AddEntityDialogState extends State<AddEntityDialog> {
-  final TextEditingController _nameController = TextEditingController();
-  final List<Attribute> _attributes = [];
+class _EditEntityDialogState extends State<EditEntityDialog> {
+  late final TextEditingController _nameController = TextEditingController(
+    text: widget.entity.name,
+  );
+  late final List<Attribute> _attributes = widget.entity.attributes;
 
   // Add this field to track primary key index
-  int? _primaryKeyIndex;
+  late int? _primaryKeyIndex =
+      _attributes
+                  .firstWhere(
+                    (attr) => attr.isPrimaryKey,
+                    orElse:
+                        () => const Attribute(id: -1, name: '', dataType: ''),
+                  )
+                  .id ==
+              -1
+          ? null
+          : _attributes.indexWhere((attr) => attr.isPrimaryKey);
 
   // Add this getter to get all available entities except the current one
   List<Entity> get availableEntities =>
-      context.read<DiagramCubit>().state.entities;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Start with one attribute
-    _addAttribute();
-  }
+      context
+          .read<DiagramCubit>()
+          .state
+          .entities
+          .where((entity) => entity.id != widget.entity.id)
+          .toList();
 
   void _addAttribute() {
     setState(() {
@@ -181,6 +192,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: AttributeRow(
+                                    attribute: _attributes[index],
                                     index: index,
                                     isPrimaryKey:
                                         _attributes[index].isPrimaryKey,
@@ -229,7 +241,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
             child: SingleChildScrollView(
               child: EntityCard(
                 entity: Entity(
-                  id: -1,
+                  id: widget.entity.id, // Use the original entity ID, not -1
                   name:
                       _nameController.text.isEmpty
                           ? 'Entity Name'
@@ -269,16 +281,16 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
           }
 
           final entity = Entity(
-            id: -1,
+            id: widget.entity.id,
             name: _nameController.text,
             attributes:
                 _attributes.where((attr) => attr.name.isNotEmpty).toList(),
           );
 
-          context.read<DiagramCubit>().addEntity(entity);
+          context.read<DiagramCubit>().updateEntity(widget.entity.id, entity);
           Navigator.pop(context);
         },
-        child: const Text('Add Entity'),
+        child: const Text('Update Entity'),
       ),
     ],
   );

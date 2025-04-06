@@ -31,16 +31,14 @@ class DiagramCubit extends Cubit<DiagramState> {
     }
   }
 
-  void loadDiagram(Diagram diagram) {
-    emit(
-      DiagramState(
-        id: diagram.id,
-        name: diagram.name,
-        entities: diagram.entities,
-        entityPositions: diagram.entityPositions,
-      ),
-    );
-  }
+  void loadDiagram(Diagram diagram) => emit(
+    DiagramState(
+      id: diagram.id,
+      name: diagram.name,
+      entities: diagram.entities,
+      entityPositions: diagram.entityPositions,
+    ),
+  );
 
   Future<void> saveDiagram() async {
     final request = SaveDiagramRequest(
@@ -50,27 +48,23 @@ class DiagramCubit extends Cubit<DiagramState> {
       entityPositions: state.entityPositions,
     );
 
-    try {
-      final SaveDiagramResponse response = await _diagramRepository.saveDiagram(
-        request,
-      );
+    final SaveDiagramResponse response = await _diagramRepository.saveDiagram(
+      request,
+    );
 
-      switch (response) {
-        case SaveDiagramResponseSuccess():
-          if (state.isNewDiagram) {
-            emit(state.copyWith(idFn: () => response.id));
-          }
-        case SaveDiagramResponseError():
-          return;
-      }
-    } on Exception catch (e) {
-      LOG.e('Failed to save diagram $e');
+    switch (response) {
+      case SaveDiagramResponseSuccess():
+        if (state.isNewDiagram) {
+          emit(state.copyWith(idFn: () => response.id));
+        }
+      case SaveDiagramResponseError():
+        return;
     }
   }
 
   Future<void> updateDiagramTitle(String title) async {
     if (state.name == title) {
-      return; // Title hasn't changed, no need to update
+      return;
     }
 
     emit(state.copyWith(name: title));
@@ -102,7 +96,6 @@ class DiagramCubit extends Cubit<DiagramState> {
       return;
     }
 
-    // Directly set the new position instead of adding to it
     positions[index] = positions[index].copyWith(x: dx, y: dy);
 
     emit(state.copyWith(entityPositions: positions));
@@ -134,10 +127,9 @@ class DiagramCubit extends Cubit<DiagramState> {
   Future<void> deleteDiagram(int diagramId) async {
     try {
       await _diagramRepository.deleteDiagram(diagramId);
-      // If the deleted diagram is currently loaded, clear it
-      final DiagramState currentState = state;
-      if (currentState.id == diagramId) {
-        emit(const DiagramState.initial());
+
+      if (state.id == diagramId) {
+        resetDiagram();
       }
     } on Exception catch (e) {
       LOG.e('Failed to delete diagram: $e');

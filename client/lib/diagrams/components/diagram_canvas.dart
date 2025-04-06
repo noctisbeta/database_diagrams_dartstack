@@ -7,7 +7,6 @@ import 'package:client/diagrams/components/relationship_painter.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
-import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,7 +66,6 @@ class _DiagramCanvasState extends State<DiagramCanvas> {
   );
 
   void _showCanvasContextMenu(BuildContext context, Offset position) {
-    LOG.i('Menu position: $position');
     unawaited(
       showMenu(
         context: context,

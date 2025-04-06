@@ -138,7 +138,13 @@ class RelationshipPainter extends CustomPainter {
           ..lineTo(tip.dx + (arrowSize * direction), tip.dy + arrowSize)
           ..close();
 
-    canvas.drawPath(path, paint..style = PaintingStyle.fill);
+    // Create a new paint object for the filled arrow head
+    final arrowPaint =
+        Paint()
+          ..color = paint.color
+          ..style = PaintingStyle.fill;
+
+    canvas.drawPath(path, arrowPaint);
   }
 
   double _getAttributeY(Entity entity, Attribute attribute) {

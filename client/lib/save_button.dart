@@ -19,7 +19,7 @@ class SaveButton extends StatelessWidget {
 }
 
 Future<void> _handleSavePressed(BuildContext context) async {
-  final AuthState authState = context.read<AuthBloc>().state;
+  final AuthState authState = context.read<AuthCubit>().state;
 
   if (authState is AuthStateAuthenticated) {
     // User is logged in, proceed with saving
@@ -56,7 +56,7 @@ Future<void> _showSignInPrompt(BuildContext context) async {
                     context: context,
                     builder:
                         (signInContext) => BlocProvider.value(
-                          value: context.read<AuthBloc>(),
+                          value: context.read<AuthCubit>(),
                           child: const SignInDialog(),
                         ),
                   ),

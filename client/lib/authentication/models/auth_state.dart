@@ -34,16 +34,6 @@ final class AuthStateLoading extends AuthState {
 }
 
 @immutable
-final class AuthStateSessionExpired extends AuthState {
-  const AuthStateSessionExpired({required this.message});
-
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
-}
-
-@immutable
 sealed class AuthStateError extends AuthState {
   const AuthStateError({required this.message});
 

@@ -39,7 +39,8 @@ class AuthProviderWrapper extends StatelessWidget {
     ],
     child: BlocProvider(
       create:
-          (context) => AuthBloc(authRepository: context.read<AuthRepository>()),
+          (context) =>
+              AuthCubit(authRepository: context.read<AuthRepository>()),
       child: child,
     ),
   );

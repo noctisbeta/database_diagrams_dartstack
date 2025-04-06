@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/export_format.dart';
 import 'package:client/exporter.dart';
 import 'package:flutter/material.dart';
 
@@ -7,16 +8,16 @@ class ExportButton extends StatelessWidget {
   const ExportButton({super.key});
 
   @override
-  Widget build(BuildContext context) => PopupMenuButton<String>(
+  Widget build(BuildContext context) => PopupMenuButton<ExportFormat>(
     tooltip: 'Export Diagram',
     icon: const Icon(Icons.file_download),
     // Add offset to move the menu down by 16 logical pixels
     offset: const Offset(0, 45),
-    onSelected: (format) => _handleExportFormat(context, format),
+    onSelected: (format) => unawaited(_handleExportFormat(context, format)),
     itemBuilder:
         (context) => [
-          const PopupMenuItem<String>(
-            value: 'png',
+          const PopupMenuItem<ExportFormat>(
+            value: ExportFormat.png,
             child: Row(
               children: [
                 Icon(Icons.image),
@@ -25,8 +26,8 @@ class ExportButton extends StatelessWidget {
               ],
             ),
           ),
-          const PopupMenuItem<String>(
-            value: 'pdf',
+          const PopupMenuItem<ExportFormat>(
+            value: ExportFormat.pdf,
             child: Row(
               children: [
                 Icon(Icons.picture_as_pdf),
@@ -35,8 +36,8 @@ class ExportButton extends StatelessWidget {
               ],
             ),
           ),
-          const PopupMenuItem<String>(
-            value: 'json',
+          const PopupMenuItem<ExportFormat>(
+            value: ExportFormat.json,
             child: Row(
               children: [
                 Icon(Icons.data_object),
@@ -48,14 +49,10 @@ class ExportButton extends StatelessWidget {
         ],
   );
 
-  void _handleExportFormat(BuildContext context, String format) {
-    switch (format) {
-      case 'png':
-        unawaited(Exporter.exportAsPNG(context));
-      case 'pdf':
-        unawaited(Exporter.exportAsPDF(context));
-      case 'json':
-        unawaited(Exporter.exportAsJSON(context));
-    }
-  }
+  Future<void> _handleExportFormat(BuildContext context, ExportFormat format) =>
+      switch (format) {
+        ExportFormat.png => Exporter.exportAsPNG(context),
+        ExportFormat.pdf => Exporter.exportAsPDF(context),
+        ExportFormat.json => Exporter.exportAsJSON(context),
+      };
 }

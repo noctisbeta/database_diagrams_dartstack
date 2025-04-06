@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:client/authentication/controllers/auth_bloc.dart';
-import 'package:client/authentication/models/auth_event.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/widgets/diagrams_list_dialog.dart';
@@ -19,7 +18,7 @@ class AuthButton extends StatefulWidget {
 
 class _AuthButtonState extends State<AuthButton> {
   @override
-  Widget build(BuildContext context) => BlocBuilder<AuthBloc, AuthState>(
+  Widget build(BuildContext context) => BlocBuilder<AuthCubit, AuthState>(
     builder: (context, state) {
       if (state is AuthStateLoading) {
         return _buildLoadingButton();
@@ -52,7 +51,7 @@ class _AuthButtonState extends State<AuthButton> {
         context: context,
         builder:
             (dialogContext) => BlocProvider.value(
-              value: context.read<AuthBloc>(),
+              value: context.read<AuthCubit>(),
               child: const SignInDialog(),
             ),
       ),
@@ -87,9 +86,9 @@ class ProfileMenu extends StatelessWidget {
         ],
       ),
     ),
-    onSelected: (value) {
+    onSelected: (value) async {
       if (value == 'signout') {
-        context.read<AuthBloc>().add(const AuthEventLogout());
+        await context.read<AuthCubit>().logout();
       } else if (value == 'diagrams') {
         unawaited(
           showDialog<void>(

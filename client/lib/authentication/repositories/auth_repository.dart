@@ -8,7 +8,6 @@ import 'package:common/auth/tokens/jwtoken.dart';
 import 'package:common/auth/tokens/refresh_jwtoken_request.dart';
 import 'package:common/auth/tokens/refresh_jwtoken_response.dart';
 import 'package:common/auth/tokens/refresh_token.dart';
-import 'package:common/auth/tokens/refresh_token_wrapper.dart';
 import 'package:common/auth/user.dart';
 import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
@@ -56,56 +55,15 @@ final class AuthRepository {
     }
   }
 
-  Future<User> getUser() async {
-    final String? username = await _authSecureStorage.getUsername();
-    final JWToken? token = await _authSecureStorage.getJWToken();
-
-    if (username == null || token == null) {
-      throw Exception('Username or token not found in secure storage');
-    }
-
-    final RefreshToken? refreshToken =
-        await _authSecureStorage.getRefreshToken();
-
-    if (refreshToken == null) {
-      throw Exception('Refresh token not found in secure storage');
-    }
-
-    final DateTime? refreshTokenExpiresAt =
-        await _authSecureStorage.getRefreshTokenExpiresAt();
-
-    if (refreshTokenExpiresAt == null) {
-      throw Exception('Refresh token expires at not found in secure storage');
-    }
-
-    final RefreshTokenWrapper refreshTokenWrapper = RefreshTokenWrapper(
-      refreshToken: refreshToken,
-      refreshTokenExpiresAt: refreshTokenExpiresAt,
-    );
-
-    return User(
-      username: username,
-      token: token,
-      refreshTokenWrapper: refreshTokenWrapper,
-    );
+  Future<User?> getUser() async {
+    final User? user = await _authSecureStorage.getUser();
+    return user;
   }
 
   Future<bool> isAuthenticated() async {
     final JWToken? token = await _authSecureStorage.getJWToken();
 
-    if (token == null) {
-      return false;
-    }
-
-    final bool isValid = token.isValid();
-
-    switch (isValid) {
-      case false:
-        final JWToken? newJwToken = await refreshJWToken();
-        return newJwToken != null;
-      case true:
-        return true;
-    }
+    return token?.isValid() ?? false;
   }
 
   Future<void> logout() async {
@@ -119,10 +77,11 @@ final class AuthRepository {
 
     switch (loginResponse) {
       case LoginResponseSuccess():
+        final User user = loginResponse.user;
         await _authSecureStorage.saveAuthData(
-          username: loginRequest.username,
-          token: loginResponse.user.token,
-          refreshTokenWrapper: loginResponse.user.refreshTokenWrapper,
+          username: user.username,
+          token: user.token,
+          refreshTokenWrapper: user.refreshTokenWrapper,
         );
       case LoginResponseError():
     }
@@ -137,10 +96,11 @@ final class AuthRepository {
 
     switch (registerResponse) {
       case RegisterResponseSuccess():
+        final User user = registerResponse.user;
         await _authSecureStorage.saveAuthData(
-          username: registerRequest.username,
-          token: registerResponse.user.token,
-          refreshTokenWrapper: registerResponse.user.refreshTokenWrapper,
+          username: user.username,
+          token: user.token,
+          refreshTokenWrapper: user.refreshTokenWrapper,
         );
       case RegisterResponseError():
     }
@@ -150,24 +110,19 @@ final class AuthRepository {
 
   Future<({DateTime jwtExpiresAt, DateTime refreshExpiresAt})?>
   getTokenExpirations() async {
-    try {
-      final JWToken? jwToken = await _authSecureStorage.getJWToken();
-      final DateTime? refreshTokenExpiresAt =
-          await _authSecureStorage.getRefreshTokenExpiresAt();
+    final JWToken? jwToken = await _authSecureStorage.getJWToken();
+    final DateTime? refreshTokenExpiresAt =
+        await _authSecureStorage.getRefreshTokenExpiresAt();
 
-      if (jwToken == null || refreshTokenExpiresAt == null) {
-        return null;
-      }
-
-      final DateTime jwtExpiresAt = jwToken.getExpiration();
-
-      return (
-        jwtExpiresAt: jwtExpiresAt,
-        refreshExpiresAt: refreshTokenExpiresAt,
-      );
-    } on Exception catch (e) {
-      LOG.e('Error getting token info: $e');
+    if (jwToken == null || refreshTokenExpiresAt == null) {
       return null;
     }
+
+    final DateTime jwtExpiresAt = jwToken.getExpiration();
+
+    return (
+      jwtExpiresAt: jwtExpiresAt,
+      refreshExpiresAt: refreshTokenExpiresAt,
+    );
   }
 }

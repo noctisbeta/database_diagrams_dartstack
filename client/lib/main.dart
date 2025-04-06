@@ -1,8 +1,10 @@
-import 'package:client/authentication/controllers/auth_bloc.dart';
+import 'dart:async';
+
 import 'package:client/authentication/auth_provider_wrapper.dart';
-import 'package:client/authentication/models/auth_event.dart';
+import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/common/widgets/my_snackbar.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/diagram_provider_wrapper.dart';
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
 import 'package:client/main_view.dart';
@@ -33,27 +35,23 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    context.read<JwtInterceptor>().onRefreshFailedCallback = () {
-      context.read<AuthBloc>().add(const AuthEventTokenExpired());
+    context.read<JwtInterceptor>().onRefreshFailedCallback = () async {
+      await context.read<AuthCubit>().logout();
     };
 
-    context.read<AuthBloc>().add(const AuthEventCheckAuth());
+    unawaited(context.read<AuthCubit>().checkAuth());
   }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: BlocListener<AuthBloc, AuthState>(
+    home: BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthStateSessionExpired) {
-          MySnackBar.show(
-            context: context,
-            message: state.message,
-            type: SnackBarType.warning,
-          );
+        if (state is AuthStateUnauthenticated) {
+          context.read<DiagramCubit>().resetDiagram();
+        }
 
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        } else if (state is AuthStateError) {
+        if (state is AuthStateError) {
           MySnackBar.show(
             context: context,
             message: state.message,

@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:client/authentication/controllers/auth_bloc.dart';
-import 'package:client/authentication/models/auth_event.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,7 @@ class _SignInDialogState extends State<SignInDialog> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       final String username = _usernameController.text;
       final String password = _passwordController.text;
@@ -49,19 +50,15 @@ class _SignInDialogState extends State<SignInDialog> {
           return;
         }
 
-        context.read<AuthBloc>().add(
-          AuthEventRegister(username: username, password: password),
-        );
+        await context.read<AuthCubit>().register(username, password);
       } else {
-        context.read<AuthBloc>().add(
-          AuthEventLogin(username: username, password: password),
-        );
+        await context.read<AuthCubit>().login(username, password);
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) => BlocListener<AuthBloc, AuthState>(
+  Widget build(BuildContext context) => BlocListener<AuthCubit, AuthState>(
     listener: (context, state) {
       if (state is AuthStateAuthenticated) {
         Navigator.pop(context);
@@ -114,9 +111,9 @@ class _SignInDialogState extends State<SignInDialog> {
                     _isRegistering
                         ? TextInputAction.next
                         : TextInputAction.done,
-                onFieldSubmitted: (_) {
+                onFieldSubmitted: (_) async {
                   if (!_isRegistering) {
-                    _submitForm();
+                    await _submitForm();
                   }
                 },
                 validator: (value) {
@@ -143,7 +140,7 @@ class _SignInDialogState extends State<SignInDialog> {
                   ),
                   obscureText: _isObscured,
                   textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _submitForm(),
+                  onFieldSubmitted: (_) => unawaited(_submitForm()),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please confirm your password';
@@ -181,7 +178,7 @@ class _SignInDialogState extends State<SignInDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        BlocBuilder<AuthBloc, AuthState>(
+        BlocBuilder<AuthCubit, AuthState>(
           builder:
               (context, state) => FilledButton(
                 onPressed: state is AuthStateLoading ? null : _submitForm,

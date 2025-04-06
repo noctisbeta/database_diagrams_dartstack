@@ -125,14 +125,12 @@ class DiagramCubit extends Cubit<DiagramState> {
   }
 
   Future<void> deleteDiagram(int diagramId) async {
-    try {
-      await _diagramRepository.deleteDiagram(diagramId);
+    await _diagramRepository.deleteDiagram(diagramId);
 
-      if (state.id == diagramId) {
-        resetDiagram();
-      }
-    } on Exception catch (e) {
-      LOG.e('Failed to delete diagram: $e');
+    if (state.id == diagramId) {
+      resetDiagram();
     }
+
+    await getDiagrams();
   }
 }

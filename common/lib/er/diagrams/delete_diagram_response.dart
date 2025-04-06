@@ -10,30 +10,22 @@ sealed class DeleteDiagramResponse extends RequestDTO {
 
 @immutable
 final class DeleteDiagramResponseSuccess extends DeleteDiagramResponse {
-  const DeleteDiagramResponseSuccess({required this.id});
+  const DeleteDiagramResponseSuccess();
 
   @Throws([BadMapShapeException])
   factory DeleteDiagramResponseSuccess.validatedFromMap(
-    Map<String, dynamic> map,
-  ) => switch (map) {
-    {'id': final int id} => DeleteDiagramResponseSuccess(id: id),
-    _ =>
-      throw const BadMapShapeException(
-        'Bad map shape for DeleteDiagramRequestSuccess',
-      ),
-  };
-
-  final int id;
+    Map<String, dynamic> _,
+  ) => const DeleteDiagramResponseSuccess();
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [];
 
   @override
-  Map<String, dynamic> toMap() => {'id': id};
+  Map<String, dynamic> toMap() => {};
 
   @override
-  DeleteDiagramResponseSuccess copyWith({int? id}) =>
-      DeleteDiagramResponseSuccess(id: id ?? this.id);
+  DeleteDiagramResponseSuccess copyWith() =>
+      const DeleteDiagramResponseSuccess();
 }
 
 @immutable

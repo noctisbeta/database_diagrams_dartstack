@@ -38,10 +38,9 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
       ).showSnackBar(const SnackBar(content: Text('Failed to delete diagram')));
     }
 
-    void onSuccess() {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Diagram deleted successfully')),
-      );
+    Future<void> onSuccess() async {
+      await context.read<DiagramCubit>().deleteDiagram(diagram.id);
+      await _refreshDiagrams();
     }
 
     final bool? confirmed = await showDialog<bool>(
@@ -73,7 +72,7 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
 
     if (confirmed ?? false) {
       try {
-        onSuccess();
+        await onSuccess();
       } on Exception catch (e) {
         LOG.e('Error deleting diagram: $e');
         onError();

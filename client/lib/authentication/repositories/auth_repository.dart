@@ -1,5 +1,5 @@
 import 'package:client/authentication/repositories/auth_data_provider.dart';
-import 'package:client/authentication/storage/auth_secure_storage.dart';
+import 'package:client/authentication/repositories/auth_secure_storage.dart';
 import 'package:common/auth/login/login_request.dart';
 import 'package:common/auth/login/login_response.dart';
 import 'package:common/auth/register/register_request.dart';

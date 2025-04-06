@@ -1,5 +1,5 @@
-import 'package:client/diagrams/diagram_repository.dart';
-import 'package:client/diagrams/diagram_state.dart';
+import 'package:client/diagrams/models/diagram_state.dart';
+import 'package:client/diagrams/repositories/diagram_repository.dart';
 import 'package:common/er/diagram.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';

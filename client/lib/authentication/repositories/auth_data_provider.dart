@@ -20,11 +20,11 @@ final class AuthDataProvider {
   static final Dio _dio = Dio(BaseOptions(baseUrl: basePath))
     ..interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
 
-  Future<T> _makeRequest<T, E extends T>({
+  Future<T> _makeRequest<T>({
     required String endpoint,
     required MapSerializable data,
     required T Function(Map<String, dynamic>) successBuilder,
-    required E Function(Map<String, dynamic>) errorBuilder,
+    required T Function(Map<String, dynamic>) errorBuilder,
   }) async {
     try {
       final Response response = await _dio.post(endpoint, data: data.toMap());

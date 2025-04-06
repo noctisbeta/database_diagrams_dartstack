@@ -1,11 +1,9 @@
 import 'package:client/authentication/controllers/auth_bloc.dart';
-import 'package:client/authentication/controllers/auth_provider_wrapper.dart';
+import 'package:client/authentication/auth_provider_wrapper.dart';
 import 'package:client/authentication/models/auth_event.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/common/widgets/my_snackbar.dart';
-import 'package:client/diagrams/diagram_cubit.dart';
-import 'package:client/diagrams/diagram_data_provider.dart';
-import 'package:client/diagrams/diagram_repository.dart';
+import 'package:client/diagrams/diagram_provider_wrapper.dart';
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
 import 'package:client/main_view.dart';
 import 'package:flutter/material.dart';
@@ -19,35 +17,8 @@ class ProviderWrapper extends StatelessWidget {
   const ProviderWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) => AuthProviderWrapper(
-    child: MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider(
-          create:
-              (context) => DiagramDataProvider(
-                jwtInterceptor: context.read<JwtInterceptor>(),
-              ),
-        ),
-        RepositoryProvider(
-          create:
-              (context) => DiagramRepository(
-                dataProvider: context.read<DiagramDataProvider>(),
-              ),
-        ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create:
-                (context) => DiagramCubit(
-                  diagramRepository: context.read<DiagramRepository>(),
-                ),
-          ),
-        ],
-        child: const MyApp(),
-      ),
-    ),
-  );
+  Widget build(BuildContext context) =>
+      const AuthProviderWrapper(child: DiagramProviderWrapper(child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {

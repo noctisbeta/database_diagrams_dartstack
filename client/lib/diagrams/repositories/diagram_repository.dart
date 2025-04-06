@@ -1,4 +1,4 @@
-import 'package:client/diagrams/diagram_data_provider.dart';
+import 'package:client/diagrams/repositories/diagram_data_provider.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';

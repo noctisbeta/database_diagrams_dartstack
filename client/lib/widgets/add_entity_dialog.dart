@@ -1,4 +1,4 @@
-import 'package:client/diagrams/diagram_cubit.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/entity_card.dart';
 import 'package:client/widgets/attribute_row.dart';
 import 'package:common/er/attribute.dart';

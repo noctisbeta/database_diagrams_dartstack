@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:client/diagrams/diagram_cubit.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/entity_card.dart';
 import 'package:client/relationship_painter.dart';
 import 'package:client/widgets/add_entity_dialog.dart';

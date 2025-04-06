@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:client/diagrams/diagram_cubit.dart';
-import 'package:client/diagrams/diagram_state.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/diagrams/models/diagram_state.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/diagrams/diagram_cubit.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/widgets/sign_in_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

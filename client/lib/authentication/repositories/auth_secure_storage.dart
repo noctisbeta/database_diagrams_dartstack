@@ -6,9 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthSecureStorage {
-  const AuthSecureStorage();
+  const AuthSecureStorage({required FlutterSecureStorage storage})
+    : _storage = storage;
 
-  static const FlutterSecureStorage _storage = FlutterSecureStorage();
+  final FlutterSecureStorage _storage;
 
   // Storage keys
   static const String _usernameKey = 'username';

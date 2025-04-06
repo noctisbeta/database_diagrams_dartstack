@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:client/diagrams/diagram_cubit.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:common/er/diagram.dart';
 import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';

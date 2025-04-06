@@ -1,7 +1,8 @@
+import 'package:server/util/json_response.dart';
 import 'package:shelf/shelf.dart';
 
 abstract interface class IAuthHandler {
-  Future<Response> refreshJWToken(Request request);
-  Future<Response> login(Request request);
-  Future<Response> register(Request request);
+  Future<JsonResponse> refreshJWToken(Request request);
+  Future<JsonResponse> login(Request request);
+  Future<JsonResponse> register(Request request);
 }

@@ -25,7 +25,7 @@ final class AuthHandler implements IAuthHandler {
   final IAuthRepository _authRepository;
 
   @override
-  Future<Response> refreshJWToken(Request request) async {
+  Future<JsonResponse> refreshJWToken(Request request) async {
     try {
       @Throws([FormatException])
       final Map<String, dynamic> json = await request.json();
@@ -67,13 +67,9 @@ final class AuthHandler implements IAuthHandler {
           }
       }
     } on FormatException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
-        body: 'Invalid request! Bad JSON. $e',
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! Bad JSON. $e');
     } on BadMapShapeException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
+      return JsonResponse.badRequest(
         body: 'Invalid request! Bad request map shape. $e',
       );
     } on DatabaseException catch (e) {
@@ -83,13 +79,17 @@ final class AuthHandler implements IAuthHandler {
         case DBEbadCertificate():
         case DBEbadSchema():
         case DBEemptyResult():
-          return Response(HttpStatus.notFound, body: 'User does not exist! $e');
+          final error = RefreshJWTokenResponseError(
+            error: RefreshError.expired,
+            message: 'Refresh token expired! $e',
+          );
+          return JsonResponse.badRequest(body: error.toMap());
       }
     }
   }
 
   @override
-  Future<Response> login(Request request) async {
+  Future<JsonResponse> login(Request request) async {
     try {
       @Throws([FormatException])
       final Map<String, dynamic> json = await request.json();
@@ -125,13 +125,9 @@ final class AuthHandler implements IAuthHandler {
           }
       }
     } on FormatException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
-        body: 'Invalid request! Bad JSON. $e',
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! Bad JSON. $e');
     } on BadMapShapeException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
+      return JsonResponse.badRequest(
         body: 'Invalid request! Bad request map shape. $e',
       );
     } on DatabaseException catch (e) {
@@ -141,13 +137,17 @@ final class AuthHandler implements IAuthHandler {
         case DBEbadCertificate():
         case DBEbadSchema():
         case DBEemptyResult():
-          return Response(HttpStatus.notFound, body: 'User does not exist! $e');
+          final error = LoginResponseError(
+            error: LoginError.userNotFound,
+            message: 'User does not exist! $e',
+          );
+          return JsonResponse.notFound(body: error.toMap());
       }
     }
   }
 
   @override
-  Future<Response> register(Request request) async {
+  Future<JsonResponse> register(Request request) async {
     try {
       @Throws([FormatException])
       final Map<String, dynamic> json = await request.json();
@@ -181,13 +181,9 @@ final class AuthHandler implements IAuthHandler {
           }
       }
     } on FormatException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
-        body: 'Invalid request! Bad JSON. $e',
-      );
+      return JsonResponse.badRequest(body: 'Invalid request! Bad JSON. $e');
     } on BadMapShapeException catch (e) {
-      return Response(
-        HttpStatus.badRequest,
+      return JsonResponse.badRequest(
         body: 'Invalid request! Bad request map shape. $e',
       );
     } on DatabaseException catch (e) {
@@ -199,10 +195,7 @@ final class AuthHandler implements IAuthHandler {
         case DBEemptyResult():
       }
 
-      return Response(
-        HttpStatus.internalServerError,
-        body: 'An error occurred! $e',
-      );
+      return JsonResponse.internalServerError(body: 'An error occurred! $e');
     }
   }
 

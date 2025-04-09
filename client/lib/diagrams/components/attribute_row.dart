@@ -41,6 +41,7 @@ class AttributeRow extends StatefulWidget {
 class _AttributeRowState extends State<AttributeRow> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
+  final TextEditingController referenceNameController = TextEditingController();
   int? selectedEntityId;
 
   @override
@@ -50,6 +51,9 @@ class _AttributeRowState extends State<AttributeRow> {
       nameController.text = widget.attribute!.name;
       typeController.text = widget.attribute!.dataType;
       selectedEntityId = widget.attribute!.referencedEntityId;
+      if (widget.isForeignKey) {
+        referenceNameController.text = widget.attribute!.name;
+      }
     }
   }
 
@@ -57,6 +61,7 @@ class _AttributeRowState extends State<AttributeRow> {
   void dispose() {
     nameController.dispose();
     typeController.dispose();
+    referenceNameController.dispose();
     super.dispose();
   }
 
@@ -99,7 +104,6 @@ class _AttributeRowState extends State<AttributeRow> {
                 widget.index,
                 name: '',
                 dataType: '',
-
                 isForeignKey: value,
                 referencedEntityId: value ? selectedEntityId : null,
               );
@@ -119,11 +123,34 @@ class _AttributeRowState extends State<AttributeRow> {
       ),
       const SizedBox(width: 8),
 
+      if (widget.isForeignKey && selectedEntityId != null)
+        Expanded(
+          child: TextField(
+            controller: referenceNameController,
+            enabled: selectedEntityId != null,
+            decoration: const InputDecoration(
+              hintText: 'Name',
+              border: OutlineInputBorder(),
+              isDense: true,
+            ),
+            onChanged: (value) {
+              widget.onUpdate(
+                widget.index,
+                name: value,
+                dataType: typeController.text,
+                referencedEntityId: selectedEntityId,
+              );
+            },
+          ),
+        ),
+      if (widget.isForeignKey && selectedEntityId != null)
+        const SizedBox(width: 8),
       // Entity selector (shown when FK is checked)
-      if (widget.isForeignKey) ...[
+      if (widget.isForeignKey)
         Expanded(
           child: DropdownButtonFormField<int>(
             value: selectedEntityId,
+            isExpanded: true,
             decoration: const InputDecoration(
               hintText: 'Select referenced entity',
               border: OutlineInputBorder(),
@@ -146,13 +173,13 @@ class _AttributeRowState extends State<AttributeRow> {
                 );
 
                 // Update name and type based on referenced PK
-                nameController.text =
+                referenceNameController.text =
                     '${referencedEntity.name.toLowerCase()}_${pk.name}';
                 typeController.text = pk.dataType;
 
                 widget.onUpdate(
                   widget.index,
-                  name: nameController.text,
+                  name: referenceNameController.text,
                   dataType: typeController.text,
                   referencedEntityId: value,
                 );
@@ -160,11 +187,9 @@ class _AttributeRowState extends State<AttributeRow> {
             },
           ),
         ),
-        const SizedBox(width: 8),
-      ],
 
       // Name column
-      if (!widget.isForeignKey) ...[
+      if (!widget.isForeignKey)
         Expanded(
           child: TextField(
             controller: nameController,
@@ -176,9 +201,10 @@ class _AttributeRowState extends State<AttributeRow> {
             onChanged: (value) => widget.onUpdate(widget.index, name: value),
           ),
         ),
-        const SizedBox(width: 8),
+      const SizedBox(width: 8),
 
-        // Type column
+      // Type column
+      if (!widget.isForeignKey)
         Expanded(
           child: TextField(
             controller: typeController,
@@ -191,7 +217,7 @@ class _AttributeRowState extends State<AttributeRow> {
                 (value) => widget.onUpdate(widget.index, dataType: value),
           ),
         ),
-      ],
+
       const SizedBox(width: 8),
       // Delete button
       IconButton(

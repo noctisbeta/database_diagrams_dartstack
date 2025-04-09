@@ -164,15 +164,20 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                           itemCount: _attributes.length,
                           onReorder: (oldIndex, newIndex) {
                             setState(() {
+                              // Adjust the newIndex as needed
                               if (oldIndex < newIndex) {
                                 newIndex -= 1;
                               }
+
+                              // First, remove the item
                               final Attribute item = _attributes.removeAt(
                                 oldIndex,
                               );
+
+                              // Then insert it at the new position
                               _attributes.insert(newIndex, item);
 
-                              // Update orders for all attributes
+                              // Update order values for all attributes
                               for (var i = 0; i < _attributes.length; i++) {
                                 _attributes[i] = _attributes[i].copyWith(
                                   order: i,
@@ -180,14 +185,27 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                               }
 
                               // Update primary key index after reordering
-                              if (_primaryKeyIndex == oldIndex) {
-                                _primaryKeyIndex = newIndex;
-                              } else if (oldIndex < _primaryKeyIndex! &&
-                                  newIndex >= _primaryKeyIndex!) {
-                                _primaryKeyIndex = _primaryKeyIndex! - 1;
-                              } else if (oldIndex > _primaryKeyIndex! &&
-                                  newIndex <= _primaryKeyIndex!) {
-                                _primaryKeyIndex = _primaryKeyIndex! + 1;
+                              if (_primaryKeyIndex != null) {
+                                if (_primaryKeyIndex == oldIndex) {
+                                  // The primary key was moved
+                                  _primaryKeyIndex = newIndex;
+                                } else if (oldIndex < _primaryKeyIndex! &&
+                                    newIndex >= _primaryKeyIndex!) {
+                                  // An item was moved from before the PK to after it
+                                  // This shifts the PK one position up
+                                  _primaryKeyIndex = _primaryKeyIndex! - 1;
+                                } else if (oldIndex > _primaryKeyIndex! &&
+                                    newIndex <= _primaryKeyIndex!) {
+                                  // An item was moved from after the PK to before it
+                                  // This shifts the PK one position down
+                                  _primaryKeyIndex = _primaryKeyIndex! + 1;
+                                }
+
+                                // Ensure the index stays within bounds
+                                _primaryKeyIndex = _primaryKeyIndex!.clamp(
+                                  0,
+                                  _attributes.length - 1,
+                                );
                               }
                             });
                           },
@@ -317,8 +335,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
             final entity = Entity(
               id: -1,
               name: _nameController.text,
-              attributes:
-                  _attributes.where((attr) => attr.name.isNotEmpty).toList(),
+              attributes: _attributes.toList(),
             );
 
             context.read<DiagramCubit>().addEntity(entity);

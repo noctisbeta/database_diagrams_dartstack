@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddEntityDialog extends StatefulWidget {
-  const AddEntityDialog({super.key});
+  const AddEntityDialog({this.entity, super.key});
+
+  final Entity? entity;
 
   @override
   State<AddEntityDialog> createState() => _AddEntityDialogState();
@@ -17,19 +19,34 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
   final TextEditingController _nameController = TextEditingController();
   final List<Attribute> _attributes = [];
 
-  // Add this field to track primary key index
   int? _primaryKeyIndex;
 
-  // Add this getter to get all available entities except the current one
   List<Entity> get availableEntities =>
-      context.read<DiagramCubit>().state.entities;
+      context
+          .read<DiagramCubit>()
+          .state
+          .entities
+          .where((e) => e.id != widget.entity?.id)
+          .toList();
 
   @override
   void initState() {
     super.initState();
 
-    // Start with one attribute
-    _addAttribute();
+    if (widget.entity != null) {
+      _nameController.text = widget.entity!.name;
+      _attributes.addAll(widget.entity!.attributes);
+      // Set primary key index if exists
+      _primaryKeyIndex = _attributes.indexWhere((attr) => attr.isPrimaryKey);
+    } else {
+      _addAttribute();
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   void _addAttribute() {
@@ -190,6 +207,7 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                                     availableEntities: availableEntities,
                                     onRemove: _removeAttribute,
                                     onUpdate: _updateAttribute,
+                                    attribute: _attributes[index],
                                   ),
                                 ),
                               ),
@@ -268,24 +286,48 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
             return;
           }
 
-          final entity = Entity(
-            id: -1,
-            name: _nameController.text,
-            attributes:
-                _attributes.where((attr) => attr.name.isNotEmpty).toList(),
-          );
+          if (_attributes.any((a) => a.name.isEmpty)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('All attributes must have a name')),
+            );
+            return;
+          }
 
-          context.read<DiagramCubit>().addEntity(entity);
+          if (_attributes.any((a) => a.dataType.isEmpty)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('All attributes must have a type')),
+            );
+            return;
+          }
+
+          if (widget.entity != null) {
+            // Update existing entity
+            final Entity updatedEntity = widget.entity!.copyWith(
+              name: _nameController.text,
+              attributes:
+                  _attributes.where((attr) => attr.name.isNotEmpty).toList()
+                    ..sort((a, b) => a.order.compareTo(b.order)),
+            );
+
+            context.read<DiagramCubit>().updateEntity(
+              widget.entity!.id,
+              updatedEntity,
+            );
+          } else {
+            final entity = Entity(
+              id: -1,
+              name: _nameController.text,
+              attributes:
+                  _attributes.where((attr) => attr.name.isNotEmpty).toList(),
+            );
+
+            context.read<DiagramCubit>().addEntity(entity);
+          }
+
           Navigator.pop(context);
         },
-        child: const Text('Add Entity'),
+        child: Text(widget.entity != null ? 'Update Entity' : 'Add Entity'),
       ),
     ],
   );
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
 }

@@ -1,4 +1,5 @@
 import 'package:common/abstractions/models.dart';
+import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
@@ -13,6 +14,7 @@ final class Diagram extends DataModel {
     required this.entityPositions,
     required this.createdAt,
     required this.updatedAt,
+    required this.type,
   });
 
   factory Diagram.validatedFromMap(Map<String, dynamic> map) => switch (map) {
@@ -23,6 +25,7 @@ final class Diagram extends DataModel {
       'entity_positions': final List<dynamic> entityPositions,
       'created_at': final String createdAt,
       'updated_at': final String updatedAt,
+      'type': final String type,
     } =>
       Diagram(
         id: id,
@@ -41,6 +44,7 @@ final class Diagram extends DataModel {
                 .toList(),
         createdAt: DateTime.parse(createdAt),
         updatedAt: DateTime.parse(updatedAt),
+        type: DiagramType.fromString(type),
       ),
     {
       'id': final int id,
@@ -49,6 +53,7 @@ final class Diagram extends DataModel {
       'entity_positions': final List<dynamic> entityPositions,
       'created_at': final DateTime createdAt,
       'updated_at': final DateTime updatedAt,
+      'type': final String type,
     } =>
       Diagram(
         id: id,
@@ -67,6 +72,7 @@ final class Diagram extends DataModel {
                 .toList(),
         createdAt: createdAt,
         updatedAt: updatedAt,
+        type: DiagramType.fromString(type),
       ),
     _ => throw const BadMapShapeException('Bad map shape for Diagram.'),
   };
@@ -77,6 +83,7 @@ final class Diagram extends DataModel {
   final List<EntityPosition> entityPositions;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DiagramType type;
 
   @override
   Map<String, dynamic> toMap() => {
@@ -86,6 +93,7 @@ final class Diagram extends DataModel {
     'entity_positions': entityPositions.map((p) => p.toMap()).toList(),
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
+    'type': type.name,
   };
 
   @override
@@ -96,6 +104,7 @@ final class Diagram extends DataModel {
     entityPositions,
     createdAt,
     updatedAt,
+    type,
   ];
 
   @override
@@ -106,6 +115,7 @@ final class Diagram extends DataModel {
     List<EntityPosition>? entityPositions,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DiagramType? type,
   }) => Diagram(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -113,5 +123,6 @@ final class Diagram extends DataModel {
     entityPositions: entityPositions ?? this.entityPositions,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    type: type ?? this.type,
   );
 }

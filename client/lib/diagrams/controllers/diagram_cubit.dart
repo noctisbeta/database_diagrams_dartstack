@@ -37,6 +37,7 @@ class DiagramCubit extends Cubit<DiagramState> {
       name: diagram.name,
       entities: diagram.entities,
       entityPositions: diagram.entityPositions,
+      diagramType: diagram.type,
     ),
   );
 
@@ -46,6 +47,7 @@ class DiagramCubit extends Cubit<DiagramState> {
       name: state.name,
       entities: state.entities,
       entityPositions: state.entityPositions,
+      type: state.diagramType,
     );
 
     final SaveDiagramResponse response = await _diagramRepository.saveDiagram(

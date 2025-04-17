@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:client/authentication/auth_provider_wrapper.dart';
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/common/main_view.dart';
 import 'package:client/common/widgets/my_snackbar.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/diagram_provider_wrapper.dart';
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
+import 'package:client/landing/views/landing_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           );
         }
       },
-      child: const MainView(),
+      child: const LandingView(),
     ),
   );
 }

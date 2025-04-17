@@ -1,5 +1,6 @@
 import 'package:client/authentication/components/auth_button.dart';
 import 'package:client/diagrams/components/diagram_title.dart';
+import 'package:client/diagrams/components/diagram_type_indicator.dart';
 import 'package:client/diagrams/components/reset_button.dart';
 import 'package:client/diagrams/components/save_button.dart';
 import 'package:client/export/components/export_button.dart';
@@ -20,8 +21,11 @@ class Toolbar extends StatelessWidget {
         ExportButton(),
         SizedBox(width: 8),
         ResetButton(),
+        SizedBox(width: 16),
+        DiagramTypeIndicator(),
         Spacer(),
         DiagramTitle(),
+
         Spacer(),
         AuthButton(),
       ],

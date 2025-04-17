@@ -24,6 +24,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       SELECT 
         d.id AS diagram_id, 
         d.name AS diagram_name,
+        d.diagram_type AS diagram_type,
         d.created_at AS diagram_created_at,
         d.updated_at AS diagram_updated_at,
         
@@ -62,17 +63,16 @@ final class DiagramsDataSource implements IDiagramsDataSource {
     final Map<int, Map<int, List<Map<String, dynamic>>>> attributesMap = {};
     final Map<int, Map<int, Map<String, dynamic>>> positionsMap = {};
 
-    // Process rows to build the maps
     for (final ResultRow roww in result) {
       final Map<String, dynamic> row = roww.toColumnMap();
       final diagramId = row['diagram_id']! as int;
       final entityId = row['entity_id'] as int?;
 
-      // Create diagram entry if it doesn't exist
       if (!diagramsMap.containsKey(diagramId)) {
         diagramsMap[diagramId] = {
           'id': diagramId,
           'name': row['diagram_name']! as String,
+          'diagram_type': row['diagram_type']! as String,
           'created_at': row['diagram_created_at']! as DateTime,
           'updated_at': row['diagram_updated_at']! as DateTime,
         };
@@ -145,6 +145,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         Diagram.validatedFromMap({
           'id': diagramsMap[diagramId]!['id'],
           'name': diagramsMap[diagramId]!['name'],
+          'diagram_type': diagramsMap[diagramId]!['diagram_type'],
           'entities': entities,
           'entity_positions': entityPositions,
           'created_at': diagramsMap[diagramId]!['created_at'],
@@ -163,11 +164,15 @@ final class DiagramsDataSource implements IDiagramsDataSource {
   ) async {
     final DiagramDB diagramDB = await _ps.executeAndMap(
       query: Sql.named('''
-      INSERT INTO diagrams (user_id, name)
-      VALUES (@user_id, @name)
+      INSERT INTO diagrams (user_id, name, diagram_type)
+      VALUES (@user_id, @name, @diagram_type)
       RETURNING *;
       '''),
-      parameters: {'user_id': userId, 'name': request.name},
+      parameters: {
+        'user_id': userId,
+        'name': request.name,
+        'diagram_type': request.type.name.toLowerCase(),
+      },
       mapper: DiagramDB.validatedFromMap,
       emptyResultMessage: 'Failed to create diagram',
     );
@@ -283,7 +288,6 @@ final class DiagramsDataSource implements IDiagramsDataSource {
     SaveDiagramRequest request,
     int userId,
   ) async {
-    // 1. Update the diagram and verify ownership
     final DiagramDB diagramDB = await _ps.executeAndMap(
       query: Sql.named('''
       UPDATE diagrams

@@ -1,4 +1,5 @@
 import 'package:common/abstractions/models.dart';
+import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
@@ -10,6 +11,7 @@ final class SaveDiagramRequest extends DataModel {
     required this.name,
     required this.entities,
     required this.entityPositions,
+    required this.type,
     this.id,
   });
 
@@ -21,6 +23,7 @@ final class SaveDiagramRequest extends DataModel {
       'name': final String name,
       'entities': final List<dynamic> entities,
       'entity_positions': final List<dynamic> entityPositions,
+      'type': final String type,
     } =>
       SaveDiagramRequest(
         id: id,
@@ -30,6 +33,7 @@ final class SaveDiagramRequest extends DataModel {
             entityPositions
                 .map((p) => EntityPosition.validatedFromMap(p))
                 .toList(),
+        type: DiagramType.fromString(type),
       ),
     _ =>
       throw const BadMapShapeException('Bad map shape for SaveDiagramRequest'),
@@ -39,6 +43,7 @@ final class SaveDiagramRequest extends DataModel {
   final String name;
   final List<Entity> entities;
   final List<EntityPosition> entityPositions;
+  final DiagramType type;
 
   @override
   Map<String, dynamic> toMap() => {
@@ -46,6 +51,7 @@ final class SaveDiagramRequest extends DataModel {
     'name': name,
     'entities': entities.map((e) => e.toMap()).toList(),
     'entity_positions': entityPositions.map((p) => p.toMap()).toList(),
+    'type': type.name,
   };
 
   @override
@@ -62,5 +68,6 @@ final class SaveDiagramRequest extends DataModel {
     name: name ?? this.name,
     entities: entities ?? this.entities,
     entityPositions: entityPositions ?? this.entityPositions,
+    type: type,
   );
 }

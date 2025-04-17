@@ -1,3 +1,4 @@
+import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:meta/meta.dart';
@@ -8,6 +9,7 @@ class DiagramState {
     required this.name,
     required this.entities,
     required this.entityPositions,
+    required this.diagramType,
     this.id,
   });
 
@@ -15,23 +17,27 @@ class DiagramState {
     : id = null,
       name = 'Untitled Diagram',
       entities = const [],
-      entityPositions = const [];
+      entityPositions = const [],
+      diagramType = DiagramType.custom;
 
-  final int? id; // Add ID to track existing diagrams
+  final int? id;
   final String name;
   final List<Entity> entities;
   final List<EntityPosition> entityPositions;
+  final DiagramType diagramType;
 
   DiagramState copyWith({
     int? Function()? idFn,
     String? name,
     List<Entity>? entities,
     List<EntityPosition>? entityPositions,
+    DiagramType? diagramType,
   }) => DiagramState(
     id: idFn?.call() ?? id,
     name: name ?? this.name,
     entities: entities ?? this.entities,
     entityPositions: entityPositions ?? this.entityPositions,
+    diagramType: diagramType ?? this.diagramType,
   );
 
   // Helper to check if this is a new diagram or existing one

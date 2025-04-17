@@ -191,12 +191,10 @@ class _AddEntityDialogState extends State<AddEntityDialog> {
                                   _primaryKeyIndex = newIndex;
                                 } else if (oldIndex < _primaryKeyIndex! &&
                                     newIndex >= _primaryKeyIndex!) {
-                                  // An item was moved from before the PK to after it
                                   // This shifts the PK one position up
                                   _primaryKeyIndex = _primaryKeyIndex! - 1;
                                 } else if (oldIndex > _primaryKeyIndex! &&
                                     newIndex <= _primaryKeyIndex!) {
-                                  // An item was moved from after the PK to before it
                                   // This shifts the PK one position down
                                   _primaryKeyIndex = _primaryKeyIndex! + 1;
                                 }

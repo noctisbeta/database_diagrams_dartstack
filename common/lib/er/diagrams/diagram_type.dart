@@ -1,6 +1,6 @@
 enum DiagramType {
   postgresql('PostgreSQL'),
-  firebase('Firebase'),
+  firestore('Firestore'),
   custom('Custom');
 
   const DiagramType(this.name);

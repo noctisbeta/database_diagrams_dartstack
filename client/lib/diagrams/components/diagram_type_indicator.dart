@@ -24,10 +24,10 @@ class DiagramTypeIndicator extends StatelessWidget {
           icon = Icons.table_chart;
           color = Colors.blue;
           label = 'PostgreSQL';
-        case DiagramType.firebase:
+        case DiagramType.firestore:
           icon = Icons.article;
           color = Colors.orange;
-          label = 'Firebase';
+          label = 'Firestore';
         case DiagramType.custom:
           icon = Icons.settings;
           color = Colors.green;

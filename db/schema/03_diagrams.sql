@@ -1,4 +1,4 @@
-CREATE TYPE diagram_type_enum AS ENUM ('postgresql', 'firebase', 'custom');
+CREATE TYPE diagram_type_enum AS ENUM ('postgresql', 'firestore', 'custom');
 
 CREATE TABLE diagrams (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

@@ -125,11 +125,12 @@ class _CreateDiagramDialogState extends State<CreateDiagramDialog> {
           const SizedBox(width: 16),
           Expanded(
             child: _TypeSelectionCard(
-              title: DiagramType.firebase.name,
+              title: DiagramType.firestore.name,
               icon: Icons.article,
               description: 'NoSQL document database',
-              isSelected: _selectedType == DiagramType.firebase,
-              onTap: () => setState(() => _selectedType = DiagramType.firebase),
+              isSelected: _selectedType == DiagramType.firestore,
+              onTap:
+                  () => setState(() => _selectedType = DiagramType.firestore),
             ),
           ),
         ],
@@ -158,13 +159,13 @@ class _CreateDiagramDialogState extends State<CreateDiagramDialog> {
             'Create tables with relationships, constraints, primary and'
             ' foreign keys. '
             'Includes PostgreSQL data types and powerful indexing options.';
-      case DiagramType.firebase:
+      case DiagramType.firestore:
         baseColor = Colors.orange;
-        title = 'Firebase Database';
+        title = 'Firestore Database';
         description =
             'Design Firestore collections with documents, nested objects,'
             ' and arrays. '
-            'Supports Firebase-specific data types and security rules '
+            'Supports Firestore-specific data types and security rules '
             'recommendations.';
       case DiagramType.custom:
         baseColor = Colors.green;

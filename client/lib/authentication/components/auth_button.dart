@@ -5,6 +5,7 @@ import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/landing/views/landing_view.dart';
 import 'package:common/auth/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -87,23 +88,42 @@ class ProfileMenu extends StatelessWidget {
       ),
     ),
     onSelected: (value) async {
-      if (value == 'signout') {
-        await context.read<AuthCubit>().logout();
-      } else if (value == 'diagrams') {
-        unawaited(
-          showDialog<void>(
-            context: context,
-            builder:
-                (dialogContext) => BlocProvider.value(
-                  value: context.read<DiagramCubit>(),
-                  child: const DiagramsListDialog(),
-                ),
-          ),
-        );
+      switch (value) {
+        case 'home':
+          await Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LandingView()),
+          );
+        case 'signout':
+          await context.read<AuthCubit>().logout();
+        // Optionally navigate to LandingView after logout as well
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(builder: (context) => const LandingView()),
+        // );
+        case 'diagrams':
+          unawaited(
+            showDialog<void>(
+              context: context,
+              builder:
+                  (dialogContext) => BlocProvider.value(
+                    value: context.read<DiagramCubit>(),
+                    child: const DiagramsListDialog(),
+                  ),
+            ),
+          );
+        case 'profile':
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile page not implemented yet.')),
+          );
       }
     },
     itemBuilder:
         (context) => [
+          const ProfileMenuItem(
+            value: 'home',
+            icon: Icons.home_outlined,
+            text: 'Home',
+          ),
+          const PopupMenuDivider(),
           const ProfileMenuItem(
             value: 'diagrams',
             icon: Icons.dashboard,
@@ -137,7 +157,7 @@ class ProfileMenuItem extends PopupMenuEntry<String> {
   final String text;
 
   @override
-  double get height => 48; // Standard height for menu items
+  double get height => 48;
 
   @override
   bool represents(String? value) => this.value == value;
@@ -152,9 +172,7 @@ class _ProfileMenuItemState extends State<ProfileMenuItem> {
     leading: Icon(widget.icon),
     title: Text(widget.text),
     onTap: () {
-      // Simply return the value without direct navigation
       Navigator.of(context).pop<String>(widget.value);
-      // Don't add any code after this - it won't execute reliably
     },
   );
 }

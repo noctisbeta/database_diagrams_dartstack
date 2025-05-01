@@ -4,9 +4,9 @@ import 'package:client/authentication/components/sign_in_dialog.dart'; // Import
 import 'package:client/authentication/controllers/auth_bloc.dart'; // Import the AuthCubit
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/common/main_view.dart';
-import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/landing/components/create_diagram_dialog.dart';
+import 'package:client/landing/components/diagrams_list.dart';
 import 'package:common/er/diagram.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -241,5 +241,5 @@ class _LandingViewState extends State<LandingView> {
     ),
   );
 
-  Widget _buildRecentDiagramsSection() => const DiagramsListDialog();
+  Widget _buildRecentDiagramsSection() => const DiagramsList();
 }

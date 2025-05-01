@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:client/authentication/components/sign_in_dialog.dart'; // Import the dialog
+import 'package:client/authentication/controllers/auth_bloc.dart'; // Import the AuthCubit
+import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/common/main_view.dart';
+import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/landing/components/create_diagram_dialog.dart';
 import 'package:common/er/diagram.dart';
@@ -15,7 +19,6 @@ class LandingView extends StatefulWidget {
 }
 
 class _LandingViewState extends State<LandingView> {
-  // In a real app, you'd get this from your auth provider
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Database Diagrams')),
@@ -25,23 +28,29 @@ class _LandingViewState extends State<LandingView> {
           constraints: const BoxConstraints(maxWidth: 900),
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // App icon/logo and intro
-                _buildIntroSection(),
-                const SizedBox(height: 48),
+            child: BlocBuilder<AuthCubit, AuthState>(
+              builder:
+                  (context, state) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // App icon/logo and intro
+                      _buildIntroSection(),
+                      const SizedBox(height: 48),
 
-                // Quick actions
-                _buildQuickActionsSection(),
-                const SizedBox(height: 40),
+                      // Quick actions
+                      _buildQuickActionsSection(),
+                      const SizedBox(height: 40),
 
-                if (false)
-                  _buildRecentDiagramsSection()
-                else
-                  _buildSignInSection(),
-              ],
+                      switch (state) {
+                        AuthStateAuthenticated() =>
+                          _buildRecentDiagramsSection(),
+                        AuthStateUnauthenticated() => _buildSignInSection(),
+                        AuthStateError() => _buildSignInSection(),
+                        AuthStateLoading() => const CircularProgressIndicator(),
+                      },
+                    ],
+                  ),
             ),
           ),
         ),
@@ -205,7 +214,21 @@ class _LandingViewState extends State<LandingView> {
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: () {
-              // Handle authentication
+              // Show the SignInDialog when the button is pressed
+              unawaited(
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible:
+                      false, // Prevent closing by tapping outside
+                  builder:
+                      (dialogContext) =>
+                      // Provide the AuthCubit from the main context
+                      BlocProvider.value(
+                        value: context.read<AuthCubit>(),
+                        child: const SignInDialog(),
+                      ),
+                ),
+              );
             },
             icon: const Icon(Icons.login),
             label: const Text('Sign In or Create Account'),
@@ -218,73 +241,5 @@ class _LandingViewState extends State<LandingView> {
     ),
   );
 
-  Widget _buildRecentDiagramsSection() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          Text(
-            'Your Recent Diagrams',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
-            ),
-          ),
-          const Spacer(),
-          TextButton.icon(
-            onPressed: () {
-              // View all diagrams
-            },
-            icon: const Icon(Icons.chevron_right),
-            label: const Text('View All'),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.2,
-        ),
-        itemCount: 0, // Replace with actual diagram list length
-        itemBuilder:
-            (context, index) =>
-                const Card(child: Placeholder(fallbackHeight: 100)),
-      ),
-      // Show a placeholder when no diagrams exist
-      if (true) // Replace with actual empty check
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'No diagrams yet',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Create your first diagram to see it here',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-        ),
-    ],
-  );
+  Widget _buildRecentDiagramsSection() => const DiagramsListDialog();
 }

@@ -24,7 +24,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
       SELECT 
         d.id AS diagram_id, 
         d.name AS diagram_name,
-        d.diagram_type AS diagram_type,
+        d.diagram_type::TEXT AS diagram_type,
         d.created_at AS diagram_created_at,
         d.updated_at AS diagram_updated_at,
         

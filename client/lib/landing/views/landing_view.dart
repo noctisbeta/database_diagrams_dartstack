@@ -84,16 +84,16 @@ class _LandingViewState extends State<LandingView> {
         (context) => CreateDiagramDialog(
           onCreateDiagram: (name, type) {
             final diagram = Diagram(
-              id: -1,
+              id: null,
               name: name,
               entities: const [],
               entityPositions: const [],
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
-              type: type,
+              diagramType: type,
             );
             context.read<DiagramCubit>().loadDiagram(diagram);
-            
+
             Navigator.of(context).pop();
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const MainView()),

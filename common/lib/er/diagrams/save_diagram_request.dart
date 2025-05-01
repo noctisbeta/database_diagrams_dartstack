@@ -12,7 +12,7 @@ final class SaveDiagramRequest extends DataModel {
     required this.entities,
     required this.entityPositions,
     required this.type,
-    this.id,
+    required this.id,
   });
 
   factory SaveDiagramRequest.validatedFromMap(

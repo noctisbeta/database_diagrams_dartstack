@@ -39,7 +39,7 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
     }
 
     Future<void> onSuccess() async {
-      await context.read<DiagramCubit>().deleteDiagram(diagram.id);
+      await context.read<DiagramCubit>().deleteDiagram(diagram.id!);
       await _refreshDiagrams();
     }
 

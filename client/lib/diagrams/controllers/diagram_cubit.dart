@@ -37,7 +37,7 @@ class DiagramCubit extends Cubit<DiagramState> {
       name: diagram.name,
       entities: diagram.entities,
       entityPositions: diagram.entityPositions,
-      diagramType: diagram.type,
+      diagramType: diagram.diagramType,
     ),
   );
 

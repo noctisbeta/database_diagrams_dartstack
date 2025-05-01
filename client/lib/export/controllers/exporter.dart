@@ -44,7 +44,7 @@ final class Exporter {
       }
 
       // Convert render object to image
-      final ui.Image image = await boundary.toImage(pixelRatio: 3);
+      final ui.Image image = await boundary.toImage();
       final ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );
@@ -121,7 +121,7 @@ final class Exporter {
       }
 
       // Convert render object to image
-      final ui.Image image = await boundary.toImage(pixelRatio: 3);
+      final ui.Image image = await boundary.toImage();
       final ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );

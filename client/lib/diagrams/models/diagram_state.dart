@@ -33,7 +33,7 @@ class DiagramState {
     List<EntityPosition>? entityPositions,
     DiagramType? diagramType,
   }) => DiagramState(
-    id: idFn?.call() ?? id,
+    id: idFn != null ? idFn() : id,
     name: name ?? this.name,
     entities: entities ?? this.entities,
     entityPositions: entityPositions ?? this.entityPositions,

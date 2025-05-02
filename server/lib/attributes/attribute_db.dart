@@ -113,7 +113,10 @@ final class AttributeDB extends DataModel {
     isPrimaryKey: isPrimaryKey ?? this.isPrimaryKey,
     isForeignKey: isForeignKey ?? this.isForeignKey,
     isNullable: isNullable ?? this.isNullable,
-    referencedEntityId: referencedEntityIdFn?.call() ?? referencedEntityId,
+    referencedEntityId:
+        referencedEntityIdFn != null
+            ? referencedEntityIdFn()
+            : referencedEntityId,
     order: order ?? this.order,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,

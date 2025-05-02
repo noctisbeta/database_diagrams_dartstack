@@ -54,13 +54,13 @@ final class DiagramDB extends DataModel {
   DiagramDB copyWith({
     int? id,
     String? name,
-    int? Function()? userIdFn,
+    int? userId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => DiagramDB(
     id: id ?? this.id,
     name: name ?? this.name,
-    userId: userIdFn?.call() ?? userId,
+    userId: userId ?? this.userId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );

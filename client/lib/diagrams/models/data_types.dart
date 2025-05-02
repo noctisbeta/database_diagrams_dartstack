@@ -1,5 +1,7 @@
+part of '../controllers/diagram_cubit.dart';
+
 /// Common PostgreSQL Data Types
-const Set<String> kPostgresDataTypes = {
+const Set<String> _kPostgresDataTypes = {
   // Numeric Types
   'SMALLINT', // int2
   'INTEGER', // int, int4
@@ -88,7 +90,7 @@ const Set<String> kPostgresDataTypes = {
 };
 
 /// Firestore Data Types (Fundamental Types)
-const Set<String> kFirestoreDataTypes = {
+const Set<String> _kFirestoreDataTypes = {
   'String',
   'Number', // Represents both integers and doubles
   'Boolean',

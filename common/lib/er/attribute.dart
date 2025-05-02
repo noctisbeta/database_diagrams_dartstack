@@ -9,11 +9,11 @@ final class Attribute extends DataModel {
     required this.id,
     required this.name,
     required this.dataType,
+    required this.order,
     this.isPrimaryKey = false,
     this.isForeignKey = false,
     this.isNullable = false,
     this.referencedEntityId,
-    this.order = 0, // Add this field
   });
 
   @Throws([BadMapShapeException])
@@ -26,7 +26,7 @@ final class Attribute extends DataModel {
       'is_foreign_key': final bool isForeignKey,
       'is_nullable': final bool isNullable,
       'referenced_entity_id': final int? referencedEntityId,
-      'order': final int order, // Add this
+      'order': final int order,
     } =>
       Attribute(
         id: id,
@@ -58,7 +58,7 @@ final class Attribute extends DataModel {
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
-    int? Function()? referencedEntityIdFactory,
+    int? Function()? referencedEntityIdFn,
     int? order,
   }) => Attribute(
     id: id ?? this.id,
@@ -67,7 +67,10 @@ final class Attribute extends DataModel {
     isPrimaryKey: isPrimaryKey ?? this.isPrimaryKey,
     isForeignKey: isForeignKey ?? this.isForeignKey,
     isNullable: isNullable ?? this.isNullable,
-    referencedEntityId: referencedEntityIdFactory?.call() ?? referencedEntityId,
+    referencedEntityId:
+        referencedEntityIdFn != null
+            ? referencedEntityIdFn()
+            : referencedEntityId,
     order: order ?? this.order,
   );
 

@@ -64,7 +64,7 @@ final class SaveDiagramRequest extends DataModel {
     List<Entity>? entities,
     List<EntityPosition>? entityPositions,
   }) => SaveDiagramRequest(
-    id: idFn?.call() ?? id,
+    id: idFn != null ? idFn() : id,
     name: name ?? this.name,
     entities: entities ?? this.entities,
     entityPositions: entityPositions ?? this.entityPositions,

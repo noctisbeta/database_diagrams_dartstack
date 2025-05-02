@@ -1,6 +1,7 @@
 import 'package:client/diagrams/models/diagram_state.dart';
 import 'package:client/diagrams/repositories/diagram_repository.dart';
 import 'package:common/er/diagram.dart';
+import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
@@ -10,6 +11,8 @@ import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part '../models/data_types.dart';
+
 class DiagramCubit extends Cubit<DiagramState> {
   DiagramCubit({required DiagramRepository diagramRepository})
     : _diagramRepository = diagramRepository,
@@ -18,6 +21,12 @@ class DiagramCubit extends Cubit<DiagramState> {
   final DiagramRepository _diagramRepository;
 
   final GlobalKey canvasBoundaryKey = GlobalKey();
+
+  Set<String>? get allowedDataTypes => switch (state.diagramType) {
+    DiagramType.postgresql => _kPostgresDataTypes,
+    DiagramType.firestore => _kFirestoreDataTypes,
+    DiagramType.custom => null,
+  };
 
   Future<List<Diagram>> getDiagrams() async {
     final GetDiagramsResponse response = await _diagramRepository.getDiagrams();

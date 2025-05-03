@@ -17,6 +17,17 @@ final class Diagram extends DataModel {
     required this.id,
   });
 
+  Diagram.initial(String name, DiagramType diagramType)
+    : this(
+        id: null,
+        name: name,
+        entities: const [],
+        entityPositions: const [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        diagramType: diagramType,
+      );
+
   factory Diagram.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
       'id': final int? id,

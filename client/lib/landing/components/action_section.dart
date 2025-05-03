@@ -16,16 +16,8 @@ class ActionSection extends StatelessWidget {
     barrierDismissible: false,
     builder:
         (context) => CreateDiagramDialog(
-          onCreateDiagram: (name, type) {
-            final diagram = Diagram(
-              id: null,
-              name: name,
-              entities: const [],
-              entityPositions: const [],
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              diagramType: type,
-            );
+          onCreateDiagram: (name, diagramType) {
+            final diagram = Diagram.initial(name, diagramType);
             context.read<DiagramCubit>().loadDiagram(diagram);
 
             Navigator.of(context).pop();
@@ -41,25 +33,23 @@ class ActionSection extends StatelessWidget {
     children: [
       Expanded(
         child: ActionCard(
-          title: 'Create New',
-          description: 'Start a new diagram from scratch',
-          icon: Icons.add_circle_outline,
-          iconColor: Colors.green,
-          isPrimary: true,
-          onTap: () {
-            unawaited(_showCreateDiagramDialog(context));
-          },
+          title: 'Use Template',
+          description: 'Start with a pre-built schema',
+          icon: Icons.content_copy,
+          iconColor: Colors.orange,
+          onTap: () {},
         ),
       ),
       const SizedBox(width: 16),
       Expanded(
         child: ActionCard(
-          title: 'Use Template',
-          description: 'Start with a pre-built schema',
-          icon: Icons.content_copy,
-          iconColor: Colors.orange,
-          isPrimary: false,
-          onTap: () {},
+          title: 'Create New',
+          description: 'Start a new diagram from scratch',
+          icon: Icons.add_circle_outline,
+          iconColor: Colors.green,
+          onTap: () {
+            unawaited(_showCreateDiagramDialog(context));
+          },
         ),
       ),
       const SizedBox(width: 16),
@@ -69,7 +59,6 @@ class ActionSection extends StatelessWidget {
           description: 'Import from SQL or JSON',
           icon: Icons.upload_file,
           iconColor: Colors.purple,
-          isPrimary: false,
           onTap: () {},
         ),
       ),

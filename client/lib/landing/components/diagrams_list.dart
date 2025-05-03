@@ -19,11 +19,8 @@ class _DiagramsListState extends State<DiagramsList> {
       context.read<DiagramCubit>().getDiagrams();
 
   Future<void> _refreshDiagrams() async {
-    final Future<List<Diagram>> newDiagrams =
-        context.read<DiagramCubit>().getDiagrams();
-
     setState(() {
-      diagramsFuture = newDiagrams;
+      diagramsFuture = context.read<DiagramCubit>().getDiagrams();
     });
   }
 
@@ -45,7 +42,7 @@ class _DiagramsListState extends State<DiagramsList> {
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder:
-          (BuildContext dialogContext) => AlertDialog(
+          (dialogContext) => AlertDialog(
             title: const Text('Delete Diagram'),
             content: Text(
               'Are you sure you want to delete "${diagram.name}"?\n\n'
@@ -79,6 +76,9 @@ class _DiagramsListState extends State<DiagramsList> {
     }
   }
 
+  String _formatDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(16),
@@ -91,19 +91,15 @@ class _DiagramsListState extends State<DiagramsList> {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-
         FutureBuilder<List<Diagram>>(
           future: diagramsFuture,
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              LOG.e('Error loading diagrams: ${snapshot.error}');
-            }
-
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
+              LOG.e('Error loading diagrams: ${snapshot.error}');
               return const Center(child: Text('Error loading diagrams'));
             }
 
@@ -148,7 +144,6 @@ class _DiagramsListState extends State<DiagramsList> {
             );
           },
         ),
-
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +162,4 @@ class _DiagramsListState extends State<DiagramsList> {
       ],
     ),
   );
-
-  String _formatDate(DateTime date) =>
-      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 }

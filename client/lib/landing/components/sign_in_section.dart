@@ -8,9 +8,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignInSection extends StatelessWidget {
   const SignInSection({super.key});
 
+  void _showSignInDialog(BuildContext context) {
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (dialogContext) => BlocProvider.value(
+              value: context.read<AuthCubit>(),
+              child: const SignInDialog(),
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Card(
-    elevation: 1,
     child: Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
@@ -28,19 +41,7 @@ class SignInSection extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: () {
-              unawaited(
-                showDialog<void>(
-                  context: context,
-                  barrierDismissible: false,
-                  builder:
-                      (dialogContext) => BlocProvider.value(
-                        value: context.read<AuthCubit>(),
-                        child: const SignInDialog(),
-                      ),
-                ),
-              );
-            },
+            onPressed: () => _showSignInDialog(context),
             icon: const Icon(Icons.login),
             label: const Text('Sign In or Create Account'),
             style: FilledButton.styleFrom(

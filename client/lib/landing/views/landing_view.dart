@@ -19,47 +19,43 @@ class LandingView extends StatelessWidget {
     ),
     body: Center(
       child: SingleChildScrollView(
-        child: ConstrainedBox(
+        child: Container(
+          padding: const EdgeInsets.all(24),
           constraints: const BoxConstraints(maxWidth: 900),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.schema, size: 64, color: Colors.blue),
-                const SizedBox(height: 24),
-                const Text(
-                  'Database Diagrams',
+          child: Column(
+            children: [
+              const Icon(Icons.schema, size: 64, color: Colors.blue),
+              const SizedBox(height: 24),
+              const Text(
+                'Database Diagrams',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: 500,
+                child: Text(
+                  'Design, visualize, and document your'
+                  ' database schemas',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: 500,
-                  child: Text(
-                    'Design, visualize, and document your'
-                    ' database schemas',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                  ),
-                ),
-
-                const SizedBox(height: 48),
-                const ActionSection(),
-                const SizedBox(height: 40),
-                BlocBuilder<AuthCubit, AuthState>(
-                  builder:
-                      (context, state) => switch (state) {
-                        AuthStateAuthenticated() => const DiagramsList(),
-                        AuthStateUnauthenticated() ||
-                        AuthStateError() => const SignInSection(),
-                        AuthStateLoading() => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      },
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 48),
+              const ActionSection(),
+              const SizedBox(height: 40),
+              BlocBuilder<AuthCubit, AuthState>(
+                builder:
+                    (context, state) => switch (state) {
+                      AuthStateAuthenticated() => const DiagramsList(),
+                      AuthStateUnauthenticated() ||
+                      AuthStateError() => const SignInSection(),
+                      AuthStateLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    },
+              ),
+            ],
           ),
         ),
       ),

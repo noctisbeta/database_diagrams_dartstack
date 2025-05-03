@@ -58,12 +58,24 @@ final class PostgreSQLParser {
         StringBuffer()
           ..write('"${attribute.name}"')
           ..write(
-            ' ${attribute.dataType}',
-          ); // Ensure dataType is SQL compatible
+            ' ${attribute.dataType.toUpperCase()}',
+          ); // Ensure dataType is uppercase for consistency
 
-    if (!attribute.isNullable) {
-      colBuffer.write(' NOT NULL');
+    // Handle Identity columns
+    if (attribute.isIdentity) {
+      // Identity implies NOT NULL and usually PRIMARY KEY (handled separately)
+      colBuffer.write(' GENERATED ALWAYS AS IDENTITY');
+      // Note: We don't add PRIMARY KEY here, it's handled later based
+      // on isPrimaryKey flag
+    } else {
+      // Handle regular columns (non-identity)
+      if (!attribute.isNullable) {
+        colBuffer.write(' NOT NULL');
+      }
+      // Potentially add DEFAULT value logic here if needed
     }
+
+    // Note: Foreign key constraints are handled separately
 
     return colBuffer.toString();
   }

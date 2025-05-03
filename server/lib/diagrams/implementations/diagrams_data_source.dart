@@ -39,6 +39,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
         a.is_primary_key,
         a.is_foreign_key,
         a.is_nullable,
+        a.is_identity,
         a.referenced_entity_id,
         a."order",
         a.created_at AS attribute_created_at,
@@ -118,6 +119,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
           'is_primary_key': row['is_primary_key']! as bool,
           'is_foreign_key': row['is_foreign_key']! as bool,
           'is_nullable': row['is_nullable']! as bool,
+          'is_identity': row['is_identity']! as bool,
           'referenced_entity_id': row['referenced_entity_id'],
           'order': row['order']! as int,
           'created_at': row['attribute_created_at']! as DateTime,
@@ -220,6 +222,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             is_primary_key,
             is_foreign_key,
             is_nullable,
+            is_identity,
             "order"
           )
           VALUES (
@@ -229,6 +232,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             @is_primary_key,
             @is_foreign_key,
             @is_nullable,
+            @is_identity,
             @order
           );
           '''),
@@ -239,6 +243,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             'is_primary_key': attribute.isPrimaryKey,
             'is_foreign_key': attribute.isForeignKey,
             'is_nullable': attribute.isNullable,
+            'is_identity': attribute.isIdentity,
             'order': attribute.order,
           },
         );
@@ -352,6 +357,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             is_primary_key,
             is_foreign_key,
             is_nullable,
+            is_identity,
             "order"
           )
           VALUES (
@@ -361,6 +367,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             @is_primary_key,
             @is_foreign_key,
             @is_nullable,
+            @is_identity,
             @order
           );
           '''),
@@ -371,6 +378,7 @@ final class DiagramsDataSource implements IDiagramsDataSource {
             'is_primary_key': attribute.isPrimaryKey,
             'is_foreign_key': attribute.isForeignKey,
             'is_nullable': attribute.isNullable,
+            'is_identity': attribute.isIdentity,
             'order': attribute.order,
           },
         );

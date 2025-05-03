@@ -13,6 +13,7 @@ final class Attribute extends DataModel {
     this.isPrimaryKey = false,
     this.isForeignKey = false,
     this.isNullable = false,
+    this.isIdentity = false,
     this.referencedEntityId,
   });
 
@@ -25,6 +26,7 @@ final class Attribute extends DataModel {
       'is_primary_key': final bool isPrimaryKey,
       'is_foreign_key': final bool isForeignKey,
       'is_nullable': final bool isNullable,
+      'is_identity': final bool isIdentity,
       'referenced_entity_id': final int? referencedEntityId,
       'order': final int order,
     } =>
@@ -35,6 +37,7 @@ final class Attribute extends DataModel {
         isPrimaryKey: isPrimaryKey,
         isForeignKey: isForeignKey,
         isNullable: isNullable,
+        isIdentity: isIdentity,
         referencedEntityId: referencedEntityId,
         order: order,
       ),
@@ -48,6 +51,7 @@ final class Attribute extends DataModel {
   final bool isPrimaryKey;
   final bool isForeignKey;
   final bool isNullable;
+  final bool isIdentity;
   final int? referencedEntityId;
 
   @override
@@ -58,6 +62,7 @@ final class Attribute extends DataModel {
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
+    bool? isIdentity,
     int? Function()? referencedEntityIdFn,
     int? order,
   }) => Attribute(
@@ -67,6 +72,7 @@ final class Attribute extends DataModel {
     isPrimaryKey: isPrimaryKey ?? this.isPrimaryKey,
     isForeignKey: isForeignKey ?? this.isForeignKey,
     isNullable: isNullable ?? this.isNullable,
+    isIdentity: isIdentity ?? this.isIdentity,
     referencedEntityId:
         referencedEntityIdFn != null
             ? referencedEntityIdFn()
@@ -82,6 +88,7 @@ final class Attribute extends DataModel {
     isPrimaryKey,
     isForeignKey,
     isNullable,
+    isIdentity,
     referencedEntityId,
     order,
   ];
@@ -94,6 +101,7 @@ final class Attribute extends DataModel {
     'is_primary_key': isPrimaryKey,
     'is_foreign_key': isForeignKey,
     'is_nullable': isNullable,
+    'is_identity': isIdentity,
     'referenced_entity_id': referencedEntityId,
     'order': order,
   };

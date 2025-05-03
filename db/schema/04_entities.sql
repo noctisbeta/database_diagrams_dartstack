@@ -17,6 +17,7 @@ CREATE TABLE attributes (
     is_primary_key BOOLEAN NOT NULL DEFAULT FALSE,
     is_foreign_key BOOLEAN NOT NULL DEFAULT FALSE,
     is_nullable BOOLEAN NOT NULL DEFAULT FALSE,
+    is_identity BOOLEAN NOT NULL DEFAULT FALSE,
     referenced_entity_id INTEGER REFERENCES entities(id) ON DELETE
     SET NULL,
         "order" INTEGER NOT NULL,

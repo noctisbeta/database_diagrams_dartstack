@@ -51,6 +51,15 @@ class EntityCard extends StatelessWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              if (attribute.isIdentity)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Icon(
+                                    Icons.format_list_numbered,
+                                    size: 16,
+                                    color: Colors.green,
+                                  ),
+                                ),
                               if (attribute.isPrimaryKey)
                                 const Padding(
                                   padding: EdgeInsets.only(right: 4),

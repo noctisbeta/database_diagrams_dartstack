@@ -83,7 +83,7 @@ class _AddEntityDialogContentState extends State<AddEntityDialogContent> {
             children: [
               SizedBox(
                 height: 500,
-                width: 500,
+                width: 600,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -97,6 +97,7 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
     bool? isPrimaryKey,
     bool? isForeignKey,
     bool? isNullable,
+    bool? isIdentity,
     int? referencedEntityId,
   }) {
     final List<Attribute> newAttributes = [
@@ -108,6 +109,7 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
             isPrimaryKey: isPrimaryKey,
             isForeignKey: isForeignKey,
             isNullable: isNullable,
+            isIdentity: isIdentity,
             referencedEntityIdFn:
                 referencedEntityId == null ? null : () => referencedEntityId,
           )

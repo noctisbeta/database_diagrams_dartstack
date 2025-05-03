@@ -27,18 +27,15 @@ class _AttributeRowState extends State<AttributeRow> {
   final TextEditingController referenceNameController = TextEditingController();
   int? selectedEntityId;
 
-  Set<String>? get allowedDataTypes =>
-      context.read<DiagramCubit>().allowedDataTypes;
-
-  late final Attribute attribute = context
-      .read<EntityEditorCubit>()
-      .state
-      .attributes
-      .firstWhere((a) => a.id == widget.attributeId);
-
   @override
   void initState() {
     super.initState();
+
+    final Attribute attribute = context
+        .read<EntityEditorCubit>()
+        .state
+        .attributes
+        .firstWhere((a) => a.id == widget.attributeId);
 
     nameController.text = attribute.name;
     typeController.text = attribute.dataType;
@@ -63,11 +60,14 @@ class _AttributeRowState extends State<AttributeRow> {
 
     return BlocBuilder<EntityEditorCubit, EntityEditorState>(
       builder: (context, state) {
-        final Attribute attribute = context
-            .read<EntityEditorCubit>()
-            .state
-            .attributes
-            .firstWhere((a) => a.id == widget.attributeId);
+        final Attribute attribute = state.attributes.firstWhere(
+          (a) => a.id == widget.attributeId,
+        );
+
+        final Set<String>? types =
+            attribute.isIdentity
+                ? {'SMALLINT', 'INTEGER', 'BIGINT'}
+                : context.read<DiagramCubit>().allowedDataTypes;
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,6 +86,19 @@ class _AttributeRowState extends State<AttributeRow> {
             Row(
               children: [
                 AttributeToggle(
+                  disabled: attribute.isForeignKey || attribute.isNullable,
+                  selected: attribute.isIdentity,
+                  onSelected:
+                      (value) => entityEditorCubit.updateAttribute(
+                        id: attribute.id,
+                        isIdentity: value,
+                      ),
+                  tooltip: 'Identity',
+                  child: const Text('🔢'),
+                ),
+                const SizedBox(width: 2),
+                AttributeToggle(
+                  disabled: attribute.isNullable,
                   selected: attribute.isPrimaryKey,
                   onSelected:
                       (value) => entityEditorCubit.updateAttribute(
@@ -97,6 +110,7 @@ class _AttributeRowState extends State<AttributeRow> {
                 ),
                 const SizedBox(width: 2),
                 AttributeToggle(
+                  disabled: attribute.isIdentity,
                   selected: attribute.isForeignKey,
                   onSelected: (value) {
                     if (!value) {
@@ -117,6 +131,7 @@ class _AttributeRowState extends State<AttributeRow> {
                 ),
                 const SizedBox(width: 2),
                 AttributeToggle(
+                  disabled: attribute.isPrimaryKey || attribute.isIdentity,
                   selected: attribute.isNullable,
                   onSelected:
                       (value) => entityEditorCubit.updateAttribute(
@@ -220,12 +235,8 @@ class _AttributeRowState extends State<AttributeRow> {
             if (!attribute.isForeignKey)
               Expanded(
                 child: Autocomplete<String>(
+                  key: ValueKey('${attribute.id}_${attribute.isIdentity}'),
                   optionsBuilder: (textEditingValue) {
-                    if (textEditingValue.text.isEmpty) {
-                      return const Iterable<String>.empty();
-                    }
-
-                    final Set<String>? types = allowedDataTypes;
                     if (types == null) {
                       return const Iterable<String>.empty();
                     }

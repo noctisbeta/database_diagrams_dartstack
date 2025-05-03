@@ -8,6 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final class EntityEditorCubit extends Cubit<EntityEditorState> {
   EntityEditorCubit() : super(const EntityEditorState.empty());
 
+  void setAttributes(List<Attribute> attributes) {
+    emit(state.copyWith(attributes: attributes));
+  }
+
   bool validateEntity(Set<String>? allowedDataTypes) {
     final String? nameError =
         state.name.isEmpty ? 'Name cannot be empty' : null;
@@ -73,9 +77,11 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
   }
 
   void addAttribute() {
-    final int newOrder = state.attributes.length + 1;
+    final int newOrder = state.attributes.length;
+    final int uniqueId =
+        -DateTime.now().millisecondsSinceEpoch - state.attributes.length;
     final Attribute newAttribute = Attribute(
-      id: newOrder,
+      id: uniqueId,
       order: newOrder,
       name: '',
       dataType: '',
@@ -85,7 +91,7 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
   }
 
   void updateAttribute({
-    required int order,
+    required int id,
     String? name,
     String? dataType,
     bool? isPrimaryKey,
@@ -95,7 +101,7 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
   }) {
     final List<Attribute> newAttributes = [
       for (final attribute in state.attributes)
-        if (attribute.order == order)
+        if (attribute.id == id)
           attribute.copyWith(
             name: name,
             dataType: dataType,
@@ -121,13 +127,9 @@ final class EntityEditorCubit extends Cubit<EntityEditorState> {
       EntityEditorState(
         id: entity.id,
         name: entity.name,
-        attributes: entity.attributes,
+        attributes: List.from(entity.attributes),
         primaryKeyId: primaryKeyId,
       ),
     );
-  }
-
-  void reset() {
-    emit(const EntityEditorState.empty());
   }
 }

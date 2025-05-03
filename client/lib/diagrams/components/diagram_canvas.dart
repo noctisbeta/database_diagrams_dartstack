@@ -4,7 +4,6 @@ import 'package:client/diagrams/components/add_entity_dialog.dart';
 import 'package:client/diagrams/components/entity_card.dart';
 import 'package:client/diagrams/components/relationship_painter.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
-import 'package:client/diagrams/controllers/entity_editor_cubit.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:flutter/material.dart';
@@ -169,15 +168,13 @@ class _DraggableEntityState extends State<_DraggableEntity> {
           PopupMenuItem(
             child: const Text('Edit Entity'),
             onTap: () {
-              context.read<EntityEditorCubit>().loadEntity(widget.entity);
-
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 showDialog(
                   context: context,
                   builder:
                       (dialogContext) => BlocProvider.value(
                         value: context.read<DiagramCubit>(),
-                        child: const AddEntityDialog(),
+                        child: AddEntityDialog(entity: widget.entity),
                       ),
                 );
               });

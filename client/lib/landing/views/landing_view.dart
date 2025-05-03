@@ -47,7 +47,9 @@ class _LandingViewState extends State<LandingView> {
                           _buildRecentDiagramsSection(),
                         AuthStateUnauthenticated() => _buildSignInSection(),
                         AuthStateError() => _buildSignInSection(),
-                        AuthStateLoading() => const CircularProgressIndicator(),
+                        AuthStateLoading() => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       },
                     ],
                   ),

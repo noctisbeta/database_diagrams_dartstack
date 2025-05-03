@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/common/main_view.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:common/er/diagram.dart';
 import 'package:common/logger/logger.dart';
@@ -7,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DiagramsListDialog extends StatefulWidget {
-  const DiagramsListDialog({super.key});
+  const DiagramsListDialog({required this.isOnLandingView, super.key});
+
+  final bool isOnLandingView;
 
   @override
   State<DiagramsListDialog> createState() => _DiagramsListDialogState();
@@ -95,9 +98,8 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
           ),
           const SizedBox(height: 16),
 
-          // Set a fixed height container for the list content
           SizedBox(
-            height: 300, // Fixed height to prevent resizing
+            height: 300,
             child: FutureBuilder<List<Diagram>>(
               future: diagramsFuture,
               builder: (context, snapshot) {
@@ -145,7 +147,18 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
                       ),
                       onTap: () {
                         context.read<DiagramCubit>().loadDiagram(diagram);
+
                         Navigator.of(context).pop();
+
+                        if (widget.isOnLandingView) {
+                          unawaited(
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const MainView(),
+                              ),
+                            ),
+                          );
+                        }
                       },
                     );
                   },

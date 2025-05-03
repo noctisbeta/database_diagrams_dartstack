@@ -11,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthButton extends StatefulWidget {
-  const AuthButton({super.key});
+  const AuthButton({required this.isOnLandingView, super.key});
+
+  final bool isOnLandingView;
 
   @override
   State<AuthButton> createState() => _AuthButtonState();
@@ -24,7 +26,10 @@ class _AuthButtonState extends State<AuthButton> {
       if (state is AuthStateLoading) {
         return _buildLoadingButton();
       } else if (state is AuthStateAuthenticated) {
-        return ProfileMenu(user: state.user);
+        return ProfileMenu(
+          user: state.user,
+          isOnLandingView: widget.isOnLandingView,
+        );
       } else {
         return _buildSignInButton();
       }
@@ -61,9 +66,14 @@ class _AuthButtonState extends State<AuthButton> {
 }
 
 class ProfileMenu extends StatelessWidget {
-  const ProfileMenu({required this.user, super.key});
+  const ProfileMenu({
+    required this.isOnLandingView,
+    required this.user,
+    super.key,
+  });
 
   final User user;
+  final bool isOnLandingView;
 
   @override
   Widget build(BuildContext context) => PopupMenuButton<String>(
@@ -106,7 +116,7 @@ class ProfileMenu extends StatelessWidget {
               builder:
                   (dialogContext) => BlocProvider.value(
                     value: context.read<DiagramCubit>(),
-                    child: const DiagramsListDialog(),
+                    child: DiagramsListDialog(isOnLandingView: isOnLandingView),
                   ),
             ),
           );
@@ -118,12 +128,13 @@ class ProfileMenu extends StatelessWidget {
     },
     itemBuilder:
         (context) => [
-          const ProfileMenuItem(
-            value: 'home',
-            icon: Icons.home_outlined,
-            text: 'Home',
-          ),
-          const PopupMenuDivider(),
+          if (!isOnLandingView)
+            const ProfileMenuItem(
+              value: 'home',
+              icon: Icons.home_outlined,
+              text: 'Home',
+            ),
+          if (!isOnLandingView) const PopupMenuDivider(),
           const ProfileMenuItem(
             value: 'diagrams',
             icon: Icons.dashboard,

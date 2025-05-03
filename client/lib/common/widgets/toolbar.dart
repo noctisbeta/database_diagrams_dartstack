@@ -27,7 +27,7 @@ class Toolbar extends StatelessWidget {
         DiagramTitle(),
 
         Spacer(),
-        AuthButton(),
+        AuthButton(isOnLandingView: false),
       ],
     ),
   );

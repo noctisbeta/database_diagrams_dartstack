@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:client/diagrams/components/add_entity_dialog.dart';
 import 'package:client/diagrams/components/diagram_canvas.dart';
-import 'package:client/diagrams/components/toolbar.dart';
+import 'package:client/diagrams/components/toolbar/toolbar.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/models/diagram_state.dart';
 import 'package:flutter/material.dart';

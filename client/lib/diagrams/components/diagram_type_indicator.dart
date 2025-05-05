@@ -207,9 +207,13 @@ class DiagramTypeIndicator extends StatelessWidget {
                       if (selectedAction != null) {
                         switch (selectedAction) {
                           case DiagramAction.showTypes:
-                            _showDataTypesDialog(context, label);
+                            if (context.mounted) {
+                              _showDataTypesDialog(context, label);
+                            }
                           case DiagramAction.changeRuleset:
-                            _showChangeRulesetDialog(context, diagramType);
+                            if (context.mounted) {
+                              _showChangeRulesetDialog(context, diagramType);
+                            }
                         }
                       }
                     }),

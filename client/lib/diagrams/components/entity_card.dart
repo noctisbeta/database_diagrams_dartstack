@@ -45,7 +45,16 @@ class EntityCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(children: [Text(attribute.name)]),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                attribute.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 2),
                         Row(
                           children: [

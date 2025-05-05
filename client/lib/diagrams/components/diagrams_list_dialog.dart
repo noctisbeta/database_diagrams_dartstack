@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:client/common/main_view.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/routing/router_path.dart';
 import 'package:common/er/diagram.dart';
 import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class DiagramsListDialog extends StatefulWidget {
   const DiagramsListDialog({required this.isOnLandingView, super.key});
@@ -151,12 +152,9 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
                         Navigator.of(context).pop();
 
                         if (widget.isOnLandingView) {
-                          unawaited(
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const MainView(),
-                              ),
-                            ),
+                          context.goNamed(
+                            RouterPath.editor.name,
+                            extra: diagram,
                           );
                         }
                       },

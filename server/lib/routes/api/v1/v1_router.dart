@@ -50,11 +50,16 @@ Future<Router> createV1Router() async {
       .addMiddleware(jwtMiddlewareProvider())
       .addHandler(diagramsRouter.call);
 
+  final Handler sharedDiagramsHandlerWithMiddleware = const Pipeline()
+      .addMiddleware(enforceJsonContentType())
+      .addHandler(diagramsRouter.call);
+
   final router =
       Router()
         ..get('/health', (request) => _healthHandler(request, postgresService))
         ..mount('/auth', authHandlerWithMiddleware)
-        ..mount('/diagrams', diagramsHandlerWithMiddleware);
+        ..mount('/diagrams', diagramsHandlerWithMiddleware)
+        ..mount('/shared-diagrams', sharedDiagramsHandlerWithMiddleware);
 
   return router;
 }

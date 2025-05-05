@@ -5,6 +5,8 @@ import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
+import 'package:common/er/diagrams/share_diagram_request.dart';
+import 'package:common/er/diagrams/share_diagram_response.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/logger/logger.dart';
@@ -27,6 +29,26 @@ class DiagramCubit extends Cubit<DiagramState> {
     DiagramType.firestore => _kFirestoreDataTypes,
     DiagramType.custom => null,
   };
+
+  Future<String?> shareDiagram() async {
+    await saveDiagram();
+
+    final ShareDiagramRequest request = ShareDiagramRequest(
+      diagramId: state.id!,
+    );
+
+    final ShareDiagramResponse response = await _diagramRepository.shareDiagram(
+      request,
+    );
+
+    switch (response) {
+      case ShareDiagramResponseSuccess():
+        return response.shortcode;
+      case ShareDiagramResponseError():
+        LOG.e('Failed to share diagram: ${response.message}');
+        return null;
+    }
+  }
 
   Future<List<Diagram>> getDiagrams() async {
     final GetDiagramsResponse response = await _diagramRepository.getDiagrams();

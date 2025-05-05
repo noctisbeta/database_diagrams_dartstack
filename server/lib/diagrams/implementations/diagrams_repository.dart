@@ -1,8 +1,12 @@
 import 'package:common/er/diagram.dart';
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
+import 'package:common/er/diagrams/get_shared_diagram_request.dart';
+import 'package:common/er/diagrams/get_shared_diagram_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
+import 'package:common/er/diagrams/share_diagram_request.dart';
+import 'package:common/er/diagrams/share_diagram_response.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/abstractions/i_diagams_repository.dart';
 import 'package:server/diagrams/abstractions/i_diagrams_data_source.dart';
@@ -56,5 +60,42 @@ final class DiagramsRepository implements IDiagramsRepository {
   @override
   Future<void> deleteDiagram(int diagramId, int userId) async {
     await _diagramsDataSource.deleteDiagram(diagramId, userId);
+  }
+
+  @override
+  Future<ShareDiagramResponse> shareDiagram(
+    ShareDiagramRequest request,
+    int userId,
+  ) async {
+    final int diagramId = request.diagramId;
+
+    final bool hasOwnership = await _diagramsDataSource.checkDiagramOwnership(
+      diagramId,
+      userId,
+    );
+
+    if (!hasOwnership) {
+      return const ShareDiagramResponseError(
+        message: 'You do not own this diagram',
+        errorType: ShareDiagramError.userNotOwner,
+      );
+    }
+
+    final String shortcode = await _diagramsDataSource.shareDiagram(diagramId);
+
+    return ShareDiagramResponseSuccess(shortcode: shortcode);
+  }
+
+  @override
+  Future<GetSharedDiagramResponse> getSharedDiagram(
+    GetSharedDiagramRequest request,
+  ) async {
+    final String shortcode = request.shortcode;
+
+    final Diagram diagram = await _diagramsDataSource.getSharedDiagram(
+      shortcode,
+    );
+
+    return GetSharedDiagramResponseSuccess(diagram: diagram);
   }
 }

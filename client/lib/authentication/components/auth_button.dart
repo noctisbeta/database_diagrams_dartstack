@@ -5,10 +5,11 @@ import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
-import 'package:client/landing/views/landing_view.dart';
+import 'package:client/routing/router_path.dart';
 import 'package:common/auth/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthButton extends StatefulWidget {
   const AuthButton({required this.isOnLandingView, super.key});
@@ -100,15 +101,9 @@ class ProfileMenu extends StatelessWidget {
     onSelected: (value) async {
       switch (value) {
         case 'home':
-          await Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LandingView()),
-          );
+          context.goNamed(RouterPath.landing.name);
         case 'signout':
           await context.read<AuthCubit>().logout();
-        // Optionally navigate to LandingView after logout as well
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(builder: (context) => const LandingView()),
-        // );
         case 'diagrams':
           unawaited(
             showDialog<void>(

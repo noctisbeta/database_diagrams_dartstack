@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:client/common/main_view.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/landing/components/action_card.dart';
 import 'package:client/landing/components/create_diagram_dialog.dart';
+import 'package:client/routing/router_path.dart';
 import 'package:common/er/diagram.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ActionSection extends StatelessWidget {
   const ActionSection({super.key});
@@ -21,9 +22,8 @@ class ActionSection extends StatelessWidget {
             context.read<DiagramCubit>().loadDiagram(diagram);
 
             Navigator.of(context).pop();
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const MainView()),
-            );
+
+            context.goNamed(RouterPath.editor.name);
           },
         ),
   );

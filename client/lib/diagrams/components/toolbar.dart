@@ -12,6 +12,7 @@ import 'package:client/export/components/export_button.dart';
 import 'package:client/landing/views/landing_view.dart';
 import 'package:client/postgresql_parsing/postgresql_code_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Toolbar extends StatelessWidget {
@@ -50,6 +51,34 @@ class Toolbar extends StatelessWidget {
         const Spacer(),
         const DiagramTitle(),
         const Spacer(),
+        IconButton(
+          icon: const Icon(Icons.share),
+          tooltip: 'Share Diagram',
+          onPressed: () async {
+            final String? shortcode =
+                await context.read<DiagramCubit>().shareDiagram();
+
+            if (shortcode != null && context.mounted) {
+              await Clipboard.setData(ClipboardData(text: shortcode));
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Shareable shortcode copied to clipboard!'),
+                ),
+              );
+            } else if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Failed to generate shareable shortcode.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+        ),
+        const SizedBox(width: 12),
         BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
             if (state is AuthStateUnauthenticated) {
@@ -71,7 +100,6 @@ class Toolbar extends StatelessWidget {
             }
           },
         ),
-
         const SizedBox(width: 12),
         const AuthButton(isOnLandingView: false),
       ],

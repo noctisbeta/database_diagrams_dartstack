@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:client/authentication/auth_provider_wrapper.dart';
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/common/widgets/my_snackbar.dart';
+import 'package:client/common/my_snackbar.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/diagram_provider_wrapper.dart';
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
-import 'package:client/landing/views/landing_view.dart';
+import 'package:client/routing/router_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -43,23 +43,23 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state is AuthStateUnauthenticated) {
-          context.read<DiagramCubit>().resetDiagram();
-        }
+  Widget build(BuildContext context) => RouterWrapper(
+    builder:
+        (context, child) => BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is AuthStateUnauthenticated) {
+              context.read<DiagramCubit>().resetDiagram();
+            }
 
-        if (state is AuthStateError) {
-          MySnackBar.show(
-            context: context,
-            message: state.message,
-            type: SnackBarType.error,
-          );
-        }
-      },
-      child: const LandingView(),
-    ),
+            if (state is AuthStateError) {
+              MySnackBar.show(
+                context: context,
+                message: state.message,
+                type: SnackBarType.error,
+              );
+            }
+          },
+          child: child,
+        ),
   );
 }

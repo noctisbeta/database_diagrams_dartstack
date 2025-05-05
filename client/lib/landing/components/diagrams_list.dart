@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:client/common/main_view.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/routing/router_path.dart';
 import 'package:common/er/diagram.dart';
 import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class DiagramsList extends StatefulWidget {
   const DiagramsList({super.key});
@@ -133,11 +134,9 @@ class _DiagramsListState extends State<DiagramsList> {
                       ),
                     ],
                   ),
-                  onTap: () async {
+                  onTap: () {
                     context.read<DiagramCubit>().loadDiagram(diagram);
-                    await Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MainView()),
-                    );
+                    context.goNamed(RouterPath.editor.name, extra: diagram);
                   },
                 );
               },

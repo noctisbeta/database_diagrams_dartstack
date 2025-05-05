@@ -6,5 +6,7 @@ abstract interface class IDiagramsHandler {
   Future<Response> getDiagrams(Request request);
   Future<Response> saveDiagram(Request request);
   Future<Response> updateDiagram(Request request, String id);
-  Future<Response> deleteDiagram(Request request, String id); // Add this method
+  Future<Response> deleteDiagram(Request request, String id);
+  Future<Response> shareDiagram(Request request);
+  Future<Response> getSharedDiagram(Request request, String id);
 }

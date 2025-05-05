@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:common/annotations/throws.dart';
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
+import 'package:common/er/diagrams/get_shared_diagram_request.dart';
+import 'package:common/er/diagrams/get_shared_diagram_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
+import 'package:common/er/diagrams/share_diagram_request.dart';
+import 'package:common/er/diagrams/share_diagram_response.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:server/diagrams/abstractions/i_diagams_repository.dart';
@@ -111,6 +115,65 @@ final class DiagramsHandler implements IDiagramsHandler {
       return JsonResponse.internalServerError(
         body: 'Failed to delete diagram: $e',
       );
+    }
+  }
+
+  @override
+  Future<Response> getSharedDiagram(Request request, String id) async {
+    try {
+      final Map<String, dynamic> json = await request.json();
+
+      final getSharedDiagramRequest = GetSharedDiagramRequest.validatedFromMap(
+        json,
+      );
+
+      final GetSharedDiagramResponse response = await _diagramsRepository
+          .getSharedDiagram(getSharedDiagramRequest);
+
+      switch (response) {
+        case GetSharedDiagramResponseSuccess():
+          return JsonResponse.ok(body: response.toMap());
+        case GetSharedDiagramResponseError():
+          return JsonResponse.notFound(body: 'Diagram not found!');
+      }
+    } on BadMapShapeException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
+    } on FormatException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
+    }
+  }
+
+  @override
+  Future<Response> shareDiagram(Request request) async {
+    try {
+      final Map<String, dynamic> json = await request.json();
+
+      final shareDiagramRequest = ShareDiagramRequest.validatedFromMap(json);
+
+      final int userId = request.getUserId();
+
+      final ShareDiagramResponse response = await _diagramsRepository
+          .shareDiagram(shareDiagramRequest, userId);
+
+      switch (response) {
+        case ShareDiagramResponseSuccess():
+          return JsonResponse.ok(body: response.toMap());
+        case ShareDiagramResponseError(:final errorType):
+          switch (errorType) {
+            case ShareDiagramError.userNotOwner:
+              return JsonResponse.forbidden(
+                body: 'You do not own this diagram',
+              );
+            case ShareDiagramError.notAuthorized:
+              return JsonResponse.forbidden(
+                body: 'You are not authorized to share this diagram',
+              );
+          }
+      }
+    } on BadMapShapeException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
+    } on FormatException catch (e) {
+      return JsonResponse.badRequest(body: 'Invalid request! $e');
     }
   }
 }

@@ -5,6 +5,8 @@ import 'package:common/er/diagrams/delete_diagram_response.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
+import 'package:common/er/diagrams/share_diagram_request.dart';
+import 'package:common/er/diagrams/share_diagram_response.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -75,6 +77,20 @@ final class DiagramDataProvider {
           ),
     );
   }
+
+  Future<ShareDiagramResponse> shareDiagram(ShareDiagramRequest request) =>
+      _makeRequest(
+        endpoint: '/share',
+        method: 'POST',
+        data: request,
+        successBuilder: ShareDiagramResponseSuccess.validatedFromMap,
+        errorBuilder: ShareDiagramResponseError.validatedFromMap,
+        onRefreshFailed:
+            () => const ShareDiagramResponseError(
+              message: 'Failed to refresh token',
+              errorType: ShareDiagramError.notAuthorized,
+            ),
+      );
 
   Future<GetDiagramsResponse> getDiagrams() => _makeRequest(
     endpoint: '/',

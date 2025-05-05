@@ -209,7 +209,7 @@ class _DraggableEntityState extends State<_DraggableEntity> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(dialogContext).pop(); // Close dialog
+                  Navigator.of(dialogContext).pop();
                 },
                 child: const Text('Cancel'),
               ),
@@ -221,7 +221,7 @@ class _DraggableEntityState extends State<_DraggableEntity> {
                 onPressed: () {
                   // Perform the delete operation
                   context.read<DiagramCubit>().deleteEntity(widget.entity.id);
-                  Navigator.of(dialogContext).pop(); // Close dialog
+                  Navigator.of(dialogContext).pop();
                 },
                 child: const Text('Delete'),
               ),

@@ -32,46 +32,46 @@ class _SharedDiagramViewState extends State<SharedDiagramView> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text('Shared Diagram: ${widget.shortcode}')),
-    body: FutureBuilder<Diagram>(
-      future: diagramFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          String errorMessage = 'Failed to load diagram.';
-          // Extract a more specific message from the exception if possible
-          if (snapshot.error is Exception) {
-            final message = (snapshot.error! as Exception).toString();
-            errorMessage =
-                message.startsWith('Exception: ')
-                    ? message.substring(11)
-                    : message;
-          }
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Error: $errorMessage',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
+  Widget build(BuildContext context) => FutureBuilder<Diagram>(
+    future: diagramFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        String errorMessage = 'Failed to load diagram.';
+        // Extract a more specific message from the exception if possible
+        if (snapshot.error is Exception) {
+          final message = (snapshot.error! as Exception).toString();
+          errorMessage =
+              message.startsWith('Exception: ')
+                  ? message.substring(11)
+                  : message;
+        }
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Error: $errorMessage',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-          );
-        } else if (snapshot.hasData) {
-          final Diagram diagram = snapshot.data!;
+          ),
+        );
+      } else if (snapshot.hasData) {
+        final Diagram diagram = snapshot.data!;
 
-          // If not, DiagramCanvas might need adjustment or a read-only version.
-          return DiagramCanvas(
+        // If not, DiagramCanvas might need adjustment or a read-only version.
+        return Scaffold(
+          appBar: AppBar(title: Text(diagram.name), centerTitle: true),
+          body: DiagramCanvas(
             entities: diagram.entities,
             entityPositions: diagram.entityPositions,
             onEntityMoved: (_, _) {}, // Read-only: No move handler
-          );
-        } else {
-          return const Center(child: Text('No diagram data available.'));
-        }
-      },
-    ),
+          ),
+        );
+      } else {
+        return const Center(child: Text('No diagram data available.'));
+      }
+    },
   );
 }

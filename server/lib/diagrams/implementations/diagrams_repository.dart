@@ -1,7 +1,6 @@
 import 'package:common/er/diagram.dart';
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
-import 'package:common/er/diagrams/get_shared_diagram_request.dart';
 import 'package:common/er/diagrams/get_shared_diagram_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
@@ -87,11 +86,7 @@ final class DiagramsRepository implements IDiagramsRepository {
   }
 
   @override
-  Future<GetSharedDiagramResponse> getSharedDiagram(
-    GetSharedDiagramRequest request,
-  ) async {
-    final String shortcode = request.shortcode;
-
+  Future<GetSharedDiagramResponse> getSharedDiagram(String shortcode) async {
     final Diagram diagram = await _diagramsDataSource.getSharedDiagram(
       shortcode,
     );

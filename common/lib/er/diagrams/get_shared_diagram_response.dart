@@ -14,9 +14,10 @@ final class GetSharedDiagramResponseSuccess extends GetSharedDiagramResponse {
   factory GetSharedDiagramResponseSuccess.validatedFromMap(
     Map<String, dynamic> map,
   ) => switch (map) {
-    {'diagram': final Diagram diagram} => GetSharedDiagramResponseSuccess(
-      diagram: diagram,
-    ),
+    {'diagram': final Map<String, dynamic> diagramMap} =>
+      GetSharedDiagramResponseSuccess(
+        diagram: Diagram.validatedFromMap(diagramMap),
+      ),
     _ =>
       throw const BadMapShapeException(
         'Bad map shape for GetSharedDiagramResponseSuccess',

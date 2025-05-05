@@ -1,6 +1,5 @@
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
-import 'package:common/er/diagrams/get_shared_diagram_request.dart';
 import 'package:common/er/diagrams/get_shared_diagram_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
@@ -31,7 +30,5 @@ abstract interface class IDiagramsRepository {
     int userId,
   );
 
-  Future<GetSharedDiagramResponse> getSharedDiagram(
-    GetSharedDiagramRequest request,
-  );
+  Future<GetSharedDiagramResponse> getSharedDiagram(String shortcode);
 }

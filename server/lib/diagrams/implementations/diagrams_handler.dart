@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:common/annotations/throws.dart';
 import 'package:common/er/diagrams/get_diagrams_request.dart';
 import 'package:common/er/diagrams/get_diagrams_response.dart';
-import 'package:common/er/diagrams/get_shared_diagram_request.dart';
 import 'package:common/er/diagrams/get_shared_diagram_response.dart';
 import 'package:common/er/diagrams/save_diagram_request.dart';
 import 'package:common/er/diagrams/save_diagram_response.dart';
@@ -119,16 +118,10 @@ final class DiagramsHandler implements IDiagramsHandler {
   }
 
   @override
-  Future<Response> getSharedDiagram(Request request, String id) async {
+  Future<Response> getSharedDiagram(Request request, String shortcode) async {
     try {
-      final Map<String, dynamic> json = await request.json();
-
-      final getSharedDiagramRequest = GetSharedDiagramRequest.validatedFromMap(
-        json,
-      );
-
       final GetSharedDiagramResponse response = await _diagramsRepository
-          .getSharedDiagram(getSharedDiagramRequest);
+          .getSharedDiagram(shortcode);
 
       switch (response) {
         case GetSharedDiagramResponseSuccess():

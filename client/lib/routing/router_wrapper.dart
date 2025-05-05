@@ -1,4 +1,5 @@
 import 'package:client/diagrams/views/editor_view.dart';
+import 'package:client/diagrams/views/shared_diagram_view.dart';
 import 'package:client/landing/views/landing_view.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:flutter/foundation.dart';
@@ -34,6 +35,28 @@ class _RouterWrapperState extends State<RouterWrapper> {
         path: RouterPath.editor.path,
         name: RouterPath.editor.name,
         builder: (context, state) => const EditorView(),
+      ),
+      GoRoute(
+        path: RouterPath.shared.path, // Use '/s/:shortcode'
+        name: RouterPath.shared.name,
+        builder: (context, state) {
+          // Extract the 'shortcode' parameter from the path
+          final String? shortcode = state.pathParameters['shortcode'];
+
+          // Handle cases where shortcode might be missing or invalid (optional)
+          if (shortcode == null || shortcode.isEmpty) {
+            // Redirect to landing or show an error page
+            // For simplicity, redirecting to landing:
+            // Note: Direct navigation inside builder is discouraged,
+            // consider using redirect or errorBuilder for cleaner handling.
+            // This is a basic example:
+            return const LandingView(); // Or an ErrorView
+          }
+
+          // Return the view responsible for fetching and displaying
+          // the shared diagram, passing the shortcode to it.
+          return SharedDiagramView(shortcode: shortcode);
+        },
       ),
     ],
     initialLocation: RouterPath.landing.path,

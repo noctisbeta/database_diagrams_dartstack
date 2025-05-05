@@ -1,7 +1,8 @@
 /// An enum that defines all available routes in the application.
 enum RouterPath {
   landing('/landing'),
-  editor('/editor');
+  editor('/editor'),
+  shared('/s/:shortcode');
 
   /// Creates a [RouterPath] with the given [path].
   const RouterPath(this.path);

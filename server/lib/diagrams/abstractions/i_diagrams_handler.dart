@@ -8,5 +8,5 @@ abstract interface class IDiagramsHandler {
   Future<Response> updateDiagram(Request request, String id);
   Future<Response> deleteDiagram(Request request, String id);
   Future<Response> shareDiagram(Request request);
-  Future<Response> getSharedDiagram(Request request, String id);
+  Future<Response> getSharedDiagram(Request request, String shortcode);
 }

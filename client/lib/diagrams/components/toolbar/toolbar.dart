@@ -25,38 +25,50 @@ class Toolbar extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Row(
       children: [
-        const SaveButton(),
-        const SizedBox(width: 8),
-        const ExportButton(),
-        const SizedBox(width: 8),
-        const ResetButton(),
-        const SizedBox(width: 16),
-        const DiagramTypeIndicator(),
-        const SizedBox(width: 16),
-        BlocBuilder<DiagramCubit, DiagramState>(
-          builder: (context, state) {
-            if (state.diagramType == DiagramType.postgresql) {
-              return const PostgresCodeButton();
-            }
-            return const SizedBox.shrink();
-          },
+        Expanded(
+          child: Row(
+            children: [
+              const SaveButton(),
+              const SizedBox(width: 8),
+              const ExportButton(),
+              const SizedBox(width: 8),
+              const ResetButton(),
+              const SizedBox(width: 16),
+              const DiagramTypeIndicator(),
+              const SizedBox(width: 16),
+              BlocBuilder<DiagramCubit, DiagramState>(
+                builder: (context, state) {
+                  if (state.diagramType == DiagramType.postgresql) {
+                    return const PostgresCodeButton();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
         ),
-        const Spacer(),
         const DiagramTitle(),
-        const Spacer(),
-        const ShareButton(),
-        const SizedBox(width: 12),
-        BlocBuilder<AuthCubit, AuthState>(
-          builder: (context, state) {
-            if (state is AuthStateAuthenticated) {
-              return const LandingViewButton();
-            }
-            return const SizedBox.shrink();
-          },
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const ShareButton(),
+              const SizedBox(width: 12),
+              BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthStateUnauthenticated) {
+                    return const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [LandingViewButton(), SizedBox(width: 12)],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const AuthButton(isOnLandingView: false),
+            ],
+          ),
         ),
-        const LandingViewButton(),
-        const SizedBox(width: 12),
-        const AuthButton(isOnLandingView: false),
       ],
     ),
   );

@@ -1,3 +1,6 @@
+import 'dart:convert'; // Add this import
+import 'dart:typed_data'; // Add this import
+
 import 'package:client/diagrams/models/diagram_state.dart';
 import 'package:client/diagrams/repositories/diagram_repository.dart';
 import 'package:common/er/diagram.dart';
@@ -181,6 +184,24 @@ class DiagramCubit extends Cubit<DiagramState> {
       LOG.e('Error importing diagram into cubit: $e');
 
       throw Exception('Failed to process imported diagram data: $e');
+    }
+  }
+
+  Future<void> processImportedFile(Uint8List fileBytes) async {
+    try {
+      final String jsonString = utf8.decode(fileBytes);
+      final Map<String, dynamic> diagramMap =
+          jsonDecode(jsonString) as Map<String, dynamic>;
+
+      // Your existing importDiagramFromMap method already handles
+      // state emission and its own error logging/throwing.
+      importDiagramFromMap(diagramMap);
+    } on Exception catch (e) {
+      LOG.e('Error decoding or parsing JSON during file import: $e');
+      // Re-throw a more specific exception or a generic one for the UI to catch
+      throw Exception(
+        'Failed to process imported file data. Invalid format or content.',
+      );
     }
   }
 }

@@ -23,22 +23,25 @@ part '../models/data_types.dart';
 class DiagramCubit extends Cubit<DiagramState> {
   DiagramCubit({required DiagramRepository diagramRepository})
     : _diagramRepository = diagramRepository,
+      _persistedState =
+          const DiagramState.initial(), // Initialize persisted state
       super(const DiagramState.initial()) {
-    unawaited(
-      loadDiagramFromLocalStorage(),
-    ); // Attempt to load on initialization
-    // Listen to state changes to auto-save
+    unawaited(loadDiagramFromLocalStorage());
+    // The stream listener for _saveDiagramToLocalStorage can remain
+    // as it's for local caching of the current working state.
     stream.listen(_saveDiagramToLocalStorage);
   }
 
   final DiagramRepository _diagramRepository;
-  final FlutterSecureStorage _secureStorage =
-      const FlutterSecureStorage(); // Instantiate secure storage
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  DiagramState
+  _persistedState; // Stores the last state known to be on the server or initial
 
   final GlobalKey canvasBoundaryKey = GlobalKey();
+  static const String _localStorageKey = 'current_diagram_state_secure';
 
-  static const String _localStorageKey =
-      'current_diagram_state_secure'; // Changed key slightly for clarity
+  // Getter for the SaveButton to check for unsaved changes
+  bool get hasUnsavedChanges => state != _persistedState;
 
   Set<String>? get allowedDataTypes => switch (state.diagramType) {
     DiagramType.postgresql => _kPostgresDataTypes,
@@ -78,19 +81,21 @@ class DiagramCubit extends Cubit<DiagramState> {
     }
   }
 
-  void loadDiagram(Diagram diagram) => emit(
-    DiagramState(
+  void loadDiagram(Diagram diagram) {
+    final loadedState = DiagramState(
       id: diagram.id,
       name: diagram.name,
       entities: diagram.entities,
       entityPositions: diagram.entityPositions,
       diagramType: diagram.diagramType,
-    ),
-  );
+    );
+    emit(loadedState);
+    _persistedState = state; // Update persisted state to match server
+  }
 
   Future<void> saveDiagram() async {
     final request = SaveDiagramRequest(
-      id: state.id,
+      id: state.id, // Use current state's id
       name: state.name,
       entities: state.entities,
       entityPositions: state.entityPositions,
@@ -103,11 +108,14 @@ class DiagramCubit extends Cubit<DiagramState> {
 
     switch (response) {
       case SaveDiagramResponseSuccess():
-        if (state.isNewDiagram) {
-          emit(state.copyWith(idFn: () => response.id));
-        }
+        // Update current state with new ID if it was a new diagram
+        emit(
+          state.copyWith(idFn: state.isNewDiagram ? () => response.id : null),
+        );
+        _persistedState =
+            state; // Update persisted state to the newly saved state
       case SaveDiagramResponseError():
-        return;
+        LOG.e('Failed to save diagram: ${response.message}');
     }
   }
 
@@ -115,21 +123,23 @@ class DiagramCubit extends Cubit<DiagramState> {
     if (state.name == title) {
       return;
     }
-
     emit(state.copyWith(name: title));
   }
 
   void resetDiagram() {
     emit(const DiagramState.initial());
+    _persistedState = const DiagramState.initial(); // Reset persisted state
     unawaited(_clearDiagramFromLocalStorage());
   }
 
   void addEntity(Entity entity) {
-    final int id = state.entities.length + 1;
-
+    final int id =
+        state.entities.isNotEmpty
+            ? state.entities.map((e) => e.id).reduce((a, b) => a > b ? a : b) +
+                1
+            : 1;
     final Entity newEntity = entity.copyWith(id: id);
     final newPosition = EntityPosition(entityId: id, x: 200, y: 200);
-
     emit(
       state.copyWith(
         entities: [...state.entities, newEntity],
@@ -141,25 +151,28 @@ class DiagramCubit extends Cubit<DiagramState> {
   void updateEntityPosition(int entityId, double dx, double dy) {
     final List<EntityPosition> positions = [...state.entityPositions];
     final int index = positions.indexWhere((pos) => pos.entityId == entityId);
-
-    if (index == -1) {
+    if (index == -1 || (positions[index].x == dx && positions[index].y == dy)) {
       return;
     }
-
     positions[index] = positions[index].copyWith(x: dx, y: dy);
-
     emit(state.copyWith(entityPositions: positions));
   }
 
   void updateEntity(int entityId, Entity updatedEntity) {
+    bool changed = false;
     final List<Entity> updatedEntities =
         state.entities.map((entity) {
           if (entity.id == entityId) {
+            if (entity != updatedEntity) {
+              changed = true;
+            }
             return updatedEntity;
           }
           return entity;
         }).toList();
-
+    if (!changed) {
+      return;
+    }
     emit(state.copyWith(entities: updatedEntities));
   }
 
@@ -187,16 +200,9 @@ class DiagramCubit extends Cubit<DiagramState> {
   void importDiagramFromMap(Map<String, dynamic> diagramMap) {
     try {
       final loadedDiagramState = DiagramState.validatedFromMap(diagramMap);
-
-      // Reset fields to make it a new, local, unsaved diagram
-      // The name from the JSON is preserved.
-      // A new unique ID is generated.
-      // User-specific data (userId) and save/share status are reset.
       emit(loadedDiagramState);
     } catch (e) {
-      // Consider emitting an error state or logging more formally
       LOG.e('Error importing diagram into cubit: $e');
-
       throw Exception('Failed to process imported diagram data: $e');
     }
   }
@@ -219,23 +225,6 @@ class DiagramCubit extends Cubit<DiagramState> {
     }
   }
 
-  Future<void> _saveDiagramToLocalStorage(DiagramState stateToSave) async {
-    try {
-      // Avoid saving the "initial" or completely empty state if not desired
-      // or if it's the result of a reset.
-      if (stateToSave != const DiagramState.initial() &&
-          stateToSave.entities.isNotEmpty) {
-        final String diagramJson = jsonEncode(stateToSave.toMap());
-        await _secureStorage.write(key: _localStorageKey, value: diagramJson);
-      } else {
-        // If it's an initial/reset state, ensure it's cleared from local storage
-        await _secureStorage.delete(key: _localStorageKey);
-      }
-    } on Exception catch (e) {
-      LOG.e('Failed to save diagram to secure storage: $e');
-    }
-  }
-
   Future<void> loadDiagramFromLocalStorage() async {
     try {
       final String? diagramJson = await _secureStorage.read(
@@ -245,14 +234,27 @@ class DiagramCubit extends Cubit<DiagramState> {
         final Map<String, dynamic> diagramMap =
             jsonDecode(diagramJson) as Map<String, dynamic>;
         final loadedState = DiagramState.validatedFromMap(diagramMap);
-        // Ensure the loaded diagram is marked as unsaved if it's not
-        // from the server
         emit(loadedState);
       }
     } on Exception catch (e) {
       LOG.e('Failed to load diagram from secure storage: $e');
-      // Optionally, clear corrupted data
       await _secureStorage.delete(key: _localStorageKey);
+    }
+  }
+
+  Future<void> _saveDiagramToLocalStorage(DiagramState stateToSave) async {
+    try {
+      if (stateToSave != const DiagramState.initial() ||
+          stateToSave != _persistedState) {
+        // Save if not initial or if different from persisted
+        final String diagramJson = jsonEncode(stateToSave.toMap());
+        await _secureStorage.write(key: _localStorageKey, value: diagramJson);
+      } else if (stateToSave == const DiagramState.initial() &&
+          _persistedState == const DiagramState.initial()) {
+        await _secureStorage.delete(key: _localStorageKey);
+      }
+    } on Exception catch (e) {
+      LOG.e('Failed to save diagram to secure storage: $e');
     }
   }
 

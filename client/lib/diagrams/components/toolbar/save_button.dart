@@ -11,21 +11,51 @@ class SaveButton extends StatelessWidget {
   const SaveButton({super.key});
 
   @override
-  Widget build(BuildContext context) => IconButton(
-    icon: const Icon(Icons.save),
-    onPressed: () => unawaited(_handleSavePressed(context)),
-    tooltip: 'Save Diagram',
-  );
+  Widget build(BuildContext context) {
+    final DiagramCubit diagramCubit = context.watch<DiagramCubit>();
+    final bool showIndicator = diagramCubit.hasUnsavedChanges;
+
+    Widget iconWidget = const Icon(Icons.save);
+
+    if (showIndicator) {
+      iconWidget = Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(Icons.save),
+          Positioned(
+            top: -2,
+            right: -2,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.surface,
+                  width: 1.5,
+                ),
+              ),
+              constraints: const BoxConstraints(minWidth: 10, minHeight: 10),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return IconButton(
+      icon: iconWidget,
+      onPressed: () => unawaited(_handleSavePressed(context)),
+      tooltip: 'Save Diagram',
+    );
+  }
 }
 
 Future<void> _handleSavePressed(BuildContext context) async {
   final AuthState authState = context.read<AuthCubit>().state;
 
   if (authState is AuthStateAuthenticated) {
-    // User is logged in, proceed with saving
     await _saveDiagram(context);
   } else {
-    // User is not logged in, show sign in prompt
     await _showSignInPrompt(context);
   }
 }

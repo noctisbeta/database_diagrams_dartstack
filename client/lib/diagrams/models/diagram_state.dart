@@ -2,10 +2,12 @@ import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
 import 'package:common/exceptions/bad_map_shape_exception.dart';
+import 'package:equatable/equatable.dart'; // Make sure to import
 import 'package:meta/meta.dart';
 
 @immutable
-class DiagramState {
+class DiagramState extends Equatable {
+  // Extend Equatable
   const DiagramState({
     required this.name,
     required this.entities,
@@ -73,4 +75,7 @@ class DiagramState {
 
   // Helper to check if this is a new diagram or existing one
   bool get isNewDiagram => id == null;
+
+  @override
+  List<Object?> get props => [id, name, entities, entityPositions, diagramType];
 }

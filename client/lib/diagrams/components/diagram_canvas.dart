@@ -113,43 +113,69 @@ class _DraggableEntity extends StatefulWidget {
 
 class _DraggableEntityState extends State<_DraggableEntity> {
   Offset? dragStartOffset;
+  bool _isDragging = false; // Add a state variable to track dragging
 
   @override
   Widget build(BuildContext context) => Positioned(
     left: widget.position.x,
     top: widget.position.y,
-    child: GestureDetector(
-      onPanStart: (details) {
-        dragStartOffset = details.localPosition;
-      },
-      onPanUpdate: (details) {
-        // Your existing pan handling code
-        final RenderBox? stackBox =
-            context.findAncestorRenderObjectOfType<RenderBox>();
+    child: MouseRegion(
+      // Wrap the GestureDetector with MouseRegion
+      cursor:
+          _isDragging
+              ? SystemMouseCursors
+                  .grabbing // Cursor when dragging
+              : SystemMouseCursors
+                  .grab, // Cursor when hovering (or .grab if preferred)
+      child: GestureDetector(
+        onPanDown: (details) {
+          // Use onPanDown
+          setState(() {
+            _isDragging = true; // Set grabbing to true on mouse down
+          });
+        },
+        onPanStart: (details) {
+          setState(() {
+            _isDragging = true; // Set dragging to true
+          });
+          dragStartOffset = details.localPosition;
+        },
+        onPanUpdate: (details) {
+          final RenderBox? stackBox =
+              context.findAncestorRenderObjectOfType<RenderBox>();
 
-        if (stackBox != null && dragStartOffset != null) {
-          final Offset localPosition = stackBox.globalToLocal(
-            details.globalPosition,
-          );
+          if (stackBox != null && dragStartOffset != null) {
+            final Offset localPosition = stackBox.globalToLocal(
+              details.globalPosition,
+            );
 
-          // Subtract the initial tap offset to maintain grab point
-          widget.onMoved(
-            widget.entity.id,
-            Offset(
-              localPosition.dx - dragStartOffset!.dx,
-              localPosition.dy - dragStartOffset!.dy,
-            ),
-          );
-        }
-      },
-      onPanEnd: (_) {
-        dragStartOffset = null;
-      },
-      onSecondaryTapUp: (details) {
-        // Show entity-specific context menu
-        _showEntityContextMenu(context, details.globalPosition);
-      },
-      child: EntityCard(entity: widget.entity),
+            widget.onMoved(
+              widget.entity.id,
+              Offset(
+                localPosition.dx - dragStartOffset!.dx,
+                localPosition.dy - dragStartOffset!.dy,
+              ),
+            );
+          }
+        },
+        onPanEnd: (_) {
+          setState(() {
+            _isDragging = false; // Set dragging to false
+          });
+          dragStartOffset = null;
+        },
+        onPanCancel: () {
+          // Also handle pan cancel
+          setState(() {
+            _isDragging = false;
+          });
+          dragStartOffset = null;
+        },
+        onSecondaryTapUp: (details) {
+          _showEntityContextMenu(context, details.globalPosition);
+        },
+        child: EntityCard(entity: widget.entity),
+      ),
     ),
   );
 

@@ -1,10 +1,16 @@
+import 'dart:async';
+
+import 'package:client/diagrams/components/add_entity_dialog.dart';
+import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EntityCard extends StatelessWidget {
-  const EntityCard({required this.entity, super.key});
+  const EntityCard({required this.entity, required this.editable, super.key});
 
   final Entity entity;
+  final bool editable;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -20,10 +26,44 @@ class EntityCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             color: Theme.of(context).colorScheme.primaryContainer,
-            child: Text(
-              entity.name,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    entity.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                if (editable)
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined),
+                    iconSize: 18,
+                    color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                    tooltip: 'Edit Entity',
+                    onPressed: () {
+                      unawaited(
+                        showDialog(
+                          context: context,
+                          builder:
+                              (dialogContext) => BlocProvider.value(
+                                value: context.read<DiagramCubit>(),
+                                child: AddEntityDialog(entity: entity),
+                              ),
+                        ),
+                      );
+                    },
+                    splashRadius: 20,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(), // To make it compact
+                  ),
+              ],
             ),
           ),
           ColoredBox(
@@ -51,6 +91,7 @@ class EntityCard extends StatelessWidget {
                               child: Text(
                                 attribute.name,
                                 overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
                           ],

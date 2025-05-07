@@ -174,7 +174,7 @@ class _DraggableEntityState extends State<_DraggableEntity> {
         onSecondaryTapUp: (details) {
           _showEntityContextMenu(context, details.globalPosition);
         },
-        child: EntityCard(entity: widget.entity),
+        child: EntityCard(entity: widget.entity, editable: true),
       ),
     ),
   );

@@ -206,6 +206,7 @@ class _AddEntityDialogContentState extends State<AddEntityDialogContent> {
                 height: 500,
                 child: SingleChildScrollView(
                   child: EntityCard(
+                    editable: false,
                     entity: Entity(
                       id: -1,
                       name:

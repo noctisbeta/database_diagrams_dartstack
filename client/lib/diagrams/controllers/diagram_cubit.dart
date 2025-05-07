@@ -1,5 +1,6 @@
-import 'dart:convert'; // Add this import
-import 'dart:typed_data'; // Add this import
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:client/diagrams/models/diagram_state.dart';
 import 'package:client/diagrams/repositories/diagram_repository.dart';
@@ -15,17 +16,29 @@ import 'package:common/er/entity_position.dart';
 import 'package:common/logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 part '../models/data_types.dart';
 
 class DiagramCubit extends Cubit<DiagramState> {
   DiagramCubit({required DiagramRepository diagramRepository})
     : _diagramRepository = diagramRepository,
-      super(const DiagramState.initial());
+      super(const DiagramState.initial()) {
+    unawaited(
+      loadDiagramFromLocalStorage(),
+    ); // Attempt to load on initialization
+    // Listen to state changes to auto-save
+    stream.listen(_saveDiagramToLocalStorage);
+  }
 
   final DiagramRepository _diagramRepository;
+  final FlutterSecureStorage _secureStorage =
+      const FlutterSecureStorage(); // Instantiate secure storage
 
   final GlobalKey canvasBoundaryKey = GlobalKey();
+
+  static const String _localStorageKey =
+      'current_diagram_state_secure'; // Changed key slightly for clarity
 
   Set<String>? get allowedDataTypes => switch (state.diagramType) {
     DiagramType.postgresql => _kPostgresDataTypes,
@@ -108,6 +121,7 @@ class DiagramCubit extends Cubit<DiagramState> {
 
   void resetDiagram() {
     emit(const DiagramState.initial());
+    unawaited(_clearDiagramFromLocalStorage());
   }
 
   void addEntity(Entity entity) {
@@ -202,6 +216,51 @@ class DiagramCubit extends Cubit<DiagramState> {
       throw Exception(
         'Failed to process imported file data. Invalid format or content.',
       );
+    }
+  }
+
+  Future<void> _saveDiagramToLocalStorage(DiagramState stateToSave) async {
+    try {
+      // Avoid saving the "initial" or completely empty state if not desired
+      // or if it's the result of a reset.
+      if (stateToSave != const DiagramState.initial() &&
+          stateToSave.entities.isNotEmpty) {
+        final String diagramJson = jsonEncode(stateToSave.toMap());
+        await _secureStorage.write(key: _localStorageKey, value: diagramJson);
+      } else {
+        // If it's an initial/reset state, ensure it's cleared from local storage
+        await _secureStorage.delete(key: _localStorageKey);
+      }
+    } on Exception catch (e) {
+      LOG.e('Failed to save diagram to secure storage: $e');
+    }
+  }
+
+  Future<void> loadDiagramFromLocalStorage() async {
+    try {
+      final String? diagramJson = await _secureStorage.read(
+        key: _localStorageKey,
+      );
+      if (diagramJson != null) {
+        final Map<String, dynamic> diagramMap =
+            jsonDecode(diagramJson) as Map<String, dynamic>;
+        final loadedState = DiagramState.validatedFromMap(diagramMap);
+        // Ensure the loaded diagram is marked as unsaved if it's not
+        // from the server
+        emit(loadedState);
+      }
+    } on Exception catch (e) {
+      LOG.e('Failed to load diagram from secure storage: $e');
+      // Optionally, clear corrupted data
+      await _secureStorage.delete(key: _localStorageKey);
+    }
+  }
+
+  Future<void> _clearDiagramFromLocalStorage() async {
+    try {
+      await _secureStorage.delete(key: _localStorageKey);
+    } on Exception catch (e) {
+      LOG.e('Failed to clear diagram from secure storage: $e');
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:common/er/diagrams/diagram_type.dart';
 import 'package:common/er/entity.dart';
 import 'package:common/er/entity_position.dart';
+import 'package:common/exceptions/bad_map_shape_exception.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -19,6 +20,28 @@ class DiagramState {
       entities = const [],
       entityPositions = const [],
       diagramType = DiagramType.custom;
+
+  factory DiagramState.validatedFromMap(Map<String, dynamic> map) =>
+      switch (map) {
+        {
+          'id': final int? id,
+          'name': final String name,
+          'entities': final List<dynamic> entities,
+          'entity_positions': final List<dynamic> entityPositions,
+          'diagram_type': final String diagramType,
+        } =>
+          DiagramState(
+            id: id,
+            name: name,
+            entities: entities.map((e) => Entity.validatedFromMap(e)).toList(),
+            entityPositions:
+                entityPositions
+                    .map((e) => EntityPosition.validatedFromMap(e))
+                    .toList(),
+            diagramType: DiagramType.fromString(diagramType),
+          ),
+        _ => throw const BadMapShapeException('Bad map shape for DiagramState'),
+      };
 
   final int? id;
   final String name;
@@ -39,6 +62,14 @@ class DiagramState {
     entityPositions: entityPositions ?? this.entityPositions,
     diagramType: diagramType ?? this.diagramType,
   );
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'entities': entities.map((e) => e.toMap()).toList(),
+    'entity_positions': entityPositions.map((e) => e.toMap()).toList(),
+    'diagram_type': diagramType.name,
+  };
 
   // Helper to check if this is a new diagram or existing one
   bool get isNewDiagram => id == null;

@@ -8,10 +8,15 @@ import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/diagram_provider_wrapper.dart';
 import 'package:client/dio_wrapper/jwt_interceptor.dart';
 import 'package:client/routing/router_wrapper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 void main() {
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
   runApp(const ProviderWrapper());
 }
 

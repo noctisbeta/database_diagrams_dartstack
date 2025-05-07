@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/diagrams/controllers/diagram_importer.dart';
 import 'package:client/landing/components/action_card.dart';
 import 'package:client/landing/components/create_diagram_dialog.dart';
 import 'package:client/routing/router_path.dart';
@@ -56,10 +57,12 @@ class ActionSection extends StatelessWidget {
       Expanded(
         child: ActionCard(
           title: 'Import',
-          description: 'Import from SQL or JSON',
+          description: 'Import from JSON',
           icon: Icons.upload_file,
           iconColor: Colors.purple,
-          onTap: () {},
+          onTap: () async {
+            await DiagramImporter.importJson(context);
+          },
         ),
       ),
     ],

@@ -174,27 +174,18 @@ final class Exporter {
       // Access the state data correctly
       final DiagramState diagramState = diagramCubit.state;
 
-      // Create a JSON representation with the data we have
-      final Map<String, dynamic> diagramJson = {
-        'entities': diagramState.entities.map((e) => e.toMap()).toList(),
-        'entityPositions':
-            diagramState.entityPositions.map((e) => e.toMap()).toList(),
-        'metadata': {
-          'name': 'Untitled Diagram',
-          'exportedAt': DateTime.now().toIso8601String(),
-        },
-      };
+      final Map<String, dynamic> diagramMap = diagramState.toMap();
 
       // Pretty print with indentation for better readability
       final String prettyJson = const JsonEncoder.withIndent(
         '  ',
-      ).convert(diagramJson);
+      ).convert(diagramMap);
 
       // Convert to bytes for saving
       final Uint8List bytes = Uint8List.fromList(utf8.encode(prettyJson));
 
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      const String diagramName = 'untitled';
+      final String diagramName = diagramState.name;
       final String fileName =
           '${diagramName.replaceAll(' ', '_')}_$timestamp.json';
 

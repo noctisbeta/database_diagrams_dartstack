@@ -166,4 +166,21 @@ class DiagramCubit extends Cubit<DiagramState> {
 
     await getDiagrams();
   }
+
+  void importDiagramFromMap(Map<String, dynamic> diagramMap) {
+    try {
+      final loadedDiagramState = DiagramState.validatedFromMap(diagramMap);
+
+      // Reset fields to make it a new, local, unsaved diagram
+      // The name from the JSON is preserved.
+      // A new unique ID is generated.
+      // User-specific data (userId) and save/share status are reset.
+      emit(loadedDiagramState);
+    } catch (e) {
+      // Consider emitting an error state or logging more formally
+      LOG.e('Error importing diagram into cubit: $e');
+
+      throw Exception('Failed to process imported diagram data: $e');
+    }
+  }
 }

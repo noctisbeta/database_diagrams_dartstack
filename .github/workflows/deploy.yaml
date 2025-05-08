@@ -26,45 +26,52 @@ jobs:
         run: flutter build web --release
         working-directory: ./client
 
-      - name: List files after build # <-- ADD THIS DEBUGGING STEP
+      - name: List files after build
         run: |
           echo "Listing workspace root:"
           ls -R ${{ github.workspace }}
           echo "Listing client directory:"
           ls -R ${{ github.workspace }}/client
+          echo "Listing client/build/web directory:"
+          ls -R ${{ github.workspace }}/client/build/web || echo "client/build/web not found"
         shell: bash
 
-      # --- Server and Common Files Deployment ---
-      - name: Deploy files to VPS
+      - name: Copy Flutter web files to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          source: "${{ github.workspace }}/client/build/web/" # Source on runner
+          target: "${{ secrets.VPS_TARGET_PATH }}" # Target on VPS
+          strip_components: 3 # To avoid creating client/build/web inside the target
+
+      - name: Copy server files to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          source: | # Multi-line source
+            ${{ github.workspace }}/compose.yaml
+            ${{ github.workspace }}/server/
+            ${{ github.workspace }}/db/schema/
+          target: "${{ secrets.VPS_SERVER_ROOT_PATH }}" # Target base directory on VPS
+
+      - name: Execute deployment commands on VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
-            echo "--- Starting Deployment ---"
+            echo "--- Starting Remote Deployment Operations ---"
 
-            # Deploy Flutter Web static files
-            echo "Deploying Flutter web files..."
-            mkdir -p ${{ secrets.VPS_TARGET_PATH }}
-            # Prepend ${{ github.workspace }} to the source path
-            rsync -avz --delete ${{ github.workspace }}/client/build/web/ ${{ secrets.VPS_TARGET_PATH }}
-            echo "Flutter web files deployed."
-
-            # Create server root directory
-            echo "Ensuring server root directory exists: ${{ secrets.VPS_SERVER_ROOT_PATH }}"
-            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}
+            # Create necessary subdirectories if scp didn't create them (scp usually does for target)
+            echo "Ensuring server subdirectories exist: ${{ secrets.VPS_SERVER_ROOT_PATH }}"
             mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/server
             mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db
-            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema # Ensure this is created before rsyncing into it
-
-            # Deploy server files
-            echo "Deploying server application files..."
-            # Prepend ${{ github.workspace }} to the source paths
-            rsync -avz --delete ${{ github.workspace }}/compose.yaml ${{ secrets.VPS_SERVER_ROOT_PATH }}/compose.yaml
-            rsync -avz --delete ${{ github.workspace }}/server/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/server/
-            rsync -avz --delete ${{ github.workspace }}/db/schema/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema/
-            echo "Server application files deployed."
+            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema
 
             # Create .env files from secrets
             echo "Creating db/.env file on VPS..."
@@ -81,7 +88,7 @@ jobs:
             docker compose -f compose.yaml down || echo "No services to bring down or already down."
 
             echo "Building server Docker image (if changed)..."
-            docker compose -f compose.yaml build server
+            docker compose -f compose.yaml build server # Assumes Dockerfile is in server/ relative to compose.yaml
 
             echo "Starting Docker Compose services..."
             docker compose -f compose.yaml up -d --remove-orphans
@@ -89,8 +96,8 @@ jobs:
             echo "Cleaning up unused Docker images..."
             docker image prune -f
 
-            # Reload Nginx for web app (if Nginx serves the web app directly)
+            # Reload Nginx for web app
             echo "Reloading Nginx for web app..."
             sudo systemctl reload nginx
 
-            echo "--- Deployment Complete ---"
+            echo "--- Remote Deployment Complete ---"

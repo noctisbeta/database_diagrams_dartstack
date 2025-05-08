@@ -38,9 +38,9 @@ jobs:
 
             # Deploy Flutter Web static files
             echo "Deploying Flutter web files..."
-            # VPS_TARGET_PATH is for web files, e.g., /var/www/your_flutter_app
             mkdir -p ${{ secrets.VPS_TARGET_PATH }}
-            rsync -avz --delete ./client/build/web/ ${{ secrets.VPS_TARGET_PATH }}
+            # Prepend ${{ github.workspace }} to the source path
+            rsync -avz --delete ${{ github.workspace }}/client/build/web/ ${{ secrets.VPS_TARGET_PATH }}
             echo "Flutter web files deployed."
 
             # Create server root directory
@@ -48,13 +48,14 @@ jobs:
             mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}
             mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/server
             mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db
+            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema # Ensure this is created before rsyncing into it
 
             # Deploy server files
             echo "Deploying server application files..."
-            rsync -avz --delete ./compose.yaml ${{ secrets.VPS_SERVER_ROOT_PATH }}/compose.yaml
-            rsync -avz --delete ./server/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/server/
-            rsync -avz --delete ./db/schema/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema/
-            # Note: We are not rsyncing .env files directly for security. They will be created from secrets.
+            # Prepend ${{ github.workspace }} to the source paths
+            rsync -avz --delete ${{ github.workspace }}/compose.yaml ${{ secrets.VPS_SERVER_ROOT_PATH }}/compose.yaml
+            rsync -avz --delete ${{ github.workspace }}/server/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/server/
+            rsync -avz --delete ${{ github.workspace }}/db/schema/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema/
             echo "Server application files deployed."
 
             # Create .env files from secrets

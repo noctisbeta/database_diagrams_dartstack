@@ -52,10 +52,10 @@ jobs:
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           source: | # Multi-line source
-            ${{ github.workspace }}/compose.yaml
-            ${{ github.workspace }}/server/
-            ${{ github.workspace }}/db/schema/
-          target: "${{ secrets.VPS_SERVER_ROOT_PATH }}" # Target base directory on VPS
+            ${{ github.workspace }}/backend/compose.yaml  # Adjusted path
+            ${{ github.workspace }}/backend/server/      # Adjusted path
+            ${{ github.workspace }}/backend/db/schema/   # Adjusted path
+          target: "${{ secrets.VPS_SERVER_ROOT_PATH }}"
           debug: true
 
       - name: Execute deployment commands on VPS

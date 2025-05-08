@@ -71,7 +71,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "${{ github.workspace }}/db/" # Source is a directory
+          source: "${{ github.workspace }}/db/"
           target: "${{ secrets.VPS_SERVER_ROOT_PATH }}" # Target is the parent directory on VPS
           debug: true
 

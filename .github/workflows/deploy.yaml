@@ -42,9 +42,9 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "." # Source relative to working-directory
+          source: "client/build/web/"
+          strip_components: 3
           target: "${{ secrets.VPS_TARGET_PATH }}"
-          working_directory: "${{ github.workspace }}/client/build/web" # Set working directory
           debug: true
 
       - name: Copy compose.yaml to VPS
@@ -53,9 +53,8 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "compose.yaml" # Source relative to working-directory
+          source: "compose.yaml"
           target: "${{ secrets.VPS_SERVER_ROOT_PATH }}"
-          working_directory: ${{ github.workspace }} # Set working directory
           debug: true
 
       - name: Copy server directory to VPS
@@ -64,9 +63,8 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "server/" # Source relative to working-directory
+          source: "server/"
           target: "${{ secrets.VPS_SERVER_ROOT_PATH }}"
-          working_directory: ${{ github.workspace }} # Set working directory
           debug: true
 
       - name: Copy db directory to VPS
@@ -75,9 +73,8 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          source: "db/" # Source relative to working-directory
+          source: "db/"
           target: "${{ secrets.VPS_SERVER_ROOT_PATH }}"
-          working_directory: ${{ github.workspace }} # Set working directory
           debug: true
 
       - name: Execute deployment commands on VPS

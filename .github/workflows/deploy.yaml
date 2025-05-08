@@ -56,6 +56,7 @@ jobs:
             ${{ github.workspace }}/server/
             ${{ github.workspace }}/db/schema/
           target: "${{ secrets.VPS_SERVER_ROOT_PATH }}" # Target base directory on VPS
+          debug: true
 
       - name: Execute deployment commands on VPS
         uses: appleboy/ssh-action@master

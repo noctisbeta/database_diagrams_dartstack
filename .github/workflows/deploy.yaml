@@ -26,6 +26,14 @@ jobs:
         run: flutter build web --release
         working-directory: ./client
 
+      - name: List files after build # <-- ADD THIS DEBUGGING STEP
+        run: |
+          echo "Listing workspace root:"
+          ls -R ${{ github.workspace }}
+          echo "Listing client directory:"
+          ls -R ${{ github.workspace }}/client
+        shell: bash
+
       # --- Server and Common Files Deployment ---
       - name: Deploy files to VPS
         uses: appleboy/ssh-action@master

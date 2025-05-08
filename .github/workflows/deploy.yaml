@@ -1,0 +1,87 @@
+name: Deploy Flutter Web and Server to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- Flutter Web Deployment ---
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Get Flutter dependencies for web
+        run: flutter pub get
+        working-directory: ./client
+
+      - name: Build Flutter web
+        run: flutter build web --release
+        working-directory: ./client
+
+      # --- Server and Common Files Deployment ---
+      - name: Deploy files to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          script: |
+            echo "--- Starting Deployment ---"
+
+            # Deploy Flutter Web static files
+            echo "Deploying Flutter web files..."
+            # VPS_TARGET_PATH is for web files, e.g., /var/www/your_flutter_app
+            mkdir -p ${{ secrets.VPS_TARGET_PATH }}
+            rsync -avz --delete ./client/build/web/ ${{ secrets.VPS_TARGET_PATH }}
+            echo "Flutter web files deployed."
+
+            # Create server root directory
+            echo "Ensuring server root directory exists: ${{ secrets.VPS_SERVER_ROOT_PATH }}"
+            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}
+            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/server
+            mkdir -p ${{ secrets.VPS_SERVER_ROOT_PATH }}/db
+
+            # Deploy server files
+            echo "Deploying server application files..."
+            rsync -avz --delete ./compose.yaml ${{ secrets.VPS_SERVER_ROOT_PATH }}/compose.yaml
+            rsync -avz --delete ./server/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/server/
+            rsync -avz --delete ./db/schema/ ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/schema/
+            # Note: We are not rsyncing .env files directly for security. They will be created from secrets.
+            echo "Server application files deployed."
+
+            # Create .env files from secrets
+            echo "Creating db/.env file on VPS..."
+            echo "${{ secrets.DB_ENV_CONTENT }}" > ${{ secrets.VPS_SERVER_ROOT_PATH }}/db/.env
+            echo "Creating server/.env file on VPS..."
+            echo "${{ secrets.SERVER_ENV_CONTENT }}" > ${{ secrets.VPS_SERVER_ROOT_PATH }}/server/.env
+            echo ".env files created."
+
+            # Docker Compose operations
+            echo "Navigating to server root: ${{ secrets.VPS_SERVER_ROOT_PATH }}"
+            cd ${{ secrets.VPS_SERVER_ROOT_PATH }}
+
+            echo "Stopping existing Docker Compose services (if any)..."
+            docker compose -f compose.yaml down || echo "No services to bring down or already down."
+
+            echo "Building server Docker image (if changed)..."
+            docker compose -f compose.yaml build server
+
+            echo "Starting Docker Compose services..."
+            docker compose -f compose.yaml up -d --remove-orphans
+
+            echo "Cleaning up unused Docker images..."
+            docker image prune -f
+
+            # Reload Nginx for web app (if Nginx serves the web app directly)
+            echo "Reloading Nginx for web app..."
+            sudo systemctl reload nginx
+
+            echo "--- Deployment Complete ---"

@@ -136,38 +136,57 @@ class _TabletDiagramsListState extends State<TabletDiagramsList> {
                 return const Center(child: Text('No diagrams found'));
               }
 
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final List<Diagram> diagrams = snapshot.data!;
-                  final Diagram diagram = diagrams[index];
-                  return ListTile(
-                    title: Text(diagram.name),
-                    subtitle: Text(
-                      'Last modified: ${_formatDate(diagram.updatedAt)}',
+              return Material(
+                borderRadius: BorderRadius.circular(8),
+                clipBehavior: Clip.hardEdge,
+                type: MaterialType.transparency,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(_formatDate(diagram.createdAt)),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          color: Theme.of(context).colorScheme.error,
-                          tooltip: 'Delete diagram',
-                          onPressed:
-                              () => unawaited(
-                                _showDeleteConfirmation(context, diagram),
-                              ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final List<Diagram> diagrams = snapshot.data!;
+                      final Diagram diagram = diagrams[index];
+                      return ListTile(
+                        tileColor:
+                            index.isEven
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : Theme.of(context).colorScheme.surface,
+                        title: Text(diagram.name),
+                        subtitle: Text(
+                          'Last modified: ${_formatDate(diagram.updatedAt)}',
                         ),
-                      ],
-                    ),
-                    onTap: () {
-                      context.read<DiagramCubit>().loadDiagram(diagram);
-                      context.goNamed(RouterPath.editor.name, extra: diagram);
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_formatDate(diagram.createdAt)),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline),
+                              color: Theme.of(context).colorScheme.error,
+                              tooltip: 'Delete diagram',
+                              onPressed:
+                                  () => unawaited(
+                                    _showDeleteConfirmation(context, diagram),
+                                  ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          context.read<DiagramCubit>().loadDiagram(diagram);
+                          context.goNamed(
+                            RouterPath.editor.name,
+                            extra: diagram,
+                          );
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                ),
               );
             },
           ),

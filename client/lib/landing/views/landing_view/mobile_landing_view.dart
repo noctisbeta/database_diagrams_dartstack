@@ -41,9 +41,9 @@ class MobileLandingView extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 16),
               const ActionSection(),
-              const SizedBox(height: 40),
+              const SizedBox(height: 16),
               BlocBuilder<AuthCubit, AuthState>(
                 builder:
                     (context, state) => switch (state) {

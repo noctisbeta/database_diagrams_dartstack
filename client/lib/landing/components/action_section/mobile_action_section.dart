@@ -9,6 +9,7 @@ import 'package:common/er/diagram.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class MobileActionSection extends StatefulWidget {
   const MobileActionSection({super.key});
@@ -90,22 +91,43 @@ class _MobileActionSectionState extends State<MobileActionSection> {
   ];
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 220,
-    child: PageView.builder(
-      controller: _pageController,
-      itemCount: cards.length,
-      clipBehavior: Clip.none,
-      itemBuilder: (context, index) {
-        double scale = 1;
-        if (index == _currentPage) {
-          scale = 1;
-        } else if (index == _currentPage - 1 || index == _currentPage + 1) {
-          scale = 0.8;
-        }
+  Widget build(BuildContext context) => Column(
+    children: [
+      SizedBox(
+        height: 220,
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: cards.length,
+          clipBehavior: Clip.none,
+          itemBuilder: (context, index) {
+            double scale = 0.8;
+            if (index == _currentPage) {
+              scale = 1.0;
+            }
+            const Duration animationDuration = Duration(milliseconds: 150);
 
-        return Transform.scale(scale: scale, child: cards[index]);
-      },
-    ),
+            return AnimatedContainer(
+              duration: animationDuration,
+              transform: Matrix4.identity()..scale(scale),
+              transformAlignment: Alignment.center,
+              child: cards[index],
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 8),
+      SmoothPageIndicator(
+        controller: _pageController,
+        count: cards.length,
+        effect: WormEffect(
+          dotHeight: 8,
+          dotWidth: 8,
+          activeDotColor: Theme.of(context).colorScheme.primary,
+          dotColor: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.3),
+        ),
+      ),
+    ],
   );
 }

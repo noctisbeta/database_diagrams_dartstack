@@ -74,6 +74,7 @@ class _EditorViewState extends State<EditorView> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Theme.of(context).colorScheme.surfaceDim,
     floatingActionButton: FloatingActionButton(
       onPressed: () {
         _showAddEntityDialog(context);
@@ -85,7 +86,6 @@ class _EditorViewState extends State<EditorView> {
     body: Column(
       children: [
         const Toolbar(),
-
         BlocBuilder<DiagramCubit, DiagramState>(
           builder: (context, state) {
             // Show tutorial overlay when there are no entities

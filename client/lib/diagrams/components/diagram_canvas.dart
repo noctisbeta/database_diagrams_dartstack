@@ -26,39 +26,46 @@ class DiagramCanvas extends StatefulWidget {
 }
 
 class _DiagramCanvasState extends State<DiagramCanvas> {
+  static const double _canvasWidth = 2000;
+  static const double _canvasHeight = 2000;
+
   @override
   Widget build(BuildContext context) => RepaintBoundary(
     key: context.read<DiagramCubit>().canvasBoundaryKey,
     child: InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(100),
-      minScale: 0.5,
+      boundaryMargin: const EdgeInsets.all(double.infinity),
+      minScale: 0.1,
       maxScale: 2,
+      constrained: false,
       child: GestureDetector(
         onSecondaryTapUp: (details) {
           final Offset adjustedOffset = details.globalPosition;
           _showCanvasContextMenu(context, adjustedOffset);
         },
-        child: Stack(
-          children: [
-            // Relationship lines layer
-            CustomPaint(
-              size: const Size(2000, 2000),
-              painter: RelationshipPainter(
-                entities: widget.entities,
-                entityPositions: widget.entityPositions,
-              ),
-            ),
-            // Existing entities
-            for (final entity in widget.entities)
-              _DraggableEntity(
-                key: ValueKey(entity.id),
-                entity: entity,
-                position: widget.entityPositions.firstWhere(
-                  (pos) => pos.entityId == entity.id,
+        child: Container(
+          decoration: BoxDecoration(border: Border.all(), color: Colors.white),
+          width: _canvasWidth,
+          height: _canvasHeight,
+          child: Stack(
+            children: [
+              CustomPaint(
+                size: const Size(_canvasWidth, _canvasHeight),
+                painter: RelationshipPainter(
+                  entities: widget.entities,
+                  entityPositions: widget.entityPositions,
                 ),
-                onMoved: widget.onEntityMoved,
               ),
-          ],
+              for (final entity in widget.entities)
+                _DraggableEntity(
+                  key: ValueKey(entity.id),
+                  entity: entity,
+                  position: widget.entityPositions.firstWhere(
+                    (pos) => pos.entityId == entity.id,
+                  ),
+                  onMoved: widget.onEntityMoved,
+                ),
+            ],
+          ),
         ),
       ),
     ),

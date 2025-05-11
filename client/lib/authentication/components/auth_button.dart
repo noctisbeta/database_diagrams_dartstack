@@ -5,6 +5,7 @@ import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
+import 'package:client/landing/components/create_diagram_dialog.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:common/auth/user.dart';
 import 'package:flutter/material.dart';
@@ -111,10 +112,12 @@ class ProfileMenu extends StatelessWidget {
               builder:
                   (dialogContext) => BlocProvider.value(
                     value: context.read<DiagramCubit>(),
-                    child: DiagramsListDialog(isOnLandingView: isOnLandingView),
+                    child: const DiagramsListDialog(),
                   ),
             ),
           );
+        case 'new_diagram':
+          await CreateDiagramDialog.showCreateDiagramDialog(context);
         case 'profile':
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Profile page not implemented yet.')),
@@ -134,6 +137,11 @@ class ProfileMenu extends StatelessWidget {
             value: 'diagrams',
             icon: Icons.dashboard,
             text: 'My Diagrams',
+          ),
+          const ProfileMenuItem(
+            value: 'new_diagram',
+            icon: Icons.add_box,
+            text: 'New Diagram',
           ),
           const ProfileMenuItem(
             value: 'profile',

@@ -9,9 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class DiagramsListDialog extends StatefulWidget {
-  const DiagramsListDialog({required this.isOnLandingView, super.key});
-
-  final bool isOnLandingView;
+  const DiagramsListDialog({super.key});
 
   @override
   State<DiagramsListDialog> createState() => _DiagramsListDialogState();
@@ -151,7 +149,10 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
 
                         Navigator.of(context).pop();
 
-                        if (widget.isOnLandingView) {
+                        final String? currentLocation =
+                            GoRouter.of(context).state.name;
+
+                        if (currentLocation == RouterPath.landing.name) {
                           context.goNamed(
                             RouterPath.editor.name,
                             extra: diagram,

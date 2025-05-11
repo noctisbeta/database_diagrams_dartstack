@@ -1,6 +1,6 @@
 import 'package:client/diagrams/views/editor_view.dart';
 import 'package:client/diagrams/views/shared_diagram_view.dart';
-import 'package:client/landing/views/landing_view.dart';
+import 'package:client/landing/views/landing_view/landing_view.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

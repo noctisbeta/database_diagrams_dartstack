@@ -34,8 +34,7 @@ class DiagramCubit extends Cubit<DiagramState> {
 
   final DiagramRepository _diagramRepository;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  DiagramState
-  _persistedState; // Stores the last state known to be on the server or initial
+  DiagramState _persistedState;
 
   final GlobalKey canvasBoundaryKey = GlobalKey();
   static const String _localStorageKey = 'current_diagram_state_secure';
@@ -235,23 +234,35 @@ class DiagramCubit extends Cubit<DiagramState> {
             jsonDecode(diagramJson) as Map<String, dynamic>;
         final loadedState = DiagramState.validatedFromMap(diagramMap);
         emit(loadedState);
+        _persistedState = loadedState;
+      } else {
+        _persistedState = state;
       }
     } on Exception catch (e) {
       LOG.e('Failed to load diagram from secure storage: $e');
+
+      emit(const DiagramState.initial());
+      _persistedState = const DiagramState.initial();
       await _secureStorage.delete(key: _localStorageKey);
     }
   }
 
   Future<void> _saveDiagramToLocalStorage(DiagramState stateToSave) async {
     try {
-      if (stateToSave != const DiagramState.initial() ||
-          stateToSave != _persistedState) {
-        // Save if not initial or if different from persisted
+      // If the state to save is the initial state,
+      // it implies we either reset the diagram or started fresh.
+      // In this case, we should clear any existing diagram from local storage.
+      if (stateToSave == const DiagramState.initial()) {
+        // Only delete if it actually exists to avoid unnecessary operations
+        final String? existingData = await _secureStorage.read(
+          key: _localStorageKey,
+        );
+        if (existingData != null) {
+          await _secureStorage.delete(key: _localStorageKey);
+        }
+      } else {
         final String diagramJson = jsonEncode(stateToSave.toMap());
         await _secureStorage.write(key: _localStorageKey, value: diagramJson);
-      } else if (stateToSave == const DiagramState.initial() &&
-          _persistedState == const DiagramState.initial()) {
-        await _secureStorage.delete(key: _localStorageKey);
       }
     } on Exception catch (e) {
       LOG.e('Failed to save diagram to secure storage: $e');

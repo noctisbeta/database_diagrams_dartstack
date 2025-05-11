@@ -1,14 +1,14 @@
 import 'package:client/authentication/components/auth_button.dart';
-import 'package:client/authentication/controllers/auth_bloc.dart'; // Import the AuthCubit
+import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/landing/components/action_section.dart';
-import 'package:client/landing/components/diagrams_list.dart';
+import 'package:client/landing/components/action_section/action_section.dart';
+import 'package:client/landing/components/diagrams_list/diagrams_list.dart';
 import 'package:client/landing/components/sign_in_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LandingView extends StatelessWidget {
-  const LandingView({super.key});
+class DesktopLandingView extends StatelessWidget {
+  const DesktopLandingView({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(

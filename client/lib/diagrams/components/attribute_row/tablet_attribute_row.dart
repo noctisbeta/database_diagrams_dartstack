@@ -7,8 +7,8 @@ import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AttributeRow extends StatefulWidget {
-  const AttributeRow({
+class TabletAttributeRow extends StatefulWidget {
+  const TabletAttributeRow({
     required this.attributeId,
     required this.availableEntities,
     super.key,
@@ -18,10 +18,10 @@ class AttributeRow extends StatefulWidget {
   final int attributeId;
 
   @override
-  State<AttributeRow> createState() => _AttributeRowState();
+  State<TabletAttributeRow> createState() => _TabletAttributeRowState();
 }
 
-class _AttributeRowState extends State<AttributeRow> {
+class _TabletAttributeRowState extends State<TabletAttributeRow> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
   final TextEditingController referenceNameController = TextEditingController();

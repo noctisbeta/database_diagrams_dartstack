@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:client/diagrams/components/add_entity_dialog.dart';
+import 'package:client/diagrams/components/add_entity_dialog/add_entity_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';

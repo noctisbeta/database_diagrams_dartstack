@@ -1,4 +1,7 @@
+import 'package:client/authentication/controllers/auth_bloc.dart';
+import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/components/diagram_type_indicator.dart';
+import 'package:client/diagrams/components/toolbar/components/landing_view_button.dart';
 import 'package:client/diagrams/components/toolbar/components/postgres_code_button.dart';
 import 'package:client/diagrams/components/toolbar/components/reset_button.dart';
 import 'package:client/diagrams/components/toolbar/components/save_button.dart';
@@ -57,7 +60,18 @@ class AppDrawer extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 12),
-
+        BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) {
+            if (state is AuthStateUnauthenticated) {
+              return const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [LandingViewButton(), SizedBox(width: 12)],
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        const SizedBox(width: 12),
         ListTile(
           leading: const Icon(Icons.home_outlined),
           title: const Text('Landing Page'),

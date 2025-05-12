@@ -1,4 +1,4 @@
-import 'package:client/diagrams/components/attribute_row.dart';
+import 'package:client/diagrams/components/attribute_row/attribute_row.dart';
 import 'package:client/diagrams/components/entity_card.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/controllers/entity_editor_cubit.dart';
@@ -8,8 +8,8 @@ import 'package:common/er/entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddEntityDialog extends StatelessWidget {
-  const AddEntityDialog({this.entity, super.key});
+class DesktopAddEntityDialog extends StatelessWidget {
+  const DesktopAddEntityDialog({this.entity, super.key});
 
   final Entity? entity;
 

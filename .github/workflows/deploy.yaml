@@ -23,7 +23,7 @@ jobs:
         working-directory: ./client
 
       - name: Build Flutter web
-        run: flutter build web --release
+        run: flutter build web --release --wasm
         working-directory: ./client
 
       - name: List files after build

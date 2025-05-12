@@ -33,9 +33,13 @@ class _DiagramCanvasState extends State<DiagramCanvas> {
   Widget build(BuildContext context) => RepaintBoundary(
     key: context.read<DiagramCubit>().canvasBoundaryKey,
     child: InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(double.infinity),
+      boundaryMargin: const EdgeInsets.symmetric(
+        horizontal: _canvasWidth * 4,
+        vertical: _canvasHeight * 4,
+      ),
       minScale: 0.1,
       maxScale: 2,
+      scaleFactor: 800,
       constrained: false,
       child: GestureDetector(
         onSecondaryTapUp: (details) {

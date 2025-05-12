@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:client/diagrams/components/add_entity_dialog.dart';
 import 'package:client/diagrams/components/diagram_canvas.dart';
+import 'package:client/diagrams/components/toolbar/components/app_drawer.dart';
 import 'package:client/diagrams/components/toolbar/toolbar.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/models/diagram_state.dart';
@@ -74,6 +75,7 @@ class _EditorViewState extends State<EditorView> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    drawer: const AppDrawer(),
     backgroundColor: Theme.of(context).colorScheme.surfaceDim,
     floatingActionButton: FloatingActionButton(
       onPressed: () {

@@ -12,16 +12,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class AuthButton extends StatefulWidget {
-  const AuthButton({required this.isOnLandingView, super.key});
+class MobileAuthButton extends StatefulWidget {
+  const MobileAuthButton({required this.isOnLandingView, super.key});
 
   final bool isOnLandingView;
 
   @override
-  State<AuthButton> createState() => _AuthButtonState();
+  State<MobileAuthButton> createState() => _MobileAuthButtonState();
 }
 
-class _AuthButtonState extends State<AuthButton> {
+class _MobileAuthButtonState extends State<MobileAuthButton> {
   @override
   Widget build(BuildContext context) => BlocBuilder<AuthCubit, AuthState>(
     builder: (context, state) {
@@ -80,22 +80,18 @@ class ProfileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PopupMenuButton<String>(
     offset: const Offset(0, 40),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+    child: const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 16,
             backgroundColor: Colors.blueGrey,
             child: Icon(Icons.person, size: 18, color: Colors.white),
           ),
-          const SizedBox(width: 8),
-          Text(
-            user.username,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.arrow_drop_down),
+
+          SizedBox(width: 4),
+          Icon(Icons.arrow_drop_down),
         ],
       ),
     ),

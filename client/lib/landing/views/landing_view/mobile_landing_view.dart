@@ -1,4 +1,4 @@
-import 'package:client/authentication/components/auth_button.dart';
+import 'package:client/authentication/components/auth_button/auth_button.dart';
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/landing/components/action_section/action_section.dart';
@@ -15,7 +15,6 @@ class MobileLandingView extends StatelessWidget {
     appBar: AppBar(
       title: const Text('Database Diagrams'),
       actions: const [AuthButton(isOnLandingView: true)],
-      actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
     ),
     body: Center(
       child: SingleChildScrollView(

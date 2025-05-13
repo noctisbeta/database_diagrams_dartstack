@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MobileSignInDialog extends StatefulWidget {
   const MobileSignInDialog({super.key});
@@ -20,6 +22,7 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
   bool _isObscured = true;
   bool _isRegistering = false;
   String? _errorMessage;
+  bool _agreedToTerms = false; // New state variable for terms agreement
 
   @override
   void dispose() {
@@ -34,18 +37,13 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
       final String username = _usernameController.text;
       final String password = _passwordController.text;
 
-      if (username.isEmpty || password.isEmpty) {
-        setState(() {
-          _errorMessage = 'Please fill in all fields';
-        });
-        return;
-      }
-
       if (_isRegistering) {
-        final String confirmPassword = _confirmPasswordController.text;
-        if (password != confirmPassword) {
+        if (!_agreedToTerms) {
+          // Check for terms agreement
           setState(() {
-            _errorMessage = 'Passwords do not match';
+            _errorMessage =
+                'You must agree to the Terms of Service and'
+                ' Privacy Policy to register.';
           });
           return;
         }
@@ -175,6 +173,122 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
                           return null;
                         },
                       ),
+                      const SizedBox(
+                        height: 16,
+                      ), // Add spacing before the checkbox
+                      CheckboxListTile(
+                        title: RichText(
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            children: [
+                              const TextSpan(text: 'I agree to the '),
+                              TextSpan(
+                                text: 'Terms of Service',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () async {
+                                        final Uri url = Uri.parse(
+                                          'https://diagrams.fractalfable.com/terms-of-service.html',
+                                        );
+                                        if (await canLaunchUrl(url)) {
+                                          await launchUrl(
+                                            url,
+                                            webOnlyWindowName: '_blank',
+                                          ); // Opens in a new tab
+                                        } else {
+                                          // Handle error: could not launch URL
+                                          if (!context.mounted) {
+                                            return;
+                                          }
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Could not open Terms'
+                                                ' of Service.',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                              ),
+                              const TextSpan(text: ' and '),
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () async {
+                                        final Uri url = Uri.parse(
+                                          'https://diagrams.fractalfable.com/privacy-policy.html',
+                                        );
+                                        if (await canLaunchUrl(url)) {
+                                          await launchUrl(
+                                            url,
+                                            webOnlyWindowName: '_blank',
+                                          ); // Opens in a new tab
+                                        } else {
+                                          // Handle error
+                                          if (!context.mounted) {
+                                            return;
+                                          }
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Could not open Privacy '
+                                                'Policy.',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                              ),
+                              const TextSpan(text: '.'),
+                            ],
+                          ),
+                        ),
+                        value: _agreedToTerms,
+                        onChanged: (bool? newValue) {
+                          setState(() {
+                            _agreedToTerms = newValue ?? false;
+                          });
+                        },
+                        controlAffinity:
+                            ListTileControlAffinity
+                                .leading, // Places checkbox first
+                        dense: true,
+                        contentPadding: EdgeInsets.zero, // Remove extra padding
+                        subtitle:
+                            !_agreedToTerms &&
+                                    _formKey.currentState?.validate() ==
+                                        false &&
+                                    _errorMessage != null &&
+                                    _errorMessage!.contains('You must agree')
+                                ? Padding(
+                                  // Show error only if this
+                                  // specific validation fails
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    'This field is required.',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                )
+                                : null,
+                      ),
                     ],
                     if (_errorMessage != null) ...[
                       const SizedBox(height: 16),
@@ -192,6 +306,8 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
                         setState(() {
                           _isRegistering = !_isRegistering;
                           _errorMessage = null;
+                          _agreedToTerms = false; // Reset terms
+                          // agreement when switching modes
                           _formKey.currentState?.reset();
                         });
                       },

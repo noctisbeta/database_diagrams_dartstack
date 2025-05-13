@@ -56,83 +56,107 @@ class _MobileCreateDiagramDialogState extends State<MobileCreateDiagramDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Create New Diagram'),
-    content: SingleChildScrollView(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Diagram Name',
-                hintText: 'Enter a name for your diagram',
-                prefixIcon: Icon(Icons.edit_document),
-              ),
-              autofocus: true,
-            ),
-            const SizedBox(height: 24),
-            const Row(
-              children: [
-                Text(
-                  'Select Database Type',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(width: 8),
-                Tooltip(
-                  message:
-                      'The database type determines available data types'
-                      ' and modeling features',
-                  child: Icon(Icons.info_outline, size: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Row(
-              children: [
-                Icon(Icons.warning_amber, size: 14, color: Colors.amber),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    'This cannot be changed after diagram creation',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildTypeSelection(),
-            const SizedBox(height: 24),
-            _buildTypeDescription(),
-          ],
+  Widget build(BuildContext context) => Dialog.fullscreen(
+    child: Scaffold(
+      appBar: AppBar(
+        title: const Text('Create New Diagram'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
         ),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Diagram Name',
+                      hintText: 'Enter a name for your diagram',
+                      prefixIcon: Icon(Icons.edit_document),
+                    ),
+                    autofocus: true,
+                  ),
+                  const SizedBox(height: 24),
+                  const Row(
+                    children: [
+                      Text(
+                        'Select Database Type',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Tooltip(
+                        message:
+                            'The database type determines available data types'
+                            ' and modeling features',
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Icon(Icons.warning_amber, size: 14, color: Colors.amber),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          'This cannot be changed after diagram creation',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTypeSelection(),
+                  const SizedBox(height: 24),
+                  _buildTypeDescription(),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('CANCEL'),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed:
+                      _isFormValid
+                          ? () {
+                            widget.onCreateDiagram(
+                              _nameController.text.trim(),
+                              _selectedType,
+                            );
+                          }
+                          : null,
+                  child: const Text('CREATE'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-        child: const Text('CANCEL'),
-      ),
-      FilledButton(
-        onPressed:
-            _isFormValid
-                ? () {
-                  widget.onCreateDiagram(
-                    _nameController.text.trim(),
-                    _selectedType,
-                  );
-                }
-                : null,
-        child: const Text('CREATE'),
-      ),
-    ],
   );
 
   Widget _buildTypeSelection() => Column(
@@ -217,14 +241,14 @@ class _MobileCreateDiagramDialogState extends State<MobileCreateDiagramDialog> {
             title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: baseColor.withValues(alpha: 800),
+              color: baseColor.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             description,
             style: TextStyle(
-              color: baseColor.withValues(alpha: 700),
+              color: baseColor.withValues(alpha: 0.7),
               height: 1.4,
             ),
           ),

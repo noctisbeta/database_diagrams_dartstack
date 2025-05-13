@@ -8,14 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class DiagramsListDialog extends StatefulWidget {
-  const DiagramsListDialog({super.key});
+class MobileDiagramsListDialog extends StatefulWidget {
+  const MobileDiagramsListDialog({super.key});
 
   @override
-  State<DiagramsListDialog> createState() => _DiagramsListDialogState();
+  State<MobileDiagramsListDialog> createState() =>
+      _MobileDiagramsListDialogState();
 }
 
-class _DiagramsListDialogState extends State<DiagramsListDialog> {
+class _MobileDiagramsListDialogState extends State<MobileDiagramsListDialog> {
   late Future<List<Diagram>> diagramsFuture =
       context.read<DiagramCubit>().getDiagrams();
 
@@ -83,10 +84,9 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => Dialog(
+  Widget build(BuildContext context) => Dialog.fullscreen(
     child: Container(
-      width: 500,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,9 +96,7 @@ class _DiagramsListDialogState extends State<DiagramsListDialog> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-
-          SizedBox(
-            height: 300,
+          Expanded(
             child: FutureBuilder<List<Diagram>>(
               future: diagramsFuture,
               builder: (context, snapshot) {

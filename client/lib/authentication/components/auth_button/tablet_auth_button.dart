@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:client/authentication/components/sign_in_dialog.dart';
+import 'package:client/authentication/components/sign_in_dialog/sign_in_dialog.dart';
 import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
-import 'package:client/diagrams/components/diagrams_list_dialog.dart';
+import 'package:client/diagrams/components/diagrams_list_dialog/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/landing/components/create_diagram_dialog/create_diagram_dialog.dart';
 import 'package:client/routing/router_path.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:client/diagrams/components/diagrams_list_dialog.dart';
+import 'package:client/diagrams/components/diagrams_list_dialog/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:common/er/diagram.dart';

@@ -5,14 +5,14 @@ import 'package:client/authentication/models/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SignInDialog extends StatefulWidget {
-  const SignInDialog({super.key});
+class DesktopSignInDialog extends StatefulWidget {
+  const DesktopSignInDialog({super.key});
 
   @override
-  State<SignInDialog> createState() => _SignInDialogState();
+  State<DesktopSignInDialog> createState() => _DesktopSignInDialogState();
 }
 
-class _SignInDialogState extends State<SignInDialog> {
+class _DesktopSignInDialogState extends State<DesktopSignInDialog> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();

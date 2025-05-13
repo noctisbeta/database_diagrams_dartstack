@@ -5,7 +5,7 @@ import 'package:client/authentication/controllers/auth_bloc.dart';
 import 'package:client/authentication/models/auth_state.dart';
 import 'package:client/diagrams/components/diagrams_list_dialog.dart';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
-import 'package:client/landing/components/create_diagram_dialog.dart';
+import 'package:client/landing/components/create_diagram_dialog/create_diagram_dialog.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:common/auth/user.dart';
 import 'package:flutter/material.dart';

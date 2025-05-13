@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:client/diagrams/controllers/diagram_cubit.dart';
 import 'package:client/diagrams/controllers/diagram_importer.dart';
 import 'package:client/landing/components/action_card.dart';
-import 'package:client/landing/components/create_diagram_dialog.dart';
+import 'package:client/landing/components/create_diagram_dialog/create_diagram_dialog.dart';
 import 'package:client/routing/router_path.dart';
 import 'package:common/er/diagram.dart';
 import 'package:flutter/material.dart';

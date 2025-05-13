@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class CreateDiagramDialog extends StatefulWidget {
-  const CreateDiagramDialog({required this.onCreateDiagram, super.key});
+class TabletCreateDiagramDialog extends StatefulWidget {
+  const TabletCreateDiagramDialog({required this.onCreateDiagram, super.key});
   final Function(String name, DiagramType type) onCreateDiagram;
 
   static Future<void> showCreateDiagramDialog(BuildContext context) =>
@@ -15,7 +15,7 @@ class CreateDiagramDialog extends StatefulWidget {
         context: context,
         barrierDismissible: false,
         builder:
-            (context) => CreateDiagramDialog(
+            (context) => TabletCreateDiagramDialog(
               onCreateDiagram: (name, diagramType) {
                 final diagram = Diagram.initial(name, diagramType);
                 context.read<DiagramCubit>().loadDiagram(diagram);
@@ -28,10 +28,11 @@ class CreateDiagramDialog extends StatefulWidget {
       );
 
   @override
-  State<CreateDiagramDialog> createState() => _CreateDiagramDialogState();
+  State<TabletCreateDiagramDialog> createState() =>
+      _TabletCreateDiagramDialogState();
 }
 
-class _CreateDiagramDialogState extends State<CreateDiagramDialog> {
+class _TabletCreateDiagramDialogState extends State<TabletCreateDiagramDialog> {
   final _nameController = TextEditingController();
   DiagramType _selectedType = DiagramType.postgresql;
   bool _isFormValid = false;

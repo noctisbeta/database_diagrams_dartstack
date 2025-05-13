@@ -13,8 +13,9 @@ class MobileLandingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Database Diagrams'),
+      title: const Text('Database Diagrams', textAlign: TextAlign.start),
       actions: const [AuthButton(isOnLandingView: true)],
+      actionsPadding: const EdgeInsets.only(right: 16),
     ),
     body: Center(
       child: SingleChildScrollView(

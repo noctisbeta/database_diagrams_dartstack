@@ -79,8 +79,9 @@ final class AuthRepository {
       case LoginResponseSuccess():
         final User user = loginResponse.user;
         await _authSecureStorage.saveAuthData(
-          username: user.username,
-          token: user.token,
+          email: user.email,
+          displayName: user.displayName,
+          token: user.jwToken,
           refreshTokenWrapper: user.refreshTokenWrapper,
         );
       case LoginResponseError():
@@ -98,8 +99,9 @@ final class AuthRepository {
       case RegisterResponseSuccess():
         final User user = registerResponse.user;
         await _authSecureStorage.saveAuthData(
-          username: user.username,
-          token: user.token,
+          email: user.email,
+          displayName: user.displayName,
+          token: user.jwToken,
           refreshTokenWrapper: user.refreshTokenWrapper,
         );
       case RegisterResponseError():

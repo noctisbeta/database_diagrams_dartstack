@@ -172,7 +172,7 @@ final class AuthHandler implements IAuthHandler {
           return JsonResponse.created(body: registerResponse.toMap());
         case RegisterResponseError(:final error):
           switch (error) {
-            case RegisterError.usernameAlreadyExists:
+            case RegisterError.emailAlreadyTaken:
               return JsonResponse.conflict(body: registerResponse.toMap());
             case RegisterError.unknownRegisterError:
               return JsonResponse.internalServerError(

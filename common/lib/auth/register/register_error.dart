@@ -1,11 +1,11 @@
 enum RegisterError {
-  usernameAlreadyExists,
+  emailAlreadyTaken,
   unknownRegisterError;
 
   factory RegisterError.fromString(String name) {
     switch (name) {
-      case 'usernameAlreadyExists':
-        return RegisterError.usernameAlreadyExists;
+      case 'emailAlreadyTaken':
+        return RegisterError.emailAlreadyTaken;
       case 'unknownRegisterError':
         return RegisterError.unknownRegisterError;
       default:
@@ -15,7 +15,7 @@ enum RegisterError {
 
   @override
   String toString() => switch (this) {
-    RegisterError.usernameAlreadyExists => 'usernameAlreadyExists',
+    RegisterError.emailAlreadyTaken => 'emailAlreadyTaken',
     RegisterError.unknownRegisterError => 'unknownRegisterError',
   };
 }

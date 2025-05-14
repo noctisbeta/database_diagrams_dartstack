@@ -112,11 +112,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthStateUnauthenticated());
   }
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String email, String password) async {
     emit(const AuthStateLoading());
 
     final LoginRequest loginRequest = LoginRequest(
-      username: username,
+      email: email,
       password: password,
     );
 
@@ -139,11 +139,16 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> register(String username, String password) async {
+  Future<void> register({
+    required String email,
+    required String displayName,
+    required String password,
+  }) async {
     emit(const AuthStateLoading());
 
     final RegisterRequest registerRequest = RegisterRequest(
-      username: username,
+      email: email,
+      displayName: displayName,
       password: password,
     );
 
@@ -156,10 +161,10 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthStateAuthenticated(user: registerResponse.user));
       case RegisterResponseError():
         switch (registerResponse.error) {
-          case RegisterError.usernameAlreadyExists:
+          case RegisterError.emailAlreadyTaken:
             emit(
-              const AuthStateErrorUsernameAlreadyExists(
-                message: 'Username already taken',
+              const AuthStateErrorEmailAlreadyTaken(
+                message: 'Email already taken',
               ),
             );
           case RegisterError.unknownRegisterError:

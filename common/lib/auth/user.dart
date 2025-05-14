@@ -8,22 +8,25 @@ import 'package:meta/meta.dart';
 @immutable
 final class User extends DataModel {
   const User({
-    required this.username,
-    required this.token,
+    required this.email,
+    required this.displayName,
+    required this.jwToken,
     required this.refreshTokenWrapper,
   });
 
   @Throws([BadMapShapeException])
   factory User.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
-      'username': final String username,
-      'token': final JWToken token,
+      'email': final String email,
+      'display_name': final String displayName,
+      'jw_token': final JWToken jwToken,
       'refresh_token_wrapper':
           final Map<String, dynamic> refreshTokenWrapperMap,
     } =>
       User(
-        username: username,
-        token: token,
+        email: email,
+        displayName: displayName,
+        jwToken: jwToken,
         refreshTokenWrapper: RefreshTokenWrapper.validatedFromMap(
           refreshTokenWrapperMap,
         ),
@@ -31,28 +34,32 @@ final class User extends DataModel {
     _ => throw const BadMapShapeException('Invalid map format for User'),
   };
 
-  final String username;
-  final JWToken token;
+  final String displayName;
+  final String email;
+  final JWToken jwToken;
   final RefreshTokenWrapper refreshTokenWrapper;
 
   @override
   Map<String, dynamic> toMap() => {
-    'username': username,
-    'token': token,
+    'email': email,
+    'display_name': displayName,
+    'jw_token': jwToken,
     'refresh_token_wrapper': refreshTokenWrapper.toMap(),
   };
 
   @override
-  List<Object?> get props => [username, token, refreshTokenWrapper];
+  List<Object?> get props => [email, displayName, jwToken, refreshTokenWrapper];
 
   @override
   User copyWith({
-    String? username,
-    JWToken? token,
+    String? email,
+    String? displayName,
+    JWToken? jwToken,
     RefreshTokenWrapper? refreshTokenWrapper,
   }) => User(
-    username: username ?? this.username,
-    token: token ?? this.token,
+    email: email ?? this.email,
+    displayName: displayName ?? this.displayName,
+    jwToken: jwToken ?? this.jwToken,
     refreshTokenWrapper: refreshTokenWrapper ?? this.refreshTokenWrapper,
   );
 }

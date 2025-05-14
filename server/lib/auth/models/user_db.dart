@@ -7,7 +7,8 @@ import 'package:server/postgres/database_exception.dart';
 final class UserDB extends DataModel {
   const UserDB({
     required this.id,
-    required this.username,
+    required this.email,
+    required this.displayName,
     required this.hashedPassword,
     required this.salt,
     required this.createdAt,
@@ -18,7 +19,8 @@ final class UserDB extends DataModel {
   factory UserDB.validatedFromMap(Map<String, dynamic> map) => switch (map) {
     {
       'id': final int id,
-      'username': final String username,
+      'email': final String email,
+      'display_name': final String displayName,
       'hashed_password': final String hashedPassword,
       'salt': final String salt,
       'created_at': final DateTime createdAt,
@@ -26,7 +28,8 @@ final class UserDB extends DataModel {
     } =>
       UserDB(
         id: id,
-        username: username,
+        email: email,
+        displayName: displayName,
         hashedPassword: hashedPassword,
         salt: salt,
         createdAt: createdAt,
@@ -36,7 +39,8 @@ final class UserDB extends DataModel {
   };
 
   final int id;
-  final String username;
+  final String email;
+  final String displayName;
   final String hashedPassword;
   final String salt;
   final DateTime createdAt;
@@ -45,7 +49,8 @@ final class UserDB extends DataModel {
   @override
   List<Object?> get props => [
     id,
-    username,
+    email,
+    displayName,
     hashedPassword,
     salt,
     createdAt,
@@ -58,7 +63,8 @@ final class UserDB extends DataModel {
   @override
   Map<String, dynamic> toMap() => {
     'id': id,
-    'username': username,
+    'email': email,
+    'display_name': displayName,
     'hashed_password': hashedPassword,
     'salt': salt,
     'created_at': createdAt.toIso8601String(),
@@ -68,14 +74,16 @@ final class UserDB extends DataModel {
   @override
   UserDB copyWith({
     int? id,
-    String? username,
+    String? email,
+    String? displayName,
     String? hashedPassword,
     String? salt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => UserDB(
     id: id ?? this.id,
-    username: username ?? this.username,
+    email: email ?? this.email,
+    displayName: displayName ?? this.displayName,
     hashedPassword: hashedPassword ?? this.hashedPassword,
     salt: salt ?? this.salt,
     createdAt: createdAt ?? this.createdAt,

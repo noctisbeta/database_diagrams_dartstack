@@ -11,13 +11,16 @@ class AuthSecureStorage {
   final FlutterSecureStorage _storage;
 
   // Storage keys
-  static const String _usernameKey = 'username';
+  static const String _emailKey = 'email';
+  static const String _displayNameKey = 'display_name';
   static const String _jwTokenKey = 'jw_token';
   static const String _refreshTokenKey = 'refresh_token';
   static const String _refreshTokenExpiresAtKey = 'refresh_token_expires_at';
 
   // Getters
-  Future<String?> getUsername() => _storage.read(key: _usernameKey);
+  Future<String?> getEmail() => _storage.read(key: _emailKey);
+
+  Future<String?> getDisplayName() => _storage.read(key: _displayNameKey);
 
   Future<JWToken?> getJWToken() async {
     final String? tokenString = await _storage.read(key: _jwTokenKey);
@@ -28,21 +31,24 @@ class AuthSecureStorage {
   }
 
   Future<User?> getUser() async {
-    final String? username = await getUsername();
+    final String? email = await getEmail();
+    final String? displayName = await getDisplayName();
     final JWToken? token = await getJWToken();
     final RefreshToken? refreshToken = await getRefreshToken();
     final DateTime? refreshTokenExpiresAt = await getRefreshTokenExpiresAt();
 
-    if (username == null ||
+    if (displayName == null ||
         token == null ||
         refreshToken == null ||
-        refreshTokenExpiresAt == null) {
+        refreshTokenExpiresAt == null ||
+        email == null) {
       return null;
     }
 
     return User(
-      username: username,
-      token: token,
+      email: email,
+      displayName: displayName,
+      jwToken: token,
       refreshTokenWrapper: RefreshTokenWrapper(
         refreshToken: refreshToken,
         refreshTokenExpiresAt: refreshTokenExpiresAt,
@@ -70,11 +76,13 @@ class AuthSecureStorage {
 
   // Save methods
   Future<void> saveAuthData({
-    required String username,
+    required String email,
+    required String displayName,
     required JWToken token,
     required RefreshTokenWrapper refreshTokenWrapper,
   }) async {
-    await _storage.write(key: _usernameKey, value: username);
+    await _storage.write(key: _emailKey, value: email);
+    await _storage.write(key: _displayNameKey, value: displayName);
     await _storage.write(key: _jwTokenKey, value: token.value);
     await _storage.write(
       key: _refreshTokenKey,
@@ -104,7 +112,7 @@ class AuthSecureStorage {
 
   // Delete methods
   Future<void> clearAuthData() async {
-    await _storage.delete(key: _usernameKey);
+    await _storage.delete(key: _displayNameKey);
     await _storage.delete(key: _jwTokenKey);
     await _storage.delete(key: _refreshTokenKey);
     await _storage.delete(key: _refreshTokenExpiresAtKey);

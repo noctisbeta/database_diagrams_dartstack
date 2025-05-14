@@ -115,7 +115,7 @@ final class AuthRepository implements IAuthRepository {
     String? userAgent,
   }) async {
     @Throws([DatabaseException])
-    final UserDB userDB = await _authDataSource.login(loginRequest.username);
+    final UserDB userDB = await _authDataSource.login(loginRequest.email);
 
     final bool isValid = await _hasher.verifyPassword(
       loginRequest.password,
@@ -140,8 +140,9 @@ final class AuthRepository implements IAuthRepository {
     );
 
     final user = User(
-      username: userDB.username,
-      token: token,
+      email: userDB.email,
+      displayName: userDB.displayName,
+      jwToken: token,
       refreshTokenWrapper: refreshTokenWrapper,
     );
 
@@ -157,14 +158,14 @@ final class AuthRepository implements IAuthRepository {
     String? ipAddress,
     String? userAgent,
   }) async {
-    final bool isUsernameUnique = await _authDataSource.isUniqueUsername(
-      registerRequest.username,
+    final bool isEmailUnique = await _authDataSource.isUniqueEmail(
+      registerRequest.email,
     );
 
-    if (!isUsernameUnique) {
+    if (!isEmailUnique) {
       return const RegisterResponseError(
-        message: 'Username already exists!',
-        error: RegisterError.usernameAlreadyExists,
+        message: 'Email already exists!',
+        error: RegisterError.emailAlreadyTaken,
       );
     }
 
@@ -175,7 +176,8 @@ final class AuthRepository implements IAuthRepository {
 
     @Throws([DatabaseException])
     final UserDB userDB = await _authDataSource.register(
-      registerRequest.username,
+      registerRequest.email,
+      registerRequest.displayName,
       hashedPassword,
       salt,
     );
@@ -190,8 +192,9 @@ final class AuthRepository implements IAuthRepository {
     );
 
     final user = User(
-      username: userDB.username,
-      token: token,
+      email: userDB.email,
+      displayName: userDB.displayName,
+      jwToken: token,
       refreshTokenWrapper: refreshTokenWrapper,
     );
 

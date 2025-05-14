@@ -5,29 +5,29 @@ import 'package:meta/meta.dart';
 
 @immutable
 final class LoginRequest extends RequestDTO {
-  const LoginRequest({required this.username, required this.password});
+  const LoginRequest({required this.email, required this.password});
 
   @Throws([BadMapShapeException])
   factory LoginRequest.validatedFromMap(
     Map<String, dynamic> map,
   ) => switch (map) {
-    {'username': final String username, 'password': final String password} =>
-      LoginRequest(username: username, password: password),
+    {'email': final String email, 'password': final String password} =>
+      LoginRequest(email: email, password: password),
     _ => throw const BadMapShapeException('Invalid map shape for LoginRequest'),
   };
 
-  final String username;
+  final String email;
   final String password;
 
   @override
-  Map<String, dynamic> toMap() => {'username': username, 'password': password};
+  Map<String, dynamic> toMap() => {'email': email, 'password': password};
 
   @override
-  List<Object?> get props => [username, password];
+  List<Object?> get props => [email, password];
 
   @override
-  LoginRequest copyWith({String? username, String? password}) => LoginRequest(
-    username: username ?? this.username,
+  LoginRequest copyWith({String? email, String? password}) => LoginRequest(
+    email: email ?? this.email,
     password: password ?? this.password,
   );
 }

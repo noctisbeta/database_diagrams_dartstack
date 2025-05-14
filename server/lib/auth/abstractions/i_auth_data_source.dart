@@ -9,9 +9,14 @@ abstract interface class IAuthDataSource {
     required String? userAgent,
     required String? ipAddress,
   });
-  Future<UserDB> login(String username);
-  Future<UserDB> register(String username, String hashedPassword, String salt);
-  Future<bool> isUniqueUsername(String username);
+  Future<UserDB> login(String email);
+  Future<UserDB> register(
+    String email,
+    String displayName,
+    String hashedPassword,
+    String salt,
+  );
+  Future<bool> isUniqueEmail(String email);
   Future<RefreshTokenDB> rotateRefreshToken({
     required RefreshToken oldToken,
     required int userId,

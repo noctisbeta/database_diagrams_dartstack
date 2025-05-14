@@ -91,15 +91,15 @@ final class AuthDataSource implements IAuthDataSource {
 
   @override
   @Propagates([DatabaseException])
-  Future<UserDB> login(String username) async {
+  Future<UserDB> login(String email) async {
     @Throws([DatabaseException])
     final UserDB userDB = await _ps.executeAndMap(
       query: Sql.named('''
-        SELECT * FROM users WHERE username = @username;
+        SELECT * FROM users WHERE email = @email;
       '''),
-      parameters: {'username': username},
+      parameters: {'email': email},
       mapper: UserDB.validatedFromMap,
-      emptyResultMessage: 'No user found with that username.',
+      emptyResultMessage: 'No user found with that email.',
     );
 
     return userDB;
@@ -108,18 +108,20 @@ final class AuthDataSource implements IAuthDataSource {
   @override
   @Propagates([DatabaseException])
   Future<UserDB> register(
-    String username,
+    String email,
+    String displayName,
     String hashedPassword,
     String salt,
   ) async {
     @Throws([DatabaseException])
     final UserDB userDB = await _ps.executeAndMap(
       query: Sql.named('''
-        INSERT INTO users (username, hashed_password, salt)
-        VALUES (@username, @hashedPassword, @salt) RETURNING *;
+        INSERT INTO users (email, display_name, hashed_password, salt)
+        VALUES (@email, @displayName, @hashedPassword, @salt) RETURNING *;
       '''),
       parameters: {
-        'username': username,
+        'email': email,
+        'displayName': displayName,
         'hashedPassword': hashedPassword,
         'salt': salt,
       },
@@ -132,11 +134,11 @@ final class AuthDataSource implements IAuthDataSource {
 
   @override
   @Propagates([DatabaseException])
-  Future<bool> isUniqueUsername(String username) async {
+  Future<bool> isUniqueEmail(String email) async {
     @Throws([DatabaseException])
     final Result res = await _ps.execute(
-      Sql.named('SELECT 1 FROM users WHERE username = @username;'),
-      parameters: {'username': username},
+      Sql.named('SELECT 1 FROM users WHERE email = @email;'),
+      parameters: {'email': email},
     );
 
     return res.isEmpty;

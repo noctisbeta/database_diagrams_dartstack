@@ -44,8 +44,8 @@ sealed class AuthStateError extends AuthState {
 }
 
 @immutable
-final class AuthStateErrorUsernameAlreadyExists extends AuthStateError {
-  const AuthStateErrorUsernameAlreadyExists({required super.message});
+final class AuthStateErrorEmailAlreadyTaken extends AuthStateError {
+  const AuthStateErrorEmailAlreadyTaken({required super.message});
 }
 
 @immutable

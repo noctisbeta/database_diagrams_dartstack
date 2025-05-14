@@ -15,9 +15,10 @@ class MobileSignInDialog extends StatefulWidget {
 }
 
 class _MobileSignInDialogState extends State<MobileSignInDialog> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _displayNameController = TextEditingController(); // Add this
   final _formKey = GlobalKey<FormState>();
   bool _isObscured = true;
   bool _isRegistering = false;
@@ -26,16 +27,18 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _displayNameController.dispose(); // Add this
     super.dispose();
   }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final String username = _usernameController.text;
+      final String email = _emailController.text;
       final String password = _passwordController.text;
+      final String displayName = _displayNameController.text;
 
       if (_isRegistering) {
         if (!_agreedToTerms) {
@@ -48,9 +51,13 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
           return;
         }
 
-        await context.read<AuthCubit>().register(username, password);
+        await context.read<AuthCubit>().register(
+          email: email,
+          password: password,
+          displayName: displayName,
+        );
       } else {
-        await context.read<AuthCubit>().login(username, password);
+        await context.read<AuthCubit>().login(email, password);
       }
     }
   }
@@ -92,22 +99,47 @@ class _MobileSignInDialogState extends State<MobileSignInDialog> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _usernameController,
+                      controller: _emailController,
                       decoration: const InputDecoration(
-                        labelText: 'Username',
+                        labelText: 'Email',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: Icon(Icons.email_outlined),
                       ),
                       autofocus: true,
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a username';
+                          return 'Please enter an email address';
+                        }
+                        if (!value.contains('@') || !value.contains('.')) {
+                          return 'Please enter a valid email address';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
+                    if (_isRegistering) ...[
+                      // Add Display Name field when registering
+                      TextFormField(
+                        controller: _displayNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Display Name',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a display name';
+                          }
+                          if (value.length < 3) {
+                            return 'Display name must be at least 3 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
